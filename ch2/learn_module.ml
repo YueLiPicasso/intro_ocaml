@@ -1,3 +1,13 @@
+(*
+
+WE introduce module and module functor. Each can be abstarcted
+by a signature (module type). The signature can be integrated 
+into the module (functor) implementation, or be standlone. 
+
+*)
+
+
+
 (* structure and signature *)
 
 module PrioQueue =
@@ -101,18 +111,23 @@ struct
     then Equal
     else if x < y
     then Less
-    else Greater
+    else Greater                              
 end;;
 
 
 module AbstractOrderedString = (OrderedString : ORDERED_TYPE)
 
-module NoCaseString =
+module NoCaseString :
+sig
+  type t = string
+  val compare : t -> t -> comparison
+end =
 struct
   type t = string
+  let lower = String.lowercase_ascii
   let compare (x : t) (y : t) =
-    let lx = String.lowercase_ascii x
-    and ly = String.lowercase_ascii y
+    let lx = lower x
+    and ly = lower y
     in if lx = ly
     then Equal
     else if lx < ly
@@ -121,7 +136,10 @@ struct
 end;;
 
 
-module AbstractNoCaseString = (NoCaseString : ORDERED_TYPE)
+module AbstractNoCaseString = (NoCaseString : ORDERED_TYPE);;
+
+NoCaseString.(compare "Abel" "abel");;
+(* AbstractNoCaseString.(compare "Abel" "abel");; *)
 
 module Natural =
 struct
@@ -200,10 +218,17 @@ minimum requirement to define a module functor, as per Observation B.
 
 *)
 
+
+(* module functor abstraction: two syntactic ways *)
+
+
+(* way one *)
+(* define a module functor type separately *)
+
 module type SETFUNCTOR =
   functor (Elt : ORDERED_TYPE) ->
   sig
-    type element = Elt.t
+    type element = Elt.t 
     type set
     val empty : set
     val add : element -> set -> set
@@ -211,4 +236,112 @@ module type SETFUNCTOR =
   end;;
 
 
+module AbstractSet = (Set : SETFUNCTOR);;
+
+
+module OrderedStringAbstractSet = AbstractSet(OrderedString);;
+
+
+OrderedStringAbstractSet.(add "hello" empty);;
+
+(*
+
+Compare with:
+
+module type SETFUNCTOR =
+  functor (Elt : ORDERED_TYPE) ->
+  sig
+    type element (* = Elt.t *)
+    type set
+    val empty : set
+    val add : element -> set -> set
+    val member : element -> set -> bool
+  end;;
+
+
+module AbstractSet = (Set : SETFUNCTOR);;
+
+
+module OrderedStringAbstractSet = AbstractSet(OrderedString);;
+
+
+OrderedStringAbstractSet.(add "hello" empty);;
+
+The equality between the type "AbstractSet(OrderedString).element" 
+and the type "OrderedString.t" can nolonger be recognized, causing
+a type error.  
+
+*)
+
+
+(* 
+
+Further experiment with module functor: 
+
+if we add one more definition to the module OrderedString:
+
+ let cat (x : t) (y : t) : t = x ^ y
+
+and run: 
+
+module OrderedStringSet = Set(OrderedString : ORDERED_TYPE);;
+
+we would get the same result as not adding the "cat" definition.
+
+*)
+
+module NoCaseStringAbstractSet = AbstractSet(NoCaseString);;
+
+NoCaseStringAbstractSet.(add "Abel" (add "abel" (add "beta" empty)));;
+
+
+(* way two *)
+(* represent the return type of a module functor, 
+   and integrate it with the funcor implementation  *)
+
+module type SET =
+sig
+  type element
+  type set
+  val empty : set
+  val add : element -> set -> set
+  val member : element -> set -> bool
+end;;
+
+
+
+module AbsctractSet3 (Elt : ORDERED_TYPE) : (SET with type element = Elt.t) =
+  struct
+    type element = Elt.t
+    type set = element list
+    let empty = []
+    let rec add x s =
+      match s with
+        [] -> [x]
+      | hd :: tl ->
+        match Elt.compare x hd with
+          Equal -> s
+        | Less -> x :: s
+        | Greater -> hd :: add x tl
+    let rec member x s =
+      match s with
+        [] -> false
+      | hd :: tl ->
+        match Elt.compare x hd with
+          Equal -> true
+        | Less -> false
+        | Greater -> member x tl
+  end;;
+
+
+(* we can also use the return type in a type annotation
+   separate from the functor implementation *)
+
+module AbstractSet2 = (Set : functor (Elt : ORDERED_TYPE) -> SET);;
+
+module AbstractSet2 = (Set : functor (Elt : ORDERED_TYPE) -> (SET with type element = Elt.t));;
+
+module NoCaseStringAbstractSet2 = AbstractSet2(NoCaseString);;
+
+NoCaseStringAbstractSet2.(add "Abel" (add "abel" (add "beta" empty)));;
 
