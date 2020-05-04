@@ -345,3 +345,4 @@ module NoCaseStringAbstractSet2 = AbstractSet2(NoCaseString);;
 
 NoCaseStringAbstractSet2.(add "Abel" (add "abel" (add "beta" empty)));;
 
+(* NoCaseStringAbstractSet2.add "foo" OrderedStringAbstractSet.empty;; *)
