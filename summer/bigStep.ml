@@ -108,4 +108,5 @@ eval env (App(App(Var "z", Var "x"), Var "x"));;
 eval env (Let ("x", int 5, (App(App(Var "z", Var "x"), Var "x"))));;
 eval env (App(Fun("x", (Let("x", int 5, Var "x"))), int 4));;
 eval env (App(Fun("x",App(App(plus, Let("x", int 5, Var "x")), Var "x")), int 4));;
+eval env (App(Fun("x",App(App(plus, Let("x", int 5, Var "x")), Var "x")), Var "x"));;
 
