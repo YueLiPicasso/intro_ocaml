@@ -4,9 +4,9 @@ open Syntax;;
 
 (* the tuorial's website and its Spinger 
    publication substantially diverge from
-   eachother regarding the implementation
+   each other regarding the implementation
    of big step semantics. We follow the 
-   website whch looks right *)
+   website which looks right *)
 
 
 (* mutually recursive types *)
