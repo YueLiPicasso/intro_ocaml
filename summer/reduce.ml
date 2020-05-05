@@ -1,5 +1,7 @@
 open Syntax;;
 
+(* small-step reduction semantics *)
+
 (* check that an expression is a value *)
 let rec evaluated = function
     Fun(_,_) -> true
@@ -45,7 +47,7 @@ let rec subst x v a =
   | Const _ -> a;; 
 
 (* beta reduction for let-binding and applying abstraction
-   Note the call-by-value evaluation rule *)
+   Note the call-by-value evaluation strategy *)
 let beta = function
   | App (Fun(x,a), v) when evaluated v ->  subst x v a
   | Let (x, v ,a) when evaluated v -> subst x v a
@@ -85,7 +87,11 @@ let rec one_step a =
   | App(a1,a2) when not (evaluated a2) -> App(a1, one_step a2)
   | Let(x,a1,a2) when not (evaluated a1) -> Let(x,one_step a1,a2)
   | _ -> raise Reduce;;
-    
+
+
+(* We can further separate an expression into a potential
+   redex and its evaluation context *)
+
 type context = expr -> expr;;
 
 (* context fomers *)
@@ -113,6 +119,8 @@ let rec find_redex : expr -> context * expr = function
 (* alternative one-step reduction *)
 let one_step' a = let c,t = find_redex a in c (top_reduce t);; 
 
+(* alternative definition of eval using one_step/one_step' *)
+let rec eval' a = try eval (one_step' a ) with Reduce -> a;;
 
 
 
