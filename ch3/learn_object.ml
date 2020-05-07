@@ -247,4 +247,109 @@ let p = new printable_point 17;;
    with the mind to define it later in sub-classes -- 
    those that inherit. *)
 
+(* A class that contains virtual methods must also 
+   be declared virtual *)
+
+class virtual abstract_point x_init =
+  object (self)
+    val mutable virtual x : int
+    method virtual get_x : int
+    method get_offset = self # get_x - x_init
+    method virtual move : int -> unit
+  end;;
+
+(* new abstract_point 6;; *)
+(* a virtual class cannot be instantiated *)
+
+class point x_init =
+  object 
+    inherit abstract_point x_init as super
+    val mutable x = x_init
+    method get_x = x
+    method move d = x <- x + d
+  end;;
+
+(* To inherit means to get all defined variables and methods, 
+   while taking over the responsibility to implement all 
+   virtual variables and methods, and with the right
+   to add its own methods and variables. *)
+
+(new point 13) # move 5;;
+
+(* private methods *)
+(* Private methods can only be invoked by methods from the same object *)
+
+class restricted_point x_init =
+  object (self)
+    val mutable x = x_init
+    method get_x = x
+    method private move d = x <- x + d
+    method bump = self # move 1
+  end;;
+
+let p = new restricted_point 0;;
+
+(* p # move 10;; *) (* This gives error *)
+
+p # bump;;
+p # get_x;;
+
+(* immediate object inheriting a class containing
+   private methods *)
+let p =
+  object
+    inherit restricted_point 10
+  end;;
+
+p # get_x;;
+(* p # move;; *)(* causes error *)
+
+(* inheritance, by a subclass, of a private method *)
+class adjres_point x =
+  let ori = (x / 10) * 10 in
+  object
+    inherit restricted_point ori
+  end;;
+
+let p = new adjres_point 24;;
+
+p # bump;;
+p # get_x;;
+(* p # move 10;; *) (* error *)
+
+
+(* we can make public an inherited private method *)
+class point_again x =
+  object 
+    inherit restricted_point x
+    method virtual move : _
+    (* mention a method without providing its definition *)
+  end;;
+
+(* alternatively *)
+class point_again x =
+  object (self : < move : _ ; ..> ) (* requiring a public move method *)
+    inherit restricted_point x
+  end;;
+
+class point_again x =
+  object
+    inherit restricted_point x as super
+    method move = super # move
+  end;;
+
+
+(* compare *)
+
+class point_again x =
+  object
+    inherit restricted_point x as super
+    method pub_move = super # move
+  end;;
+
+
+
+(* Types and classes are independent in OCaml. For example, 
+   the classes "point" and "adjusted point" produce objects of
+   the same type *)
 
