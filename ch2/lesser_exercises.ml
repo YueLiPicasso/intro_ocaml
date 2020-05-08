@@ -1,4 +1,4 @@
-module StrSet = AbsSet(OrderedString);;
+(*module StrSet = AbsSet(OrderedString);;
 
 module AbsSet = (Set : SETFUNCTOR);;
 
@@ -75,7 +75,7 @@ let at_most_one_elem x = match x with
    | _ -> false;; *)
 
 
-
+*)
 
 let isvowel c =
   c = 'a' || c = 'e' || c = 'i' || c = 'o' || c = 'u';;
