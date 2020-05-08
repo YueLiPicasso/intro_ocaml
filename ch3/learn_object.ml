@@ -353,3 +353,61 @@ class point_again x =
    the classes "point" and "adjusted point" produce objects of
    the same type *)
 
+
+(* class interface *)
+
+class type restricted_point_type =
+  object
+    method get_x : int
+    method bump : unit
+  end;;
+
+fun (x : restricted_point_type) -> x;;
+
+class restricted_point' x = (restricted_point x : restricted_point_type);;
+
+(*
+class restricted_point'' = (point : int -> restricted_point_type);;
+
+Error: The class type int -> point is not matched by the class type
+         int -> restricted_point_type
+       The first class type has no method bump
+       The public method get_offset cannot be hidden
+       The public method move cannot be hidden
+
+
+*)
+
+
+p # get_x;; p # bump;;
+
+class type point_type =
+  object
+    method get_x : int
+    method move : int -> unit
+    method get_offset : int
+  end;;
+
+class point' = (point : int -> point_type);;
+
+(* a class type has its "must show", "must not show" 
+   and "optinally show" *)
+
+(* we can put a class interface into a module signature *)
+
+module type POINT = sig
+  class restricted_point' : int ->
+    object
+      method get_x : int
+      method bump : unit
+    end
+end;;
+
+
+module Point : POINT = struct
+  class restricted_point' = restricted_point
+end;;
+
+let p = new Point.restricted_point' 12;;
+
+p # get_x;; p # bump;;
