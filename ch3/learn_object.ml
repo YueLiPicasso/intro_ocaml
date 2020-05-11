@@ -411,3 +411,186 @@ end;;
 let p = new Point.restricted_point' 12;;
 
 p # get_x;; p # bump;;
+
+
+(* inheritance *)
+
+class colored_point x (c : string) =
+  object
+    inherit point x
+    val c = c
+    method color = c
+  end;;
+
+let p' = new colored_point 5 "red";;
+
+p' # get_x , p' # color ;;
+
+(* generic function *)
+
+let get_succ_x p = p # get_x + 1;;
+(* p is any object that has the method "get_x" *)
+
+let p = new point 10;;
+
+get_succ_x p + get_succ_x p';;
+
+
+(* a genric function on objects can refer to methods
+   that are not declared so far *)
+let set_x p = p # set_x;;
+(* Distinguish : set_x as a method of some object p, and set_x as a 
+   top level function. These two interpretation of the same 
+   name have distinct type. *)
+
+
+let incr p = set_x p (get_succ_x p);;
+
+class printable_colored_point y c =
+  object (self)
+    val c = c
+    method color = c
+    inherit printable_point y as super
+    method! print =
+      print_string "(";
+      super # print;
+      print_string ", ";
+      print_string (self # color);
+      print_string ")"
+  end;;
+
+let p' = new printable_colored_point 17 "red";;
+
+p' # print;;
+
+class another_printable_colored_point y c c' =
+  object (self)
+    inherit printable_point (y + 20)
+    inherit! printable_colored_point y c
+    val! c = c'
+  end;;
+
+let p = new another_printable_colored_point 17 "red" "green";;
+
+p # print;;
+
+
+(* val!, method! and inherit! are explit overriding annotation *)
+
+(*
+object
+  method! m = ()
+end;;
+*)
+
+(* parameterized class *)
+
+(* Not allowed: 
+
+class oref x_init =
+  object
+    val mutable x = x_init
+    method get = x
+    method set y = x <- y
+  end;;
+
+for at least one of the methods has a
+   polymorphic type
+*)
+
+class oref (x_init : int) =
+  object
+    val mutable x = x_init
+    method get = x
+    method set y = x <- y
+  end;;
+
+           
+
+(*An immediate object can be polymorphic *)    
+let new_ored x_init =
+  object
+    val mutable x = x_init
+    method get = x
+    method set y = x <- y
+  end;;
+
+let stref =  new_ored "hello";;
+let inref = new_ored 16;;
+
+stref # get;; stref # set "world";;
+inref # get;; inref # set 99;;
+
+(* class polymorphism must be explict *)
+
+class ['a] oref x_init =
+  object
+    val mutable x = (x_init : 'a)
+    method get = x
+    method set y = x <- y
+  end;;
+
+let r = new oref 1 in r # set 2 ; (r # get);;
+
+(* a constraint may be imposed on the type variable
+   of a polymorphic class *)
+
+(* here 'a is constarined to int*)
+class ['a] oref_succ (x_init : 'a) =
+  object
+    val mutable x = x_init + 1
+    method get = x
+    method set y = x <- y
+  end;;
+
+(* here 'a is constrained to any object that has a method
+   move of type int -> unit *)
+class ['a] circle (c : 'a) =
+  object
+    val mutable center = c
+    method center = center
+    method set_center c = center <- c
+    method move = (center # move : int -> unit)
+  end;;
+
+(* here 'a is constrained to any object of class point 
+   or a sub-class of point *)
+class ['a] circle (c : 'a) =
+  object
+    constraint 'a = #point
+    val mutable center = c
+    method center = center
+    method set_center c = center <- c
+    method move = center # move
+  end;;
+
+
+let p' = new colored_point 5 "red";;
+let c = new circle p';;
+
+c # center # get_offset;;
+c # move (-8);;
+
+(* polymorphic class inheriance *)
+class ['a] colored_circle c =
+  object
+    (*constraint 'a = #colored_point*)
+    inherit ['a] circle c
+    method color = center # color
+  end;;
+(* if we remove the explict constraint clause, then 
+   the system can infer a suitable constraint on the
+   type variable 'a: firstly it must an object of 
+   (a subclass of ) the class point, and secondly it
+   must provide a method color. We can see that an object
+   of the class colored_point satisfies this inferred 
+   constraint. *)
+
+
+let c = new colored_circle p';;
+let p = new colored_point 20 "black";;
+
+c # color;;
+c # set_center p;;
+c # move 99;;
+c # center # get_offset;; 
