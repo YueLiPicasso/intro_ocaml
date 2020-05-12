@@ -594,3 +594,90 @@ c # color;;
 c # set_center p;;
 c # move 99;;
 c # center # get_offset;; 
+
+
+(* polymorphic methods *)
+
+class ['a] intlist (l : int list) =
+  object
+    method empty = ( l = [])
+    method fold f (accu : 'a) = List.fold_left f accu l
+  end;;
+
+(* this object is not polymorphic *)
+(* Only its constructor is polymorphic *)
+let l = new intlist [1;2;3];; 
+
+(* the abstacrtion fixes the parameter type
+   of the object l to int  *)
+l # fold (fun x y -> x + y) 0;; 
+
+l;;
+
+let l = new intlist [1;2;3];; 
+(* the abstraction fixes the parameter type of the 
+   object l to string; we can change the argument 
+   function, but the function's type must remain 
+   string -> int -> string *)
+l # fold (fun s x -> s ^ Int.to_string x ^ " ") "";;
+l # fold (fun s x -> s ^ Int.to_string x ^ " hello ") "";; 
+
+
+(* quantification is wrongly located; we want the class to be
+   polymorphic in the way that the method fold of any object can 
+   be used in a polymorphic manner. For this end we must give an
+   explicit polymorphic type to the method definition, but not to 
+   the class definition. *)
+
+class intlist (l : int list) =
+  object
+    method empty = (l = [])
+    method fold : 'a. ('a -> int -> 'a) -> 'a -> 'a =
+      fun f accu -> List.fold_left f accu l
+  end;;
+
+(* now we can freely switch between arguments of different
+   type *)
+let l = new intlist [1;2;3];;
+l # fold (fun x y -> x + y) 0;;
+l # fold (fun x y -> x + y + 3) 0;;
+l # fold (fun s x -> s ^ Int.to_string x ^ " ") "";;
+l # fold (fun s x -> s ^ Int.to_string x ^ " hello ") "";; 
+
+(* we can omit explicit polymorphic method type annotation 
+   if we override such a method after inheritance *)
+
+class intlist_rev l =
+  object
+    inherit intlist l
+    method! fold f accu = List.fold_left f accu (List.rev l)
+  end;;
+
+let l = new intlist_rev [1;2;3];;
+l # fold (fun s x -> s ^ Int.to_string x ^ " hello ") "";;
+l # fold (fun x y -> x + y) 0;;
+
+
+(* If we separate class interface from class definition, 
+   quantification of polymorphic method type can be left 
+   implicit *)
+
+class type ['a] iterator =
+  object method fold : ('b -> 'a -> 'b) -> 'b -> 'b end;;
+
+class intlist' l =
+  object (self : int #iterator)
+    method empty = ( l = [] )
+    method fold f accu = List.fold_left f accu l
+  end;;
+
+
+(* applying an interface to the class *)
+class type intlist_type =
+  object
+    method empty : bool
+    method fold : (string -> int -> string) -> string -> string
+  end;;
+
+(* this won't work: 'a is not compatible with string *)
+(* class intlist'' = (intlist : int list -> intlist_type);; *)
