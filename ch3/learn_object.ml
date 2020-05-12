@@ -676,7 +676,8 @@ class intlist' l =
 class type iterate_intlist =
   object
     method empty : bool
-    method fold : ('a -> int -> 'a) -> 'a -> 'a
+    method fold :  ('a -> int -> 'a) -> 'a -> 'a
+    (* or explicitly: method fold : 'a.('a -> int -> 'a) -> 'a -> 'a *)
   end;;
 
 
@@ -689,3 +690,21 @@ class intlist_again l =
 let l = new intlist_again [1;2;3];;
 l # fold (fun s x -> s ^ Int.to_string x ^ " hello ") "";; 
 l # fold (fun x y -> x + y) 0;;
+
+
+(* This won't work:
+
+class intlist_again l =
+  object
+    method empty = (l = [])
+    method fold :  ('a -> int -> 'a) -> 'a -> 'a =
+      fun f accu -> List.fold_left f accu l
+  end;;
+
+   The compiler would say that 'a is unbound *)
+
+(* type variable quantification can be implicit in class descripion
+   "class type ...", i.e., you don't need the " 'a. " prefix for the 
+   type expression; however, you must add it in a class definition 
+   "class ...". *)
+
