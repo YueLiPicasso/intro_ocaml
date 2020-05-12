@@ -672,12 +672,20 @@ class intlist' l =
   end;;
 
 
-(* applying an interface to the class *)
-class type intlist_type =
+(* here is a specialized iterator description *)
+class type iterate_intlist =
   object
     method empty : bool
-    method fold : (string -> int -> string) -> string -> string
+    method fold : ('a -> int -> 'a) -> 'a -> 'a
   end;;
 
-(* this won't work: 'a is not compatible with string *)
-(* class intlist'' = (intlist : int list -> intlist_type);; *)
+
+class intlist_again l =
+  object (self : #iterate_intlist)
+    method empty = ( l = [])
+    method fold f accu = List.fold_left f accu l
+  end;;
+
+let l = new intlist_again [1;2;3];;
+l # fold (fun s x -> s ^ Int.to_string x ^ " hello ") "";; 
+l # fold (fun x y -> x + y) 0;;
