@@ -64,24 +64,65 @@ let rec unify t1 t2 =
 (* scratch area *)
 
 (*
- compare the following two let-bindings:
+Compare the following let-bindings:
 
-let tint' () =  texp (Tcon (Tint, []));;
 let tint = texp (Tcon (Tint, []));;
+let tint' () =  texp (Tcon (Tint, []));;
+let tint'' () = {texp = Desc (Tcon(Tint, [])); mark = 0};;
 
-they both create something like  texp (Tcon (Tint, [])). however,
-all occurrances of tint refer to the same physical object, while
-each call of  tint' () creates a fresh physical object whose content is
- texp (Tcon (Tint, [])). 
+they all create something like {texp = Desc (Tcon(Tint, [])); mark = 0};;).
+Hhowever, all occurrances of tint refer to the same physical object, while
+separate calls of  tint'() create  distinct physical records,  all of which 
+share the same physical (Tcon (Tint, [])). Moreover, separate calls of tint''()
+create distinct phsical records whose texp fields also share the same physical 
+(Tcon (Tint, [])). 
 
 *)
 
 let tint' () =  texp (Tcon (Tint, []));;
+let tint'' () = {texp = Desc (Tcon(Tint, [])); mark = 0};;
+
+
+let a = tint'();;
+let b = tint'();;
+
+a == b;; (* false *)
+
+desc a;; (* - : desc = Tcon (Tint, []) *)
+desc b;; (* - : desc = Tcon (Tint, []) *)
+
+desc a == desc b;; (* true *)
+
+let a' = tint'' ();;
+let b' = tint'' ();;
+
+desc a';; (* - : desc = Tcon (Tint, []) *)
+desc b';; (* - : desc = Tcon (Tint, []) *)
+
+a' == b';; (* false *)
+
+desc a' == desc b';; (* true *)
 
 Tint = Tint;;  (* true *)
 Tint == Tint;; (* true *)
 Tcon (Tint, []) = Tcon(Tint, []);;  (* true *)
 Tcon (Tint, []) == Tcon(Tint, []);; (* false *)
+Desc (Tcon (Tint, [])) == Desc (Tcon (Tint, []));; (* false *)
+{texp = Desc (Tcon (Tint, [])); mark = 0} == {texp = Desc (Tcon (Tint, [])); mark = 0};;
+(* false *)
+desc {texp = Desc (Tcon (Tint, [])); mark = 0} == desc {texp = Desc (Tcon (Tint, [])); mark = 0};;
+(* false *)
+
+let d1 = Tcon (Tint, []);;
+let d2 = Tcon (Tint, []);; 
+
+d1 == d2;; (* false *)
+
+desc (texp d1) == desc (texp d2);; (* false *)
+
+desc (texp d1) == d1;; (* true *)
+desc (texp d2) == d2;; (* true *)
+
 [] == [];;     (* true *)
 (Tint, []) = (Tint, []);;  (* true *)
 (Tint, []) == (Tint, []);; (* false *)
@@ -93,17 +134,24 @@ tint'() = tint;; (* true *)
 
 tint;;
 
-let a = tint'();;
-let b = tint'();;
 
 unify a b;;
 
-a;; b ;;
+a,  b ;;
 
 a == b;;
 
-tint == tint ;;
-tint'() == tint'();;
+unify a' b';;
+
+a', b';;
+
+desc (repr a') == desc b';; (* true *)
+
+
+tint == tint ;; (* true *)
+tint'() == tint'();; (* false *)
+texp (Tcon(Tint,[])) == texp (Tcon(Tint,[]));; (* false *)
+
 
 tarrow tint tint == tarrow tint tint;;
 
