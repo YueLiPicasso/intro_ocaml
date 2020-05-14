@@ -79,6 +79,9 @@ create distinct phsical records whose texp fields also share the same physical
 
 *)
 
+tint == tint;; (* true *)
+let a = tint and b = tint in a == b;; (* true *)
+
 let tint' () =  texp (Tcon (Tint, []));;
 let tint'' () = {texp = Desc (Tcon(Tint, [])); mark = 0};;
 

@@ -442,7 +442,9 @@ let set_x p = p # set_x;;
 (* Distinguish : set_x as a method of some object p, and set_x as a 
    top level function. These two interpretation of the same 
    name have distinct type. *)
-
+(* The top level set_x is polymorphic in the class of its 
+   arguments: it accpets any class that provides a method 
+   named set_x. *)
 
 let incr p = set_x p (get_succ_x p);;
 
@@ -708,3 +710,42 @@ class intlist_again l =
    type expression; however, you must add it in a class definition 
    "class ...". *)
 
+let l = new intlist' [1;2;3];;
+
+let sum lst = lst # fold (fun x y -> x + y) 0;;
+
+(* Due to limitation of type inference, at the call site 
+the polymorphic type of sum cannot be specialized by the type 
+of its argument, therefore a type error is reported quotinng 
+   "incompatible type" *)
+
+(* sum l;; *)
+
+(* To solve this problem, we can put a type constraint on
+   the parameter *)
+
+let sum (lst : _ # iterator) = lst # fold (fun x y -> x + y) 0;;
+
+sum l;;
+
+(* proide explicit method type as part of an object type *)
+
+let sum lst =
+  (lst : <fold : 'a. ('a -> _ -> 'a) -> 'a -> 'a; .. >) # fold ( + ) 0;;
+
+sum l;;
+
+(* a method can be polymorphic in the class of its arguments *)
+(* we can achieve this using explicit quantification together
+   with aliased type (typexpr as 'ident) *)
+class type point0 = object method get_x : int end;;
+
+class distance_point x =
+  object
+    inherit point x
+    method distance : 'a. (#point0 as 'a) -> int =
+      fun other -> abs (other # get_x - x)
+  end;;
+
+let p = new distance_point 3 in
+(p # distance (new point 8), p # distance (new colored_point 1 "blue"));;
