@@ -749,3 +749,57 @@ class distance_point x =
 
 let p = new distance_point 3 in
 (p # distance (new point 8), p # distance (new colored_point 1 "blue"));;
+
+
+(* Another way to let methods be polymorphic in the class of
+   its argument, is to specify the arg type not using #-type
+   but using object type <method-type {; method-type}[;|;..]> *)
+
+(* o is any object that has exactly one public method mtd : int *)
+let f (o : < mtd : int>) = ();;
+
+f (object method mtd = 6 end);;
+
+let ob =  object (self)
+  val x = 99
+  method private get_x = x
+  method mtd = self # get_x + 2 (* get_x can only be accessed through self*)
+  initializer print_int x
+end in f ob;;
+
+(* here o is any object that at least has a 
+   public method mtd : int *)
+let f' (o : < mtd : int;..>) = ();;
+
+f' (object method mtd = 6 method mtd' = 5 end);;
+
+class multi_poly =
+  object
+    method m1 : 'a. (<n1 : 'b. 'b -> 'b; ..> as 'a) -> _ =
+      fun o -> o # n1 true, o # n1 "hello"
+    method m2 :  'b 'a.(<n2 : 'b -> bool;..> as 'a) -> 'b -> _ =
+      fun o x -> o # n2 x
+   (*  method m3 : 'b. <n2 : 'b -> bool;..> -> 'b -> _ =
+       fun o x -> o # n2 x *)
+      (* error : unbound type variable. <n2: 'b -> bool;..> 
+         is regarded as a type variable, and it is not unbound 
+         explicily. The way to bind it is to use an alias type
+         named 'a. So for #point0 *)
+  end;;
+
+
+let ob1 = object
+  method n2 = function
+      "hello" -> true
+    | "world" -> false
+    | _ -> assert false
+end;;
+
+let ob2 = object
+  val mutable x = 0
+  method n2 y = if y >= 0 then (x <- y; true) else false
+end;;
+
+let ob3 = new multi_poly;;
+
+ob3 # m2 ob1 "world", ob3 # m2 ob2 5;;
