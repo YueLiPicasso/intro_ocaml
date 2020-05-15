@@ -1,5 +1,3 @@
-open Syntax;;
-
 type type_symbol = Tarrow | Tint;;
 
 type texp = {mutable texp : node; mutable mark : int}
@@ -45,6 +43,9 @@ exception Arity of texp * texp;;
 let link t1 t2 = (repr t1).texp <- Link t2;;
 (* why no just t1.texp <- Link t2 *)
 
+(* unify works on two mutable records; on successful 
+   completion, the two records shall represent the same 
+   type, with some strcuture sharing. *)
 let rec unify t1 t2 =
   let t1 = repr t1 and t2 = repr t2 in
   if t1 == t2 then () else
@@ -62,6 +63,52 @@ let rec unify t1 t2 =
 
 
 (* scratch area *)
+
+let t1 = tarrow (tvar()) tint;;
+let t2 = tarrow tint tint;;
+
+t1 == t2;; (* false *)
+
+unify t1 t2;;
+
+t1,t2;;
+
+let {texp = Desc (Tcon(_, l1)) ; _ } as t1 = tarrow (tvar()) tint;;
+let {texp = Desc (Tcon(_, l2)) ; _ } as t2 =  tarrow tint tint;;
+
+
+unify t2 t1;;
+
+t1, t2;;
+
+l1 , l2;;
+
+
+unify t1 t2;;
+
+t1, t2;;
+
+l1 , l2;;
+
+repr t2 == repr t1;;
+
+
+let lk = let v = tvar() in
+  link v
+    (let v = tvar() in
+     link v
+       (let v = tvar() in
+        link v
+          (let v = tvar() in
+           link v t2; v); v); v); v;;
+
+link lk (tvar());;
+
+lk;;
+
+repr lk, lk;;
+
+(* List.iter2 unify [] [tint];; *)
 
 (*
 Compare the following let-bindings:
@@ -95,6 +142,8 @@ desc a;; (* - : desc = Tcon (Tint, []) *)
 desc b;; (* - : desc = Tcon (Tint, []) *)
 
 desc a == desc b;; (* true *)
+(*According to Ref. Man. , on non-mutable 
+  types the behaviour of == is implementtion dependent *)
 
 let a' = tint'' ();;
 let b' = tint'' ();;
