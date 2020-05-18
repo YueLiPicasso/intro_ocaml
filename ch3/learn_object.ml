@@ -803,3 +803,95 @@ end;;
 let ob3 = new multi_poly;;
 
 ob3 # m2 ob1 "world", ob3 # m2 ob2 5;;
+
+
+(* Using coercions *)
+
+let p = new point 3 and q = new colored_point 4 "blue";;
+
+(*
+
+The type point and colored_point are not compatible, in the sense
+that they are not regarded as the same type. Putting them in the 
+same list produces a type error
+ 
+[p;q];;
+*)
+
+(* explicit subtyping *)
+(* i.e. identfy a type with its subtype *)
+let colored_point_to_point cp = (cp : colored_point :> point);;
+
+(* type coercion hides the methods unique for the sub-class*)
+[p; (colored_point_to_point q)];;
+
+(*
+( p : point :> colored_point );; *)
+
+(* subtyping does not necessarily result from 
+   explicit inheritance: it just recognises the 
+   subset relation between the two object types *)
+
+class fruit id =
+  object
+    val name : string = id
+    method name = name
+  end;;
+
+class apple id t =
+  object
+    val name : string = id
+    method name = name
+    val taste : string = t
+    method taste = taste
+  end;;
+
+let apple_is_fruit a = (a : apple :> fruit);;
+
+let a = new apple "apple" "sore" and f = new fruit "banana" in
+[apple_is_fruit a;f];;
+
+
+(* broadening coercion without explicit domain, and only 
+   the codomain is specified *)
+
+let to_point cp = (cp :> point);;
+
+
+(* method duplicates self *)
+class banana =
+  object
+    val  length : int = 4
+    val color : string = "green"
+    method reproduce = {<length=length + 1>}
+    method clone = {<>}
+    method size = length
+    method color = color
+  end;;
+
+let b = new banana;;
+let b' = b # reproduce;;
+let b'' = b' # reproduce;;
+
+[b # size, b # color; b'#size,b'#color;b''#size,b''#color];;
+
+let b_1 = b # clone;;
+let b_2 = b_1 # clone;;
+let b_2' = b_2 # reproduce;;
+
+[b # size, b # color;b_1#size,b_1#color;
+ b_2#size,b_2#color;b_2'#size,b_2'#color];;
+
+(* limitation of broadening coercion on recursive types *)
+
+class c0 = object method m = {<>} method n = 0 end;;
+(*
+ c0 abbreviates the recursive type
+< m : 'a; n : int> as 'a 
+*)
+
+class type c1 = object method m : c1 end;;
+(*
+c1 abbreviates the recursive type 
+<m : 'a> as 'a
+*)
