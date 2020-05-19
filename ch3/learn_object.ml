@@ -882,16 +882,282 @@ let b_2' = b_2 # reproduce;;
 [b # size, b # color;b_1#size,b_1#color;
  b_2#size,b_2#color;b_2'#size,b_2'#color];;
 
-(* limitation of broadening coercion on recursive types *)
+(* limitation of implicit-domain coercion *)
 
 class c0 = object method m = {<>} method n = 0 end;;
 (*
- c0 abbreviates the recursive type
-< m : 'a; n : int> as 'a 
+c0 = < m : 'a; n : int> as 'a 
 *)
 
 class type c1 = object method m : c1 end;;
 (*
-c1 abbreviates the recursive type 
-<m : 'a> as 'a
+c1  = <m : c1>
+#c1 = <m : c1; .. > 
 *)
+
+class type c2 = object ('a) method m : 'a end;;
+(*
+c2  = <m : 'a> as 'a
+#c2 = <m : 'a; .. > as 'a 
+*)
+
+let ob = new c0;;
+
+(* coercion from c0 to c1 and from c0 to c2 both work
+   under explit domain *)
+
+let c0_to_c1 = fun (x : c0) -> (x : c0 :> c1);;
+let c0_to_c2 = fun (x : c0) -> (x : c0 :> c2);;
+
+c0_to_c1 ob, c0_to_c2 ob;;
+
+(* under implicit domain, only coercion from c0 to c2 works,
+   but not from c0 to c1 *)
+
+let to_c1 x = ( x :> c1);;
+let to_c2 x = (x :> c2);;
+
+(* to_c1 ob;; *)
+to_c2 ob;;
+
+(* functional objects *)
+
+class functional_point y =
+  object
+    val x = y (* immutable instance variable *)
+    method get_x = x
+    method move d = {< x = x + d >} (* copy object *)
+    method move_to x = {< x >} (* copy object *)
+  end;;
+
+
+let p = new functional_point 7;;
+
+p # get_x;;
+
+(p # move 3) # get_x;;
+
+(p # move_to 15) # get_x;;
+
+(* fresh objects cloned. p is not modified *)
+
+p # get_x;;
+
+(* compare with: *)
+
+class bad_functional_point y =
+  object
+    val x = y
+    method get_x = x
+    method move d = new bad_functional_point (x+d)
+    method move_to x = new bad_functional_point x
+  end;;
+
+let q = new bad_functional_point 7;;
+
+q # get_x;;
+
+(q # move 5) # get_x;;
+
+(q # move_to 44) # get_x;;
+
+q # get_x;;
+
+class functional_colored_point y (s : string) =
+  object
+    inherit functional_point y
+    val color = s
+    method color = color
+  end;;
+
+
+class bad_functional_colored_point y (s : string) =
+  object
+    inherit bad_functional_point y
+    val color = s
+    method color = color
+  end;;
+
+let cp = new functional_colored_point 10 "red";; 
+
+cp # get_x, cp # color;;      
+(cp # move 6) # color, (cp # move_to 6) # color;;
+
+let cq = new bad_functional_colored_point 55 "green";;
+
+cq # get_x, cq # color;;
+cq # move 5;;
+
+(* since inheritance is just a syntactic relation, the move method 
+of the bad subclass creates objects of the superclass, while that of 
+the good subclass creates objects of the subclass itself *)
+
+(* Cloning objects *)
+
+(* object clone is shallow: if an instance variable refers to
+   a reference cell or array, then the same reference cell or array 
+   is shared between the object and its shallow clone, so that
+   modification of the reference cell or array from one object 
+   is visible from the perspective of the clone *)
+
+let ob = Oo.copy
+    (object
+      val mutable cell = ref 5
+      val arr = [|true;true;true|]
+      method get_cell = !cell
+      method set_cell n = cell := n
+      method get_arr id = arr.(id)
+      method set_arr id bo = arr.(id) <- bo
+      method set x = cell <- x
+    end);;
+
+let ob' = Oo.copy ob;;
+
+(* group 1 *)
+
+ob # get_cell, ob' # get_cell;; (* (5,5) *)
+
+ob' # set_cell 10;;
+
+ob # get_cell, ob' # get_cell;; (* (10,10) *)
+
+(* group 2 *)
+
+ob # get_arr 0,ob # get_arr 1,ob # get_arr 2;; (* (true, true, true) *)
+ob' # get_arr 0,ob' # get_arr 1,ob' # get_arr 2;; (* (true, true, true) *)
+
+ob' # set_arr 0 false;
+ob' # set_arr 1 false;
+ob' # set_arr 2 false;;
+
+ob # get_arr 0,ob # get_arr 1,ob # get_arr 2;;  (* (false, false, false) *)
+ob' # get_arr 0,ob' # get_arr 1,ob' # get_arr 2;; (* (false, false, false) *)
+
+(* group 3 *)
+
+ob # set (ref 100);;
+ob # get_cell, ob' # get_cell;; (* 100, 10 *)
+
+Oo.copy;;
+
+ob = ob';; (* for ojects, = iff == *)
+ob <> ob';;
+
+(* clone and override are interchangeable when 
+   there is no instance variable update from the 
+   override *)
+
+(* the following two classes have the same object type *)
+
+class copy =
+  object
+    method copy = {<>}
+  end;;
+
+class copy =
+  object (self)
+    method copy = Oo.copy self
+  end;;
+
+(* object state saving and restoring can be implemented
+   using object clone *)
+
+class backup =
+  object (self)
+    val mutable copy = None
+    method save = copy <- Some {< copy = None >}
+    method restore = match copy with
+        Some x -> x | None -> self
+  end;;
+
+
+let ob = new backup;;
+ob # restore = ob;; (* true *)
+ob # save;;
+ob # restore = ob;; (* false *)
+
+(* using multiple inheritance, the backup facility 
+   can be added to any class *)
+
+class ['a] backup_ref x =
+  object
+    inherit ['a] oref x
+    inherit backup
+  end;;
+
+(* experimenting with a  backup_ref object *)
+
+let p = new backup_ref 0;;
+p # get;; (* 0 *)
+p # set 5;;
+p # save;;
+p # set 100;; 
+p # get;; (* 100 *)
+(p # restore) # get;; (* 5 *)
+(p # restore) # set 100;;
+(p # get) = (p # restore) # get && p # get = 100;; (* true *)
+p # set 0;p # save;;
+p # restore # get = 0;; (* true *)
+p # restore # save;;
+p # restore # restore # get;;
+p # restore # restore # save;;
+p # restore # restore # restore # get;;
+p # restore # restore # restore # save;;
+
+(* we see that iterative call of the "save" method from the restored object 
+   creates a linked list *)
+
+
+(* detour from the Ref. Man. :
+   the backup_ref object can form a linked list *)
+
+let rec deep_set p n m =
+  if n = 0 then p # set m else deep_set (p # restore) (n-1) m;;
+
+
+(*
+
+deep_set p 0 k= p # set k
+deep_set p 1 k= p # restore # set k
+deep_set p 2 k= p # restore # restore # set k
+deep_set p 3 k= p # restore # restore # restore # set k
+...
+
+*)
+
+let rec deep_get_helper p n =
+  if n = 0 then p # get else deep_get_helper (p # restore) (n-1);;
+
+(* get the first n + 1 nodes' values from a linked list *)
+let deep_get p n =
+  let res = Array.make (n+1) 0 in
+  for cnt = 0 to n do
+    res.(cnt) <- deep_get_helper p cnt
+  done;
+  res
+;;
+
+let rec deep_save_helper p n =
+  if n = 0 then p # save else deep_save_helper (p # restore) (n-1);;
+
+(* create a linked lisi of n + 2 nodes *)
+let deep_save p n =
+  for cnt = 0 to n do
+    deep_save_helper p cnt
+  done;;
+
+let size = 100;;
+let p = new backup_ref 0;;
+
+(* create a linked list of a give size *)
+deep_save p size;;
+
+(* set the values of nodes in the linked list *)
+for cnt = 0 to size+1 do
+  deep_set p cnt cnt
+done;;
+
+(* retrive the values from the linked list *)
+deep_get p (size+1);;
+
+
