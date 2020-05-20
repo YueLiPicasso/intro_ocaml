@@ -1161,3 +1161,183 @@ done;;
 deep_get p (size+1);;
 
 
+(* a variant of backup to store all states in a linked list *)
+
+class backup =
+  object (self)
+    val mutable copy = None
+    method save = copy <- Some {<>} (* duplicate self*)
+    method restore =
+      match copy with
+        Some x -> x
+      | None -> self
+    method clear = copy <- None
+  end;;
+
+let p = new backup_ref 0;;
+
+for i = 1 to size do
+  p # save;
+  p # set i
+done;;
+
+deep_get p size;;
+
+
+(* recursive classes *)
+
+class window =
+  object
+    val mutable top_widget = (None : widget option)
+    method top_widget = top_widget
+    method set_wgt wgt = top_widget <- Some wgt
+  end
+and widget (w : window) =
+  object
+    val window = w
+    method window = window
+  end;;
+
+    
+let w = new window;;
+w # top_widget;;
+let wgt = new widget w;;
+wgt # window # top_widget;;
+w # set_wgt wgt;;
+let (Some wg) = w # top_widget;;
+wg = wgt;; (* true *)
+
+
+(* binary method *)
+
+class virtual comparable =
+  object (_ : 'a)
+    method virtual leq : 'a -> bool
+  end;;
+
+class money (x : float) =
+  object
+    inherit comparable
+    val repr = x
+    method value = repr
+    method leq p = repr <= p # value
+  end;;
+
+let p = new money 2.50 and
+  q = new money 3.00 in
+p # leq q;;
+
+(* This causes error
+(p : money :> comparable);;
+*)
+
+class money2 x =
+  object
+    inherit money x
+    method times k = {<repr = k *. repr>}
+  end;;
+
+let p = new money2 2.5;;
+let p' = p # times 10. in
+p' # value;;
+p' # leq p;;
+
+(* These also produces error
+(p' : money2 :> comparable);;
+(p' : money2 :> money);;
+*)
+
+
+let min (x : #comparable) y =
+  if x # leq y then x else y;;
+
+(min (new money 1.3) (new money 3.1)) # value;;
+(min (new money2 5.) (new money2 6.)) # value;;
+
+(* #comparable unifies with the types of both money
+   and money2, but neither money nor money2 can be 
+   coerced to comparable *)
+
+
+class money x =
+  object (_ : 'a)
+    val repr = x
+    method value = repr
+    method print = print_float repr
+    method times k = {< repr = k *. x >}
+    method leq (p : 'a) = repr <= p # value
+    method plus (p : 'a) = {< repr = x +. p # value >}
+  end;;
+
+let p = new money 2.33 and p' = new money 3.42 in
+p # leq p', p' # leq p, (p' # plus p) # value, (p # plus p') # value,
+(p # times 100.) # value, (p' # times 100.) # value;;
+
+(* we can use a module to hide the representation of 
+   a class *)
+                                   
+module type MONEY =
+sig
+  type t
+  class c : float ->
+    object ('a)
+      val repr : t
+      method value : t
+      method print : unit
+      method times : float -> 'a
+      method leq : 'a -> bool
+      method plus : 'a -> 'a
+    end
+end;;
+
+module Euro : MONEY =
+struct
+  type t = float
+  class c x =
+    object (_ : 'a)
+      val repr = x
+      method value = repr
+      method print = print_float repr
+      method times k = {< repr = k *. x >}
+      method leq (p : 'a) = repr <= p # value
+      method plus (p : 'a) = {< repr = x +. p # value >}
+    end
+end;;
+
+let p = new Euro.c 5.66;;
+
+p # value;;
+p # print;;
+p # leq p;;
+(p # plus p) # print;;
+
+module type TEA =
+sig
+  type t
+  class c :
+    object
+      val n : t
+      method drink : t
+    end
+end;;
+
+module Tea : TEA =
+struct
+  type t = string
+  class c =
+    object
+      val n = "tea"
+      method drink = n
+    end
+end;;
+
+let cup = new Tea.c;;
+cup # drink;;
+
+(*
+To hide a class's representation using a module:
+- Define a new type for the type of the representation,and then 
+- Make the new type abstract in a module type, where this new 
+  abstract type annotates the class representation.
+- Apply the module type to the module 
+*)
