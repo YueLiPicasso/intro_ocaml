@@ -43,7 +43,14 @@ let f ~x ~y = x + y and h g = g  ~y:3 ~x:2 in h f;;
 let h g = g  ~y:3 ~x:2 in h ( + );;
 *)
 
-(* ?lab is a label for an optional argument *)
+(* an optional argument can be provided in two ways:
+   using prefix ~lab: or ?lab: The latter way passes the 
+   argument as is, while the latter automatically wraps 
+   the arg with Some when passing it *)
+(* providing a non-labelled non-optional argument causes all
+   optional arguments before it, if there are any in the definition,
+   and if they are not provided at the site of call, to be defaulted,
+   i.e., their dfault values are supplied automatically. *)
 let bump ?(step = 1) x = x + step;;
 bump 2;;
 bump ~step:3 2;;
@@ -102,3 +109,72 @@ test5 ~x:5 ?y:None ();;
    provided later on, or, should these optional arguments be
    defaulted, i.e., their default values being passed to the 
    calling function *)
+
+(* type inference problems with labels *)
+
+let f  ~x ~y = x - y;;
+let h' g = g ~y:2 ~x:3;;
+(* The following expression has
+   a type error:
+   h' f;;
+   The type of f and g does not match: one is x:int -> y:int -> int
+   the other is y:int-> x:int-> int. Because the compiler cannot tell
+   what is the intended parameter order of g, so it assumes that the 
+   way it appears is the intended order.  The problem can be fixed by
+   annotation g with the intended type.  *)
+let h' (g: x:int -> y:int -> int) = g ~y:2 ~x:3;;
+h' f;;
+
+let bump ?(step = 1) x = x + step;;
+(* problem and solution:
+ 
+   let bump_it bump x = bump ~step:2 x;;
+   bump_it bump 1;;
+
+   causes a type error. Because the compiler cannot tell 
+   if the ~step parameter is optional, nor what is the default
+   order of the two parameters, the ~step parameter is assumed 
+   to be non-optional, and the default order is assumed to be 
+   the order in which the arguments appear. Thus, the inferred
+   type of the first parameter of bump_it is: 
+   step:int -> 'a -> 'b
+   which does not match the type of the bump function:
+   ?step:int -> int -> int, i.e. int option -> int -> int
+   Several ways exist to fix the problem.
+*)
+
+let bump_it bump x = bump ?step:(Some 2) x;; (* use optlabel *)
+let bump_it bump (x : int) : int = bump ?step:(Some 2) x;;
+let bump_it (bump : ?step:int -> int -> int) x = bump ~step:2 x;;
+bump_it bump 1;;
+
+
+let add ?(x = 0) ~x:y = ( + ) x y;;
+add ~x:1 ~x:2;;
+(* erronous
+   add ~x:1 ?x:None;; *)
+add ?x:None ~x:6;;
+add 6;;
+
+(* This is not allowed, although we can guess 
+   that 2 corresponds to label x. 
+let f ~x ~y = x+y in f ~y:1 2;;
+*)
+
+(* THis is neither allowed, but this time we cannot 
+   guess which is which regarding the correspondence
+   between the arguments (1 and 2) and the formal 
+   parameters ~x and ~z.
+
+   let f ~x ~y ~z = x,y,z in f 1 2 ~y:2;;
+*)
+
+(* There is only one case where labels can be omitted:
+   - the function has a known arity, and 
+   - all arguments are unlabelled, and
+   - the number of arguments matches that of non-optional 
+     parameters. *)
+  
+
+let f ~x ~y ~z ?(k = 0) = x * y * z + k in (f 1 2 3) ~k:4;;
+let f ~x ~y ?(k = 0) ~z  = x * y * z + k in (f 1 2 3);;
