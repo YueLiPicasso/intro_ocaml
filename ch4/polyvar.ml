@@ -178,3 +178,104 @@ let f ~x ~y = x+y in f ~y:1 2;;
 
 let f ~x ~y ~z ?(k = 0) = x * y * z + k in (f 1 2 3) ~k:4;;
 let f ~x ~y ?(k = 0) ~z  = x * y * z + k in (f 1 2 3);;
+
+
+(* f is expected to have type int -> int, while bump has 
+   type ?step:int -> int -> int. The compiler transforms 
+   bump to match the type of f by passing None as the optional 
+   argument *)
+
+let twice f (x : int) = f (f x);;
+
+twice bump 2;;
+
+let f ?(x = 0) ?(y = 1) z ?(a = 2) ?(b = 3) = (x + y + a + b)*z;;
+twice (f ~a:0 ~b:0) 2;;
+
+(* polymorphic variant *)
+
+(* a value constructor could belong to several variant 
+   types but it can only assume one type at a time *)
+
+type mytype = Hello 
+and yourtype  = Hello 
+and histype = Bye of int
+and hertype = Bye of int
+and 'a theirtype = Aha of 'a
+and 'a ourtype = Aha of 'a;;
+
+  
+(Hello : mytype),(Hello : yourtype),
+(Bye 3 : histype),(Bye 3 : hertype),
+(Aha "got it" : string theirtype),
+(Aha 'c' : char ourtype);;
+
+(* type  error
+(Hello : mytype) = (Hello : yourtype);;
+*)
+
+(* a polymorphic variant constructor is 
+   prefixed with a backtick *)
+
+[`On;`Off];;
+`Number 1;;
+let f = function `On -> 1 | `Off -> 0 | `Number n -> n;;
+List.map f [`On;`Off;`Number 5];;
+List.map f [`On;`Off];;
+
+(* exact polymorphic variant type is used in type abbreviation *)
+type 'a vlist = [`Nil | `Cons of 'a * 'a vlist];;
+
+let rec map f : 'a vlist -> 'b vlist = function
+  | `Nil -> `Nil
+  | `Cons(a,l) -> `Cons(f a, map f l)
+;;
+
+(* use a type constraint to prevent the type of the
+   right-hand side polymorphic variant expression 
+   from being inferred independently *)
+let ls : float vlist = `Cons(1.2 , `Cons (2.3 , `Cons (4.4 , `Nil)));;
+map Float.to_string ls;;
+
+let ls' = [`Hi; `There];;
+let ls = [`Hi; `There ; `This ; `Is ; `Yue];;
+
+(* ls has type
+   [> `Hi | `Is | `There | `This | `Yue ] list
+   the [> ... ] part is compatible with a variant 
+   type 'b containing more tags, so the type of ls
+   is compatible with 'b list.  The [> ...] part is 
+   called an "open variant type".  
+*)
+
+let foo = function
+    `Hi -> "hi"
+  | `There -> "there"
+  | `This -> "this"
+  | `Is -> "is"
+  | `Yue -> "yue"
+  | `How -> "how"
+  | `Are -> "are"
+  | `You -> "you"
+  | `My -> "my"
+  | `Friend -> "friend"
+;;
+
+(* The function foo has type 
+   [< `Are | `Friend | `Hi | `How | `Is | `My | `There | `This | `You | `Yue ]
+   ->  string where the argument type of the form [< ...] is a "closed
+   variant type". It enumerates all possible tags to which foo may be 
+   applied. This type is compatiable with the parameter types of  both 
+   ls and ls' *)
+
+List.map foo ls;;
+List.map foo ls';;
+
+(* one more open variant type example *)
+
+[[`This; `Is];
+ [`A ; `Story];
+ [`About ; `The];
+ [`People ; `Of];
+ [`Rome]
+];;
