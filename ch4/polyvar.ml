@@ -280,3 +280,23 @@ let rec map f : 'a vlist -> 'b vlist = function
    from being inferred independently *)
 let ls : float vlist = `Cons(1.2 , `Cons (2.3 , `Cons (4.4 , `Nil)));;
 map Float.to_string ls;;
+
+(* More on type checking for polymorphic variants *)
+(* compare the inferred typea for h and f *)
+let h = function `A -> `C | `B -> `D;;
+let f = function `A -> `C | `B -> `D | x -> x;;
+(* for f: since the last pattern matches any tag, the matching is open, 
+   the input type of f must be compatible with [> `A | `B]. On the other
+   hand, x is returned as is, so the input type and output type must be 
+   the same, both being compatible with [> `A | `B]. Furthermore, the 
+   return type must also be compatible with [> `C |`D ], so both input 
+   and output type must be compatible with [> `A | `B | `C |`D], which 
+   is captured by the type expression 
+   ([> `A | `B | `C | `D] as 'a) -> 'a 
+*)
+
+f `E;;
+
+(* f `E has type [>  `A | `B | `C | `D | `E] because `E has 
+   type [> `E], and the former type is the smallest type 
+   compatiable with both `E and the input type of f *)
