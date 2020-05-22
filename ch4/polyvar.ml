@@ -224,12 +224,6 @@ List.map f [`On;`Off;`Number 5];;
 List.map f [`On;`Off];;
 
 
-(* use a type constraint to prevent the type of the
-   right-hand side polymorphic variant expression 
-   from being inferred independently *)
-let ls : float vlist = `Cons(1.2 , `Cons (2.3 , `Cons (4.4 , `Nil)));;
-map Float.to_string ls;;
-
 let ls' = [`Hi; `There];;
 let ls = [`Hi; `There ; `This ; `Is ; `Yue];;
 
@@ -281,3 +275,8 @@ let rec map f : 'a vlist -> 'b vlist = function
   | `Cons(a,l) -> `Cons(f a, map f l)
 ;;
 
+(* use a type constraint to prevent the type of the
+   right-hand side polymorphic variant expression 
+   from being inferred independently *)
+let ls : float vlist = `Cons(1.2 , `Cons (2.3 , `Cons (4.4 , `Nil)));;
+map Float.to_string ls;;
