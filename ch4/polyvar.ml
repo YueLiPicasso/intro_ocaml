@@ -223,13 +223,6 @@ let f = function `On -> 1 | `Off -> 0 | `Number n -> n;;
 List.map f [`On;`Off;`Number 5];;
 List.map f [`On;`Off];;
 
-(* exact polymorphic variant type is used in type abbreviation *)
-type 'a vlist = [`Nil | `Cons of 'a * 'a vlist];;
-
-let rec map f : 'a vlist -> 'b vlist = function
-  | `Nil -> `Nil
-  | `Cons(a,l) -> `Cons(f a, map f l)
-;;
 
 (* use a type constraint to prevent the type of the
    right-hand side polymorphic variant expression 
@@ -279,3 +272,12 @@ List.map foo ls';;
  [`People ; `Of];
  [`Rome]
 ];;
+
+(* exact polymorphic variant type is used in type abbreviation *)
+type 'a vlist = [`Nil | `Cons of 'a * 'a vlist];;
+
+let rec map f : 'a vlist -> 'b vlist = function
+  | `Nil -> `Nil
+  | `Cons(a,l) -> `Cons(f a, map f l)
+;;
+
