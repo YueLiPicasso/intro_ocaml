@@ -300,3 +300,76 @@ f `E;;
 (* f `E has type [>  `A | `B | `C | `D | `E] because `E has 
    type [> `E], and the former type is the smallest type 
    compatiable with both `E and the input type of f *)
+
+(* conjunctive tyes *)
+(* infer by hand the type of the following functions *)
+
+let f1 = function `A x -> x = 1 | `B -> true | `C -> false;;
+(* Output type is bool, x is of type int, input type should be closed, 
+   i.e., [< `Tag1 | `Tag2 | ...],  containing `A of int, `B and `C *)
+
+let f2 = function `A x -> x = "a" | `B -> true;;
+(* x is of type string, output type is bool, input type is cloaed, 
+   containing `A of string and `B *)
+
+let f x = f1 x && f2 x;;
+(* My asnwer is: output type is bool, and input type is an 
+   intersection of the input types for f1 and f2, i.e., [< `B] *)
+(* The type checker gives [< `A of int & string | `B] because both
+   f1 and f2 accept the variant tag `A, despite that the argument 
+   type for `A in f1 is different from that in f2. The inferred 
+   value, `A of int & string, means that if we pass the tag `A to f,
+   then the argument that follows `A must be of both types  int 
+   and string. This is not satisfiable, so that we only only pass `B
+   to f.  *)
+
+f `B;;
+
+(* The following expressions and type definiions cause error: 
+
+f (`A 5);;
+f (`A "hello");;
+
+type contra = [`A of string & int];;
+type contra = [`A of int & int];; 
+*)
+
+(* coercion for extact polymorphic variants *)
+
+
+type 'a wlist = [`Nil
+                | `Cons of 'a * 'a wlist
+                | `Snoc of 'a wlist * 'a];;
+
+let ls : int wlist = `Snoc (`Snoc (`Snoc (`Nil, 3) ,2), 1);;  
+let ls' : int vlist = `Cons (1, `Cons (2, `Cons (3, `Nil)));;
+
+let wlist_of_vlist l = (l : 'a vlist :> 'a wlist) in
+wlist_of_vlist ls';;
+
+let open_vlist l = (l : 'a vlist :> [> 'a vlist]);;
+open_vlist ls';;
+
+fun x -> (x :> [`A |`B |`C ]);;
+
+(* Selectively coerce values through pattern matching *)
+let split_cases = function
+  | `Nil | `Cons _ as x -> `A x
+  | `Snoc _ as x -> `B x
+;;
+
+split_cases ls;;
+split_cases ls';;
+split_cases (open_vlist ls');;
+split_cases (wlist_of_vlist ls');;
+split_cases `Nil;;
+
+(* The or-pattern `Nil | `Cons _ (composed of variant tags) is
+   wraped inside n alias-pattern. The precedence of | is higher 
+   than the keyword "as"  *)
+
+(* incremental definition of function *)
+
+let num x = `Num x;;
+let eval1 eval (`Num x) = x;;
+(* let rec rec eval *)
