@@ -372,4 +372,42 @@ split_cases `Nil;;
 
 let num x = `Num x;;
 let eval1 eval (`Num x) = x;;
-(* let rec rec eval *)
+let rec eval x = eval1 eval x;;
+
+
+let plus x y = `Plus(x,y);;
+let eval2 eval = function
+  | `Plus(x,y) -> eval x + eval y
+  | `Num _ as x -> eval1 eval x;;
+let rec eval x = eval2 eval x;; (* creates a recursive type *)
+
+eval (`Plus(`Num 4, `Plus(`Num 1, `Num 2)));;
+
+eval (plus (num 4) (plus (num 3) (num 7)));;
+
+
+(* if type-name is bound to an exact  polymorphic variant 
+   type, then #type-name denotes an or-pattern for that type *)
+type myvariant = [`Tag1 of int | `Tag2 of bool];;
+let f = function
+  | #myvariant -> "myvariant"
+  | `Tag3 -> "Tag3";;
+
+let g1 = function `Tag1 _ -> "Tag1" | `Tag2 _ -> "Tag2";;
+let g = function
+  | #myvariant as x -> g1 x
+  | `Tag3 -> "Tag3";;
+
+
+type abc = [`A | `B| `C];;
+let f = function
+  | `As -> "A"
+  | #abc -> "other";;
+let f : abc -> string = f;;
+
+f `A;; (* f `As;; *)
+
+(*
+let f : abc -> string = function
+  | `As -> "A"
+  | #abc -> "other";;*)
