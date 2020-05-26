@@ -1,4 +1,4 @@
-# intro_ocaml
+# About this Repo
 Artifects created while learning the OCaml language
 
 [ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/).
