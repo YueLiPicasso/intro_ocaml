@@ -1,5 +1,5 @@
-# OCaml Workouts
-Artifects created while learning the OCaml language
+# Learning OCaml
+This repo hosts artifects created while I was learning the OCaml language.
 
 [ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/).
 
