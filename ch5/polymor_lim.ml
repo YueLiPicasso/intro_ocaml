@@ -167,12 +167,14 @@ struct
 
   module Example =
     struct
-      let l = List [1;2;3];;
-      let ll = Nested [l;l];;
-      let lll = Nested [ll;l];;
-      let llll = Nested [l;ll;lll];;
+      let l = List [1;2;3];; (* int nested *)
+      let ll = Nested [l;l];; (* int nested *)
+      let lll = Nested [ll;l];; (* int nested *)
+      let llll = Nested [l;ll;lll];; (* int nested *)
     end;;
 end;;
+
+Regular.Example.(l,ll,lll,llll);;
 
 Regular.(maximal_depth Example.llll);;
 
@@ -212,6 +214,60 @@ struct
     and v4 = nnnl4
     and v5 = nnnnl5;;
   end;;
+
+  let rec depth : 'a. 'a nested -> 'b = function
+    (* the type variable 'b (unbound and named) can be 
+       replaced by _ (anonymous type variable) or int *)
+    (* the scope of 'b is this let-expression, i.e., the 
+       top level phrase in which it appears *)
+    | List _ -> 1
+    | Nested n -> 1 + depth n;;
+
+  (* the 'b in the type constraint of f is not the same type 
+     variable as the 'b in the type constraint of depth, so they 
+     can be instantiated into incompatible types int and bool *)
+  let f : 'b -> bool = fun x -> x && true;;
+
+  let map_and_sum f = List.fold_left (fun acc x -> acc + f x) 0;;  
+  (* Let [a1;a2;...;an] be any list, and f : 'a -> int. Then 
+     map_and_sum f [a1;a2;...;an] evaluates to 
+     (f a1) + (f a2) + ... (f an) 
+  *)
+
+  module type MAP =
+  sig
+    val fold_left :
+      mapf:('a -> 'b) ->
+      foldf:('c -> 'b -> 'c) ->
+      init:'c ->
+      'a list -> 'c
+  end;;
 end;;
 
 Non_regular.Int_nested.(v1,v2,v3,v4,v5);;
+List.map Non_regular.depth Non_regular.Int_nested.[v1;v2;v3;v4;v5];; 
+(* The difference between 'a. 'a nested -> int and 'a nested -> int 
+   reminds me of the explicit generalization of the inductive 
+   hypothesis in Coq *)
+
+(* 'a, 'b and 'c denote type variables that may or may not 
+   be polymorphic, so they can be instantiated during type checking  *)
+let sum : 'a -> 'b -> 'c = fun x y -> x + y;;
+
+(* an explicitly polymorphic type cannot be unified with a 
+   non-polymorphic type. The following expression is rejected: *)
+
+(* let sum : 'a 'b 'c. 'a -> 'b -> 'c = fun x y -> x + y;; *)
+
+(* The scope of the named type variable 'a is the whole top-level phrase.
+   It represents an unspecified type that can be inistantiated by any type
+   ttp satisfy the type constraint 
+
+   let f : 'a -> int = fun x -> x + 5 and
+   g : 'a -> bool = fun b -> b && true;;
+
+   In this case the type variable is first instantiated by int when binding
+   f and then when type checking g, b is supposed to be an int and a type 
+   clash appeared because a bool is expected.   
+*)
+
