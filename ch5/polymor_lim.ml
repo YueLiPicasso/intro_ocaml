@@ -234,16 +234,47 @@ struct
      (f a1) + (f a2) + ... (f an) 
   *)
 
+  (* the map_and_sum function is a special case of 
+     a general combination of map-and-fold *)
   module type MAP =
   sig
-    val fold_left :
+    val foldl :
       mapf:('a -> 'b) ->
       foldf:('c -> 'b -> 'c) ->
       init:'c ->
       'a list -> 'c
   end;;
+
+  module Map : MAP =
+  struct
+    let foldl ~mapf ~foldf ~init =
+      fun l -> List.fold_left foldf init (List.map mapf l)
+  end;;
+
+  let map_and_sum' ~mapf = Map.foldl ~mapf ~foldf:( + ) ~init:0;;
+
+  let rec nested_length : 'a. ?len:('a list -> int) -> 'a nested -> int =
+    fun ?len:(lenf = List.length) -> 
+    function | List l -> lenf l
+             | Nested n -> nested_length ~len:(map_and_sum' ~mapf:lenf) n;;
+  
+  (* type inference by hand gives the poly-typexpr with _ *)
+  let rec shape
+  : 'a 'b. ('a nested -> _ ) -> ('b list list -> 'a list) -> 'b nested -> _
+  = fun nest nested_shape nl ->
+    match nl with
+    | List l -> raise (Invalid_argument "list too shallow")
+    | Nested (List l) -> nest @@ List (nested_shape l)
+    | Nested n -> let nested_shape' = List.map nested_shape 
+      and nest' x = nest (Nested x) in
+      shape nest' nested_shape' n;;
+
+  let nshape : 'a nested -> 'c =
+    fun n -> shape (fun x -> x) (fun l -> List.map List.length l) n;;
 end;;
 
+
+Non_regular.map_and_sum' ~mapf:(fun b -> if b then 1 else 0) [true;true;true;false;true];;
 Non_regular.Int_nested.(v1,v2,v3,v4,v5);;
 List.map Non_regular.depth Non_regular.Int_nested.[v1;v2;v3;v4;v5];; 
 (* The difference between 'a. 'a nested -> int and 'a nested -> int 
@@ -270,4 +301,58 @@ let sum : 'a -> 'b -> 'c = fun x y -> x + y;;
    f and then when type checking g, b is supposed to be an int and a type 
    clash appeared because a bool is expected.   
 *)
+
+
+(* Number of elements in a nested list can be calculated by mappiing 
+   the length function *)
+
+(* List *)
+List.length [1;1;1];;
+
+(* Nested List *)
+List.fold_left ( + ) 0
+  (List.map List.length [[1];[1];[]]);;
+(* or *)
+Non_regular.map_and_sum' ~mapf:List.length  [[1];[1];[]];;
+
+(* Nested Nested List *)
+List.fold_left ( + ) 0
+  (List.map (List.fold_left ( + ) 0)
+     (List.map (List.map List.length) [[[1];[2]];[[];[3]];[[4];[]]]));;
+(* or *)
+let open Non_regular in
+map_and_sum'
+  ~mapf:(map_and_sum' ~mapf:List.length)
+  [ [[1];[2]] ; [[];[3]] ; [[4];[]] ];;
+
+
+(* Nested Nested Nested List *)
+List.fold_left ( + ) 0
+  (List.map (List.fold_left ( + ) 0)
+     (List.map (List.map (List.fold_left ( + ) 0))
+        (List.map (List.map (List.map List.length))
+           [[[[1;2];[3;4]];[[5;6];[7;8]]];[[[2];[]];[]];[]])));;
+(* or *)
+let open Non_regular in
+map_and_sum'
+  ~mapf:(map_and_sum'
+           ~mapf:(map_and_sum' ~mapf:List.length))
+  [[[[1;2];[3;4]];[[5;6];[7;8]]];[[[2];[]];[]];[]];;
+
+List.map Non_regular.nested_length Non_regular.Int_nested.[v1;v2;v3;v4;v5];; 
+
+
+(* shape of a nested list *)
+
+(* Nested List *)
+List.map List.length [[1];[1];[]];;
+(* Nested Nested List *)
+List.map (List.map List.length) [[[1];[2]];[[];[3]];[[4];[]]];;
+(* Nested Nested Nested List *)
+List.map (List.map (List.map List.length))
+           [[[[1;2];[3;4]];[[5;6];[7;8]]];[[[2];[]];[]];[]];;
+
+Non_regular.(nshape Int_nested.v4);; 
+
+
 
