@@ -192,6 +192,7 @@ sig
   end;;
   val depth : 'a nested -> int;;
   val nested_length : ?len:('a list -> int) -> 'a nested -> int;;
+  val len : 'a nested -> int;;
   val nshape : 'a nested -> int nested;;
   val map_and_sum' : mapf:('a -> int) -> 'a list -> int;;
 end =
@@ -273,6 +274,8 @@ struct
     fun ?len:(lenf = List.length) -> 
     function | List l -> lenf l
              | Nested n -> nested_length ~len:(map_and_sum' ~mapf:lenf) n;;
+
+  let len = fun x -> nested_length x;; (* value restriction *)
   
   (* type inference by hand gives the poly-typexpr with _ *)
   let rec shape
@@ -436,4 +439,34 @@ average nested_length Int_nested.v1 Int_nested.v5;;
 
 (* Workaround 1 of 2: universally quantified record field *)
 
-type 'a nested_reduction
+type 'a nested_reduction = { f : 'elt. 'elt nested -> 'a };;
+
+let boxed_len = { f = len };;
+let boxed_depth = { f = depth };;
+
+let average nsm x y = (nsm.f x + nsm.f y) / 2;;
+
+(* on int list list nested and int nested *)
+average boxed_len (List [[[1]];[[2];[3]]]) (Nested (List [[1;2;3];[4;5;6]]));;
+
+len (Nested (List [[1;2;3];[4;5;6]]));;
+
+(* on int nested and int list nested *)
+average boxed_depth  (Nested (Nested (List [[[1]]])))
+  (Nested (List [[[1;2;3]];[[4;5;6]]]));;
+
+depth  (Nested (Nested (List [[[1]]])));;
+
+(* workaround 2 of 2: polymorphic method of an object *)
+
+let obj_len = object method f: 'a. 'a nested -> 'b = len end;;
+let obj_dep = object method f: 'a. 'a nested -> 'b = depth end;;  
+
+let averageo (obj:<f: 'a.'a nested -> _ > ) x y =
+  (obj#f x + obj#f y) / 2;;
+
+averageo obj_len  (List [[[1]];[[2];[3]]]) (Nested (List [[1;2;3];[4;5;6]]));;
+averageo obj_dep  (List [[[1]];[[2];[3]]]) (Nested (List [[1;2;3];[4;5;6]]));;
+
+(* record or object wrappers are used in OCaml to implement higher-rank 
+   polymorphism under a first-rank polymorphic type system *)
