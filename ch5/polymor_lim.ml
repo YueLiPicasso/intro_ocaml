@@ -178,7 +178,23 @@ Regular.Example.(l,ll,lll,llll);;
 
 Regular.(maximal_depth Example.llll);;
 
-module Non_regular =
+module Non_regular :
+sig
+  type 'a nested = List of 'a list
+                 | Nested of 'a list nested;;
+  module Int_nested :
+  sig
+    val v1 : int nested;;
+    val v2 : int nested;;
+    val v3 : int nested;;
+    val v4 : int nested;;
+    val v5 : int nested;;
+  end;;
+  val depth : 'a nested -> int;;
+  val nested_length : ?len:('a list -> int) -> 'a nested -> int;;
+  val nshape : 'a nested -> int nested;;
+  val map_and_sum' : mapf:('a -> int) -> 'a list -> int;;
+end =
 struct
   type 'a nested = List of 'a list
                  | Nested of 'a list nested;;
@@ -352,7 +368,72 @@ List.map (List.map List.length) [[[1];[2]];[[];[3]];[[4];[]]];;
 List.map (List.map (List.map List.length))
            [[[[1;2];[3;4]];[[5;6];[7;8]]];[[[2];[]];[]];[]];;
 
-Non_regular.(nshape Int_nested.v4);; 
+Non_regular.(nshape Int_nested.v4);;
+
+(* Higher-rank polymorphic functions *)
+
+open Non_regular;;
+
+let average_depth x y = (depth x + depth y) / 2;;
+
+let average_len x y = (nested_length x + nested_length y) / 2;;
+
+Int_nested.(average_len v1 v4);;
+average_len (List [2]) (List [[]]);;
+nested_length (List [2]);;
+nested_length (List [[]]);;
+
+(* factorize the two average_<sth> functions as: *)
+
+let average f x y = ( f x + f y) / 2;;
+(* ('a -> int) -> 'a -> 'a -> int *)
+
+(* For the following definitions, the given polymorphic type 
+   constraints are all more general than the inferred type 
+   of the definition body *)
+(*
+let average' : 'a. ('a  -> int) -> 'b -> 'c -> int =
+  fun f x y ->  ( f x + f y) / 2;;
+
+let average'' : 'a 'b. ('a -> int) -> 'b -> 'c -> int =
+  fun f x y ->  ( f x + f y) / 2;;
+
+let average'' : 'a 'b 'c. ('a -> int) -> 'b -> 'c -> int =
+  fun f x y ->  ( f x + f y) / 2;;
+*)
+
+average nested_length;;
+(* '_weak1 nested -> '_weak1 nested -> int *)
+
+(* this test passes  *)
+average nested_length Int_nested.v1 Int_nested.v5;;
+
+(* This does  not satisfy the weak type *)
+(* average nested_length (List [2]) (List [[2]]);; *)
 
 
+(* we want the average functio to have type 
+   ('a . 'a -> int) -> 'b -> 'c -> int
+   however, since the universally quantified type 'a is
+   scoped over one particular argument, not over the entire
+   type expression, the type is second-rank polymorphic. For 
+   decidability reasons this is not directly supportd by OCaml.
+   In other words, a second-rank polymoprphic functions takes
+   first-rank polymorphic functions as arguments.
+   
+   None of the above three type constraints encodes a higher-rank 
+   polymorphic type. They are all failed attempts to positively 
+   answer the question: 
+   Can I let the scope of the universally quantified type variable(s)
+   cover the entire type expression so that the resulting function can be
+   polymorphic in the desired sense ? 
+   They are just first-rank polymorphic types that are more general than
+   the inferred first-rank polymorphic type. None of them is second-rank
+   polymorphic. 
 
+   So the problem is: we need some support for higher-rank polymorphism, 
+   but the type checker only operates within first-rank polymorphism. *)
+
+(* Workaround 1 of 2: universally quantified record field *)
+
+type 'a nested_reduction
