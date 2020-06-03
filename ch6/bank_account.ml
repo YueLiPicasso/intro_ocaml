@@ -135,6 +135,81 @@ struct
       method virtual deposit : m -> unit
     end
 
-  (* module Client (B : sig class bank : client_view end)*)
+  module Client (B : sig class bank : client_view end) =
+  struct
+    class account x : client_view =
+      object
+        inherit B.bank
+        inherit check_client x
+      end
+
+    let discount x =
+      let c = new account x in
+      if today() < (30,10,1998) then c # deposit (m 100.); c
+  end
 end;;
 
+module Euro_account = Account(Euro);;
+
+module Client = Euro_account.Client (Euro_account);;
+
+new Client.account (new Euro.c 100.);;
+
+module Investment_account (M : MONEY) =
+struct
+  (*type m = M.c*)
+  module A = Account(M)
+
+  class bank =
+    object
+      inherit A.bank as super
+      method deposit x =
+        if (new M.c 1000.)#leq x then
+          print_string "Would you like to invest?";
+        super # deposit x
+    end
+
+  module Client = A.Client
+end;;
+
+module Euro_invest_acnt = Investment_account (Euro);;
+
+module Invest_client = Euro_invest_acnt.Client(Euro_invest_acnt);;
+
+new Invest_client.account (new Euro.c 19000.);;
+
+
+module Internet_account (M : MONEY) =
+struct
+  module A = Account (M)
+
+  class bank =
+    object
+      inherit A.bank
+      method mail s = print_string s
+    end
+
+  class type client_view =
+    object
+      inherit A.client_view
+      method mail : string -> unit
+    end
+
+  module Client (B : sig class bank : client_view end) =
+  struct
+    class account x : client_view =
+      object
+        inherit B.bank
+        inherit A.check_client x
+      end
+  end
+end;;
+
+
+module Yue_Net = Internet_account (Euro);;  
+  
+module Yue_Net_Client = Yue_Net.Client(Yue_Net);;
+
+let myacc =  new Yue_Net_Client.account (new Euro.c 100.);;
+myacc # history;;
+myacc # withdraw (new Euro.c 22.);;
