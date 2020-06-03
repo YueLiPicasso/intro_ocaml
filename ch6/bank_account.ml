@@ -1,3 +1,5 @@
+(* Simple bank account *)
+
 module type MONEY =
 sig
   type t;;
@@ -213,3 +215,52 @@ module Yue_Net_Client = Yue_Net.Client(Yue_Net);;
 let myacc =  new Yue_Net_Client.account (new Euro.c 100.);;
 myacc # history;;
 myacc # withdraw (new Euro.c 22.);;
+
+
+(* Simple modules as classes *)
+
+(* Strings *)
+
+class ostring s =
+  object
+    method get n = String.get s n
+    method print = print_string s
+    method escaped = new ostring (String.escaped s)
+  end;;
+
+(* the method escaped returns an object of the class ostring, 
+   not an object of the current class, so that it does not update
+   itself when the class ostring is inherited *)
+
+class sub_string s =
+  object
+    inherit ostring s
+    method sub start len = new sub_string (String.sub s start len)
+  end;;
+
+    
+(new sub_string "hello\n\t") # escaped;; (* object of class ostring *)
+
+(* use object clone {< >} to support scalability *)
+
+class better_string s =
+  object
+    val repr = s
+    method get n = String.get repr n
+    method print = print_string repr
+    method escaped = {< repr = String.escaped repr>}
+    method sub start len = {< repr = String.sub s start len >}
+  end;;
+
+(new better_string "hello\nworld") # escaped # print;;
+(new better_string "hello\nworld") # print;;
+(new better_string "hello\nworld") # escaped;; (* : better_string *)
+
+class oString s =
+  object
+    inherit better_string s
+    method make len ch = {< repr = String.make len ch >}
+  end;;
+
+(new oString "hello\nworld") # escaped;; (* : oString *)
+((new oString "hello\nworld") # make 5 'c') # print;;
