@@ -264,3 +264,171 @@ class oString s =
 
 (new oString "hello\nworld") # escaped;; (* : oString *)
 ((new oString "hello\nworld") # make 5 'c') # print;;
+
+
+class ostring s =
+  object (self : 'str_obj)
+    val repr = s
+    method repr = repr
+    method get n = String.get repr n
+    method print = print_string repr
+    method escaped = {< repr = String.escaped repr >}
+    method sub start len = {< repr = String.sub repr start len >}
+    method concat (t : 'str_obj) = {< repr = repr ^ t#repr>}
+  end;;
+
+let mystr = new ostring "Hello\tWorld !";;
+mystr#print;;
+mystr#escaped#print;;
+let cat = mystr#concat (new ostring " Nice\n weather !");;
+cat#print;;
+
+(* constructor class for strings *)
+class cstring n = ostring (String.make n ' ');;
+
+(* The type implication of the above class definition *)
+let cstr = new cstring 10;; (* : cstring *)
+cstr#print;;
+(* where does the method print come from? *)
+(* Answer: we have the following specification for cstring:
+   class cstring : int -> ostring *)
+
+let catc = cstr#concat (new ostring "hello");; (* : cstring *)
+(* why can you concat cstring with ostring? 
+   Why cstring has the method concat anyway? *)
+catc#print;;
+let cstr' = new cstring;; (* : int -> cstring *)
+cstr' 4;; (* : cstring*)
+(cstr' 4 : cstring :> ostring);; (* this is correct *)
+
+(* stack *)
+
+exception Empty;;
+
+class ['a] stack =
+  object
+    val mutable l = ([] : 'a list)
+    method push x = l <- x :: l
+    method pop = match l with [] -> raise Empty | a :: l' -> l <- l'; a
+    method clear = l <- []
+    method length = List.length l
+    method fold : 'b. ('b -> 'a -> 'b) -> 'b -> 'b
+      = fun f x -> List.fold_left f x l
+  end;;
+
+let bs = new stack;; 
+bs # push true;; bs # push false;;
+
+
+let f = fun c b -> match c with
+  | 't' ->
+    begin
+      match true && b with
+      | true -> 't'
+      | false -> 'f'
+    end
+  | 'f' ->
+    begin
+      match false || b with
+      | true -> 't'
+      | false -> 'f'
+    end
+  | _ -> raise (Invalid_argument "f")
+in bs # fold f 'f';;
+
+
+(* hash table class *)
+
+type hash_table_shape = Simple of int | Histo of int list;;
+
+class type ['a, 'b] hash_table =
+  object 
+    method find : 'a -> 'b
+    method add : 'a -> 'b -> unit
+    method shape : hash_table_shape
+  end;;
+
+(* small hash table is implemented as an association list *)
+class ['a, 'b] small_hashtbl : ['a, 'b] hash_table =
+  object
+    val mutable table = []
+    method find key = List.assoc key table
+    method add key valeur = table <- (key, valeur) :: table
+    method shape = Simple (List.length table)
+  end;;
+
+let htb = new small_hashtbl;;
+htb # add 1 "john";;
+htb # add 2 "tom";;
+htb # add 2 "jim";;
+htb # find 2;;
+htb # shape;;
+
+(* a true hash table *)
+(* size is the number of buckets *)
+class ['a, 'b] hashtbl size : ['a, 'b] hash_table =
+  object (self)
+    val table = Array.init size (fun i -> new small_hashtbl)
+    method private hash key =
+      (Hashtbl.hash key) mod (Array.length table)
+    method find key = table.(self#hash key) # find key
+    method add key = table.(self#hash key) # add key
+    method shape = let rec build_shape n shp =
+                     if n < size
+                     then  let Simple len = table.(n) # shape in
+                       build_shape (n + 1) (len :: shp)
+                     else shp in
+      Histo (List.rev (build_shape 0 []))
+  end;;
+
+let hat = new hashtbl 10;;
+hat # add "George Washington" (1789, 1797);;
+hat # add "John Adams" (1797, 1801);;
+hat # add "Thomas Jefferson" (1801, 1809);;
+hat # add "James Madison" (1809, 1817);;
+hat # add "James Monroe" (1817, 1825);;
+hat # add "John Quincy Adams" (1825, 1829);;
+hat # add "Andrew Jackson" (1829, 1837);;
+hat # add "Martin Van Buren" (1837, 1841);;
+hat # add "William Henry Harrison" (1841, 1841);;
+hat # add "John Tyler" (1841, 1845);;
+hat # add "James K. Polk" (1845, 1849);;
+hat # add "Zachary Taylor" (1849, 1850);;
+hat # add "Millard Fillmore" (1850, 1853);;
+hat # add "Franklin Pierce" (1853, 1857);;
+hat # add "James Buchanan" (1857, 1861);;
+hat # add "Abraham Lincoln" (1861, 1865);;
+hat # add "Andrew Johnson" (1865, 1869);;
+hat # add "Ulysses S. Grant" (1869,1877);;
+hat # add "Rutherford B. Hayes" (1877, 1881);;
+hat # add "James A. Garfield" (1881, 1881);;
+hat # add "Chester A. Arthur" (1881, 1885);;
+hat # add "Grover Cleveland" (1885, 1889);;
+hat # add "Benjamin Harrison" (1889, 1893);;
+hat # add "Grover Cleveland" (1893, 1897);;
+hat # add "William McKinley" (1897, 1901);;
+hat # add "Theodore Roosevelt" (1901, 1909);;
+hat # add "William Howard Taft" (1909, 1913);;
+hat # add "Woodrow Wilson" (1913, 1921);;
+hat # add "Warren G. Harding" (1921, 1923);;
+hat # add "Calvin Coolidge" (1923, 1929);;
+hat # add "Herbert Hoover" (1929, 1933);;
+hat # add "Franklin D. Roosevelt" (1933, 1945);;
+hat # add "Harry S. Truman" (1945, 1953);;
+hat # add "Dwight D. Eisenhower" (1953, 1961);;
+hat # add "John F. Kennedy" (1961, 1963);;
+hat # add "Lyndon B. Johnson" (1963, 1969);;
+hat # add "Richard Nixon" (1969, 1974);;
+hat # add "Gerald Ford" (1874, 1977);;
+hat # add "Jimmy Carter" (1977, 1981);;
+hat # add "Ronald Reagan" (1981, 1989);;
+hat # add "George Bush" (1989, 1993);;
+hat # add "Bill Clinton" (1993, 2001);;
+hat # add "George W. Bush" (2001, 2009);;
+hat # add "Barack Obama" (2009, 2017);;
+hat # add "Donald Trump" (2017, 2020);;
+
+hat # shape;;
+hat # find "Franklin Pierce";;
+hat # find "George Washington";;
+hat # find "Theodore Roosevelt";;
