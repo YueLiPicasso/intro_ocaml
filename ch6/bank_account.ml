@@ -432,3 +432,148 @@ hat # shape;;
 hat # find "Franklin Pierce";;
 hat # find "George Washington";;
 hat # find "Theodore Roosevelt";;
+
+(* Set class *)
+
+(* Set as the standard module *)
+module IntPairs =
+struct
+  type t = int * int
+  let compare (x0, y0) (x1,y1) =
+    match Stdlib.compare x0 x1 with
+      0 -> Stdlib.compare y0 y1
+    | c -> c
+end;;
+
+module PairsSet = Set.Make(IntPairs);;
+
+let myset = PairsSet.(empty |> add (1,2) |> add (1,3) |> add (3,2));;
+let myset' = PairsSet.(empty |> add (1,2) |> add (1,3) |> add (2,3));;
+PairsSet.is_empty myset;;
+PairsSet.mem (1,2) myset;;
+PairsSet.(is_empty (singleton (3,3)));;
+PairsSet.elements myset;;
+PairsSet.(elements (union myset myset'));;
+PairsSet.(elements (inter myset myset'));;
+PairsSet.(elements (diff myset myset'));;
+PairsSet.(cardinal (union myset myset'));;
+
+let print_pair (a, b) = Printf.printf "(%d, %d)\n" a b;;
+print_pair (1,2);;
+
+PairsSet.(iter print_pair (union myset myset'));;
+
+(* object oriented set *)
+
+module type SET =
+sig
+  type 'a tag (* abstract type of set *)
+  class ['a] c : 
+    object ('b)
+      method is_empty : bool
+      method mem : 'a -> bool
+      method add : 'a -> 'b
+      method union : 'b -> 'b
+      method iter : ('a -> unit) -> unit
+      method tag : 'a tag
+    end
+end;;
+
+        
+module Set : SET =
+struct
+  (* merge two ordered lists into a larger ordered list, 
+     discarding duplication, and assuming that each list 
+     itself does not contain duplication *)
+  let rec merge l1 l2 =
+    match l1 with
+      [] -> l2
+    | h1 :: t1 ->
+      match l2 with
+        [] -> l1
+      | h2 :: t2 ->
+        if h1 < h2 then h1 :: merge t1 l2
+        else if h1 > h2 then h2 :: merge l1 t2
+        else merge t1 l2
+
+  type 'a tag = 'a list
+
+  class ['a] c =
+    object (_ : 'b)
+      val repr = ([] : 'a list)
+      method is_empty = (repr = [])
+      method mem x = List.exists (( = ) x) repr
+      method add x = {< repr = merge [x] repr >}
+      method union (s : 'b) = {< repr = merge repr s#tag >}
+      method tag = repr
+      method iter (f : 'a -> unit) = List.iter f repr
+    end
+end;;
+
+(* The scope of 'a is the entire structure/signature where it appeared *)
+
+let myset = (((new Set.c) # add 1) # add 2) # add 3;;
+let myset' = ((((new Set.c) # add 4) # add 5) # add 6) # add 1;;
+
+myset #tag;;
+myset' # iter print_int;;
+(myset # union myset') #iter print_int;;
+
+(* The subject/observer pattern *)
+
+class virtual ['subject, 'event] observer =
+  object
+    method virtual notify : 'subject -> 'event -> unit
+  end;;
+
+(* The virtual observer class is essentially a parametric class
+   where a virtual method is declared whose type contains the 
+   two type parameters of the class. Therefore the class can be
+   inherited in the following unintended contexts *)
+class president =
+  object
+    inherit [string, int*int] observer
+    method notify =
+      fun name term -> print_string name;print_newline();
+        print_pair term
+  end;;
+
+let p = new president;;      
+p # notify "Grover Cleveland" (1885, 1889);;
+
+class ['a, 'b] nothing =
+  object
+    inherit ['a, 'b] observer
+    (* the parameters of observer are bound by 
+       the "nothing" class's type parameters *)
+    method notify = fun _ _ -> ()
+  end;;
+
+let n1 = new nothing;;
+(* val n1 : ('_weak6, '_weak7) nothing = <obj> *)
+n1 # notify;;
+(* - : '_weak6 -> '_weak7 -> unit = <fun> *)
+n1 # notify "a" "b";;
+n1;; (* : (string, string) nothing *)
+let n2 = new nothing;;
+n2 # notify (object val a = 1 end)
+  (object val b = 2 end);;
+n2;; (* : (<  >, <  >) nothing *)
+
+(* back to the subject/observer pattern topic *)
+
+class ['observer, 'event] subject =
+  object (self)
+    val mutable observers = ([]: 'observer list)
+    method add_observer obs = observers <- (obs :: observers)
+    method notify_observers (e : 'event) =
+      List.iter (fun x -> x#notify self e) observers
+  end;;
+
+type event = Raise | Resize | Move;;
+
+let string_of_event = function
+  Raise -> "Raise" | Resize -> "Resize" | Move -> "Move";;
+
+let count = ref 0;;
+
