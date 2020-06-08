@@ -570,6 +570,8 @@ class ['observer, 'event] subject =
       List.iter (fun x -> x#notify self e) observers
   end;;
 
+(* We now define instances of the pattern by inheritance *)
+
 type event = Raise | Resize | Move;;
 
 let string_of_event = function
@@ -577,3 +579,69 @@ let string_of_event = function
 
 let count = ref 0;;
 
+class ['observer] window_subject =
+  let id = count := succ !count; !count in
+  object (self)
+    inherit ['observer, event] subject
+    val mutable position = 0
+    method identity = id
+    method move x = position <- position + x; self # notify_observers Move
+    method draw = Printf.printf "{Position = %d}\n" position
+  end;;
+
+class ['subject] window_observer =
+  object
+    inherit ['subject, event] observer
+    method notify s e = s # draw
+  end;;
+
+let window = new window_subject;;
+
+let window_observer = new window_observer;;
+
+window_observer # notify window Resize;;
+window_observer;;
+window # add_observer window_observer;;
+window;;
+window # move 1;;
+
+(* By now the two objects: the window object and the window_observer
+   object, still do not belong to two classes that serve as each other's 
+   type parameter *)
+
+class ['observer] richer_window_subject =
+  object (self)
+    inherit ['observer] window_subject
+    val mutable size = 1
+    method resize x = size <- size + x; self # notify_observers Resize
+    val mutable top = false
+    method raise = top <- true; self # notify_observers Raise
+    method! draw = Printf.printf "{Position = %d; Size = %d}\n" position size
+  end;;
+
+class ['subject] richer_window_observer =
+  object
+    inherit ['subject] window_observer as super
+    method notify s e = if e <> Raise then s # raise; super # notify s e
+  end;;
+
+
+let wd = new richer_window_subject and wdo = new richer_window_observer;;
+wd # add_observer wdo;;
+wd # resize  6;;
+
+class ['subject] trace_observer =
+  object
+    inherit ['subject, event] observer
+    method notify s e =
+      Printf.printf
+        "<Window %d <== %s>\n" s#identity (string_of_event e)
+  end;;
+
+
+(* several different kind of but compatible observers 
+   can be added to the same window *)
+let window = new richer_window_subject;;
+window # add_observer (new richer_window_observer);;
+window # add_observer (new trace_observer);;
+window # move 1; window # resize 2;;
