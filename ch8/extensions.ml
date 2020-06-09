@@ -142,20 +142,76 @@ struct
 end;;
 
 (* tests *)
-print_string ExprPrint.(show'expr (Binop ("+", Const 1, Var "x")));;
-ExprPrint.pretty'expr
-  (Binop ("exp", (Binop ("*", (Const 4), (Var "x"))),
-          (Binop ("-", (Var "y"),
-                  (Binop ("+",(Const 4),(Var "z")))))));; 
 
-print_string ExprImO.(show'expr (Binop ("+", Const 1, Var "x")));;
-ExprImO.pretty'expr
-  (Binop ("exp", (Binop ("*", (Const 4), (Var "x"))),
-          (Binop ("-", (Var "y"),
-                  (Binop ("+",(Const 4),(Var "z")))))));;
+let expr1 = Binop ("+", Const 1, Var "x");;
+let expr2 = Binop ("exp",
+                   (Binop ("*", (Const 4), (Var "x"))),
+                   (Binop ("-",
+                           (Var "y"),
+                           (Binop ("+",(Const 4),(Var "z"))))));;
 
-print_string ExprCls.(show'expr (Binop ("+", Const 1, Var "x")));;
-ExprCls.pretty'expr
-  (Binop ("exp", (Binop ("*", (Const 4), (Var "x"))),
-          (Binop ("-", (Var "y"),
-                  (Binop ("+",(Const 4),(Var "z")))))));; 
+
+print_string (ExprPrint.show'expr expr1);;
+print_string (ExprImO.show'expr expr1);;
+print_string (ExprCls.show'expr expr1);;
+
+ExprCls.pretty'expr expr2;; 
+ExprPrint.pretty'expr expr2;; 
+ExprImO.pretty'expr expr2;;
+
+(* the fold transfomration class *)
+
+class ['iota] fold'expr =
+  fun (fself : 'iota -> expr -> 'iota) ->
+  object
+    inherit ['iota, 'iota] transformation'expr
+    method pConst i _ = i
+    method pVar i _ = i
+    method pBinop  i o l r = fself (fself i l) r
+  end;;
+
+(* Inheriting the fold transformer, 
+   with light modification, we can: *)
+
+(* get the list of all free arithmetic variables *)
+
+let fv e =
+  let rec fv' = fun i e ->
+    let foldobj =
+      object
+        inherit [string list] fold'expr fv'
+        method! pVar i x = x :: i
+      end
+    in gcata'expr foldobj i e
+  in fv' [] e;;
+
+fv expr1;;
+fv expr2;;
+
+(* get the height of an expression's syntax tree *)
+
+class height (fself : int -> expr -> int) =
+  object
+    inherit [int] fold'expr fself
+    method! pBinop i _ l r = 1 + max (fself i l) (fself i r)
+  end;;
+
+let height =
+  let rec height' i e' = gcata'expr (new height height') i e' in
+  height' 0;;
+
+height expr1;;
+height expr2;;
+
+(* Tracking class inheritance
+
+class transformation'expr (virtual)
+        |          |           \
+        |          |            \
+ class show   class pretty  class fold'expr
+                               |      \
+                               |       \
+                            class fv  class height
+
+*)
+                              
