@@ -22,6 +22,25 @@ let prio = function
   | "exp" -> 5
   | s -> raise (Invalid_argument s);;
 
+(* operator of string *)
+let op = function
+    "+" -> ( + )
+  | "-" -> ( - )
+  | "*" -> ( * )
+  | "/" -> ( / )
+  | "exp" ->  fun m n ->
+    let m' = float_of_int m and n' = float_of_int n in
+    (int_of_float (m' ** n'))
+  | s -> raise (Invalid_argument s);;
+
+(* variable state *)
+
+let state = function
+    "x" -> 2
+  | "y" -> 10
+  | "z" -> 4
+  | s -> raise (Invalid_argument s);;
+
 (* polymorphic identity function*)
 let id : 'a. 'a -> 'a = fun x -> x;;
 
@@ -159,6 +178,7 @@ ExprCls.pretty'expr expr2;;
 ExprPrint.pretty'expr expr2;; 
 ExprImO.pretty'expr expr2;;
 
+
 (* the fold transfomration class *)
 
 class ['iota] fold'expr =
@@ -169,6 +189,10 @@ class ['iota] fold'expr =
     method pVar i _ = i
     method pBinop  i o l r = fself (fself i l) r
   end;;
+
+let rec thread_through () e = gcata'expr (new fold'expr thread_through) () e;;
+thread_through () expr1;;
+thread_through () expr2;;
 
 (* Inheriting the fold transformer, 
    with light modification, we can: *)
@@ -203,15 +227,80 @@ let height =
 height expr1;;
 height expr2;;
 
+class map'expr fself =
+  object
+    inherit [unit, expr] transformation'expr
+    method pVar _ x = Var x
+    method pConst _ n = Const n
+    method pBinop _ o l r = Binop (o, fself () l, fself () r)
+  end;;
+
+let rec id'expr () e = gcata'expr (new map'expr id'expr) () e;;
+ExprImO.pretty'expr (id'expr () expr3);;
+
+
+class simplify fself =
+  object
+    inherit map'expr fself
+    method! pBinop _ o l r =
+      match fself () l, fself () r with
+      | Const m, Const n -> Const ((op o) m n)
+      | le, re -> Binop (o, le, re)
+  end;;
+  
+let rec simplify'expr () e = gcata'expr (new simplify simplify'expr) () e;;
+
+let expr3 = Binop ("exp",
+                   (Binop ("*", (Const 4), (Const 2))),
+                   (Binop ("-",
+                           (Var "y"),
+                           (Binop ("+",(Const 4),(Const 4))))));;
+
+ExprImO.pretty'expr expr3;;
+ExprImO.pretty'expr (simplify'expr () expr3);;
+
+class substitute fself state =
+  object
+    inherit map'expr fself
+    method pVar _ x = Const (state x)
+  end;;
+
+let rec substitute'expr () =
+  gcata'expr (new substitute substitute'expr state) ();;
+
+ExprImO.pretty'expr expr2;;
+ExprImO.pretty'expr (substitute'expr () expr2);;
+ExprImO.pretty'expr (simplify'expr ()  (substitute'expr () expr2));;
+
+class eval fself state =
+  object
+    inherit map'expr fself
+    method pVar _ x = Const (state x)
+    method! pBinop _ o l r =
+      match fself () l, fself () r with
+      | Const m, Const n -> Const ((op o) m n)
+      | le, re -> Binop (o, le, re)
+  end;;
+
+let evalue e state =
+  let rec eval'expr () e' = gcata'expr (new eval eval'expr state) () e' in
+  eval'expr () e;;
+
+ExprImO.pretty'expr expr2;;
+ExprImO.pretty'expr (evalue expr2 state);;
+
 (* Tracking class inheritance
 
-class transformation'expr (virtual)
-        |          |           \
-        |          |            \
- class show   class pretty  class fold'expr
-                               |      \
-                               |       \
-                            class fv  class height
+transformation'expr (virtual)
+   /    |      \            \      
+  /     |       \            \
+show  pretty  fold'expr      map'expr
+                /   \         /    \
+               /     \       /      \
+              fv   height simplify substitute
+                               \    /
+                                \  /
+                                eval
 
 *)
                               
