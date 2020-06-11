@@ -522,6 +522,21 @@ f'' (`C 'a');;
 type u' = [> t];;
 *)
 
+(* intuitively, not more than t but not less than `A *)
+type v = private [< t > `A];;
 
+(* values of type v can only be constructe using 
+   the listed tags, viz., `A *)
+(`A 100 : v );;
 
+(* When pattern matching on v, we must assume that all tags 
+   of t may be present *)
+let g : v -> string = function
+  | `A n -> "A " ^ string_of_int n
+  | `B b -> "B " ^ string_of_bool b
+;;
 
+(*  `B true is an invalid value
+    g (`B true);; *)
+
+g (`A 100);;
