@@ -5,7 +5,7 @@ let rec oz = 1 :: zo and zo = 0 :: oz in (oz, zo);;
 - : int list * int list = ([1; 0; <cycle>], [0; 1; <cycle>]) 
 *)
 
-(* GT examples *)
+(* GT motivating examples *)
 
 (* a (custom) type *)
 type expr =
@@ -304,3 +304,224 @@ show  pretty  fold'expr      map'expr
 
 *)
                               
+(* Recursive module *)
+
+module rec A : sig
+  type t = Leaf of string | Node of ASet.t
+  val compare : t -> t -> int
+end = struct
+  type t = Leaf of string | Node of ASet.t
+  let compare t1 t2 =
+    match (t1, t2) with
+    | (Leaf s1, Leaf s2) -> Stdlib.compare s1 s2
+    | (Leaf _, Node _) -> 1
+    | (Node _, Leaf _) -> -1
+    | (Node n1, Node n2) -> ASet.compare n1 n2
+end
+and ASet
+  : Set.S with type elt = A.t
+  = Set.Make(A)
+;;
+
+(* The definitions of the module A and the module Aset are 
+   mutually dependent *)
+
+
+(* Private types *)
+
+(* Private type representation allows pattern matching 
+   but not using value constructor application to create
+   values of that type *)
+
+module M : sig
+  type t = private
+    | A
+    | B of int
+  val a : t
+  val b : int -> t
+end = struct
+  type t = A | B of int
+  let a = A
+  let b n = assert ( n > 0 ) ; B n
+end
+;;
+
+M.a;;
+M.b 5;;
+let string_of_M = function
+  | M.A -> "A"
+  | M. B n -> "B " ^ string_of_int n
+;;
+
+string_of_M (M.b 99);;
+string_of_M (M.a);;
+
+module M': sig
+  type t = private
+    { name : string;
+      date_of_birth : int * int * int;
+      mutable service_age : int }
+  val create_record : string ->  int * int * int -> int -> t
+    val update_service_age : t -> int -> unit
+end = struct
+  type t = { name : string;
+             date_of_birth : int * int * int;
+             mutable service_age : int }
+  let create_record s dob sa =
+    {name = s; date_of_birth = dob; service_age = sa}
+  let update_service_age rc sa =
+    rc.service_age <- if sa > rc.service_age
+      then sa else raise (Invalid_argument "update_service_age")
+end;;
+
+                               
+let myrecord = M'.create_record "Yue Li" (12, 12, 2020) 4;;
+(* fields of a private record type can be accessed normally *)
+myrecord.name;;
+myrecord.service_age;;
+myrecord.date_of_birth;;
+
+(* we can also pattern match against a private record type *)
+let post80s : M'.t -> bool = function
+    {date_of_birth = (_, _, y)} when (y > 1980) -> true
+                                   | _ -> false
+;;
+post80s myrecord;;
+
+M'.update_service_age myrecord 10; myrecord;;
+
+(* Direct mutable field modification and record 
+   creatiion is not allowed for a private record type 
+ 
+myrecord.service_age <- 100;;
+({ name = "James"; date_of_birth = (1,2,3); service_age = 14 } : M'.t );;
+
+*)
+
+(* Private type abbreviation *)
+
+module N : sig
+  type t = private int
+  val of_int : int -> t
+  val to_int : t -> int
+end = struct
+  type t = int
+  let of_int n = assert (n >= 0); n
+  let to_int n = n
+end;;
+
+(* type t = private int 
+   can be read as "t is a restricted form of int". 
+   This implies that t can always be coerced into int but otherwis they 
+   are not automatcally considered as equal *)
+
+( (N.of_int 8) : N.t :> int );;
+
+(* type error 
+
+   (N.of_int 8) = 8;; *)
+
+let nums = List.map N.of_int [1;2;3;4;5];; 
+(nums : N.t list :> int list);; 
+
+
+(* private row types: i.e. object or polymorphic variant type *)
+
+module Ma =
+struct
+  class c = object method x = 3 method y = 2 end
+  let o = new c
+end;;
+
+(*
+module Ma :
+  sig class c : object method x : int method y : int end val o : c end
+*)
+
+module Mb : sig
+type c = private < x : int; .. > val o : c end =
+struct
+  class c = object method x = 3 method y = 2 end
+  let o = new c
+end;;
+
+(* M.c is not recognized as a class
+let obj = new M.c;;
+*)
+
+module F(X : sig type c = private < x : int; .. > end) =
+struct
+  let get_x (o : X.c) = o # x
+end;;
+
+module FMa = F(Ma);;
+module FMb = F(Mb);;
+
+FMa.get_x Ma.o;;
+FMb.get_x Mb.o;;
+
+module G(X : sig type c = private < x : int; y : int; .. > end) =
+struct
+  include F(X)
+  let get_y  (o : X.c) = o # y
+end;;
+
+module GMa = G(Ma);;
+GMa.get_x (Ma.o), GMa.get_y (Ma.o);;
+
+(* signature mismatch 
+
+module GMb = G(Mb);;
+
+*)
+
+(* declaring an object type private we can prevent creation of
+   new objects of such type *)
+
+type t = [`A of int | `B of bool]
+
+(* extend t with hidden new tags *)
+
+type u = private [> t];;
+
+let f : u -> string = function
+  | `A n -> "A " ^ string_of_int n
+  | `B n -> "B " ^ string_of_bool n
+  | _ -> "abstract constructor";; 
+
+f (`A 100), f (`B true);;
+
+(* we must have the last case in pattern matching for unkonwn tags,
+   but we cannot supply such a tag to f *)
+
+(* compare  f,  f' and f'': their types and the way they can be applied  *)
+let f' = function
+  | `A n -> "A " ^ string_of_int n
+  | `B n -> "B " ^ string_of_bool n
+;;
+(*
+val f' : [< `A of int | `B of bool ] -> string = <fun>
+*)
+
+let f'' = function
+  | `A n -> "A " ^ string_of_int n
+  | `B n -> "B " ^ string_of_bool n
+  | _ -> "abstract tag"
+;;
+(*
+val f'' : [> `A of int | `B of bool ] -> string = <fun>
+*)
+f'' (`C 'a');;
+
+(* f is somewhat in between f' and f'': it has an open type, yet 
+   we cannot supply tags that are not specified explicitly in the 
+   pattern matching block. Annotaing f with u modifies the behaviour 
+   of f. *)
+
+(* error
+type u' = [> t];;
+*)
+
+
+
+
