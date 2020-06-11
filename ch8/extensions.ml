@@ -540,3 +540,53 @@ let g : v -> string = function
     g (`B true);; *)
 
 g (`A 100);;
+
+
+(* Locally abstract types *)
+
+(*  pseudo type parameters themselves does not suspend the 
+    evaluation of the body of the abstraction *)
+fun (type t) -> 1;;
+
+(* type constructors introduced using ( type ... ) is considered 
+   abstract (no representation, no equation, incompatible with 
+   any other type) in the scope of the sub-expresion, but will then
+   be replaced by a fresh type variable after type checking  *)
+let foldl = fun (type t) (g : int -> t -> int) init (foo : t list) ->
+  List.fold_left g init foo;;
+(*
+val foldl : (int -> 'a -> int) -> int -> 'a list -> int 
+*)
+
+(* compare : *)
+(* This does not pass type-checking
+let plu = fun (type t) (l : t) (r : t) -> l + r;; *)
+let plu = fun (l : 't) (r : 't) -> l + r;;
+
+let foldl_tpl (type a b c)
+    (g : a -> b * c -> a) (ini : a) (l : (b * c) list) =
+  List.fold_left g ini l;;
+
+(* locally abstract types can be supplied to local modules 
+   to get polymorphic functions *)
+
+let f (type t) () =
+  let module M = struct exception E of t end in
+  (fun x -> M.E x), (function M.E x -> Some x | _ -> None);;
+f ();;
+
+
+let sort_uniq (type s) (cmp : s -> s -> int) =
+  let module S = Set.Make(struct type t = s let compare = cmp end) in
+  fun l -> S.elements (List.fold_right S.add l S.empty);;
+
+module IntSet = Set.Make(struct type t = int let compare = Stdlib.compare end);;
+
+let to_set : int list -> IntSet.t =
+  fun l -> List.fold_right IntSet.add l IntSet.empty;;
+
+let myset = to_set [1;1;1;1;2;2;3;4;4;4;5;6;6;7;7;7;7] in
+IntSet.elements myset;;
+
+sort_uniq Stdlib.compare [1;1;1;1;2;2;3;4;4;4;5;6;6;7;7;7;7];;
+sort_uniq Stdlib.compare ['a';'b';'a';'a';'c'];;
