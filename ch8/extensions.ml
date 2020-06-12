@@ -590,3 +590,74 @@ IntSet.elements myset;;
 
 sort_uniq Stdlib.compare [1;1;1;1;2;2;3;4;4;4;5;6;6;7;7;7;7];;
 sort_uniq Stdlib.compare ['a';'b';'a';'a';'c'];;
+
+
+(* First-class module *)
+
+(* Basic example *)
+
+type picture = Apple | Banana | Cherry;;
+
+(* we get several implementations of the same module type *)
+
+module type DEVICE = sig
+  val draw : picture -> unit
+end;;
+
+module SVG = struct
+  let draw : picture -> unit = function
+    | Apple -> print_string "Apple\n"
+    | Banana -> print_string "Banana\n"
+    | Cherry -> print_string "Cherry\n"
+end;;
+
+module PDF = struct
+  let draw : picture -> unit = function
+    | Apple -> print_string "APPLE\n"
+    | Banana -> print_string "BANANA\n"
+    | Cherry -> print_string "CHERRY\n"
+end;;
+
+(* ... these implementations are stored in a hash table 
+   as first-class modules *)
+
+let devices : (string, (module DEVICE)) Hashtbl.t = Hashtbl.create 17;;
+Hashtbl.add devices "SVG" (module SVG : DEVICE);;
+Hashtbl.add devices "PDF" (module PDF : DEVICE);;  
+
+(* ... we can then select an implementation as run-time *)
+
+let draw_using_device device_name picture =
+  let module Device = (val (Hashtbl.find devices device_name) : DEVICE) in
+  Device.draw picture;;
+
+draw_using_device "PDF" Apple;;
+draw_using_device "SVG" Apple;;
+
+(* Advanced example *)
+
+let sort (type s) (module SSet : Stdlib.Set.S with type elt = s) l =
+  SSet.elements (List.fold_right SSet.add l SSet.empty);;
+
+(* the test *)
+
+let module CharSet =
+  Stdlib.Set.Make(struct type t = char let compare = Stdlib.compare end)
+in
+sort (module CharSet) ['d';'c';'b';'a'];;
+
+(* the test revisited *)
+
+(* taking a comparison function for certain type, returns
+   a packaged module implementing the set of values of this
+   type *)
+
+let make_set (type s) (cmp : s -> s -> int) =
+  let module OrdS = struct type t = s let compare = cmp end in 
+  let module MySet = Stdlib.Set.Make(OrdS) in
+  (module MySet : Stdlib.Set.S with type elt = s)
+;;
+
+sort (make_set Stdlib.compare)  ['d';'c';'b';'a'];;
+sort (make_set Stdlib.compare)  ["hello";"great";"sky";"apple"];;
+sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
