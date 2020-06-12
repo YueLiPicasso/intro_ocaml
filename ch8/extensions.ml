@@ -661,3 +661,162 @@ let make_set (type s) (cmp : s -> s -> int) =
 sort (make_set Stdlib.compare)  ['d';'c';'b';'a'];;
 sort (make_set Stdlib.compare)  ["hello";"great";"sky";"apple"];;
 sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
+
+
+
+(* Recovering the type of a module *)
+
+(* The line 
+
+   include module type of struct include Hashtbl end
+
+   does three things sequentially:
+   1. include Hashtbl in a structure we call S (struct include Hashtbl end)
+   2. infer the module type TS of the structure S (module type of)
+   3. textual inclusion of TS in MYHASH (include)
+
+   MYHASH has a type equation
+
+   type ('a,'b) t = ('a, 'b) Hashtbl.t 
+   
+   because:
+   1. Hashtbl provides an abstract type in the signature
+   2. After Hashtbl is included in the structure S, S gets
+      a type equation E:
+
+      type ('a,'b) t = ('a, 'b) Hashtbl.t 
+ 
+   3. The type equation E is then put in the inferred  module
+      type TS.
+   4. Contents of TS is put in MYHASH verbatim.
+
+*)
+
+module type MYHASH = sig
+  include module type of struct include Hashtbl end
+  val replace : ('a, 'b) t -> 'a -> 'b -> unit
+end;;
+
+module MyHash : MYHASH = struct
+  include Hashtbl
+  let replace t k v = remove t k; add t k v
+end;;
+
+let mh = MyHash.create 10;;
+MyHash.add mh "james" (24, 6, 1990);;
+MyHash.find mh "james";;
+MyHash.replace mh "james" (30, 12, 1999);;
+MyHash.find mh "james";;
+
+(* ... But why not just this: *)
+
+module type MYHASH' = sig
+  include module type of Hashtbl
+  val replace :  ('a, 'b) t -> 'a -> 'b -> unit
+end;;
+
+
+module MyHash' : MYHASH' = struct
+  include Hashtbl
+  let replace t k v = remove t k; add t k v
+end;;
+
+let mh' = MyHash'.create 10;;
+MyHash'.add mh "james" (24, 6, 1990);;
+MyHash'.find mh "james";;
+MyHash'.replace mh "james" (30, 12, 1999);;
+MyHash'.find mh "james";;
+
+(* EXPLANATION *)
+
+(* Re-exported variant type *)
+
+type mytp =  Hi of int | There of bool;;
+type mytp' =  mytp = Hi of int | There of bool;;
+
+let f : mytp -> unit = fun _ -> ();;
+
+Hi 5;; (*: mytp' *)
+
+f (Hi 5);; (* we get ()*)
+
+(Hi 5 :> mytp);; (* successful *)
+
+(* mytp' re-exports mytp: these two type constructors are 
+   identified and they must has the same representation *)
+
+(* semantics of include module type: 
+   - simply performs textual copying
+   - overriding is possible  *)
+
+module type A = sig
+  type t = Hello | World
+  type u = int
+  type v
+  val b : int -> int -> int
+  val c : int
+end;;
+
+module type B = sig
+  include A
+  val a : bool
+  val b : char
+end;;
+
+(* semantics of inclue module expression *)
+
+(* Bb re-exports the type t of Aa: 
+   - the representation is copied, and
+   - a type equation is added, as 
+   type t = Aa.t = Hello | World
+
+   Bb also has the equation:
+   type u = int
+*)
+
+module Aa : A = struct
+  type t = Hello | World
+  type u = int
+  type v = Edinburgh | Castle
+  let b = ( + )
+  and c = 3
+end;;
+
+module Bb =
+struct
+  include Aa
+end;;
+
+Bb.b 1 2 = 3;;
+
+let f : Bb.t -> unit = fun _ -> ();;
+f Aa.World;;
+
+(* compare B' with B'' and B''' *)
+
+module type B' = sig
+  include module type of Aa
+end;;
+
+module type B'' = sig
+  include module type of struct include Aa end
+end;;
+
+module type B''' = sig
+  include module type of Bb
+end;;
+
+
+(* The inferred type of Bb is just B'' or B''' *)
+
+(* It seems that for a standard library like Hashtbl, include module type of 
+   - Hashtble
+   - struct include Hashtbl end 
+   give the same result; but for a custom module like Aa, include module type of 
+   - Aa
+   - struct include Aa end
+   give different results 
+*)
+
+
+(* END OF EXPLANATION *)
