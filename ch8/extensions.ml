@@ -666,6 +666,50 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
 
 (* Recovering the type of a module *)
 
+(* The idea is to use the |module type of <module-expr>| syntactic form to 
+   recover/infer/compute the signature of the module <module-expr>, in order 
+   to re-define part of an existing module or to re-implement an existing module. 
+   
+   The main semantical feature of this form is "non-strengthing": for abstract 
+   types and new datatypes (i.e. new record or variant types) from the module 
+   <module-expr>, the inferred signature does not add type equations to such types
+   to emphasize that this type has an equal from <module-expr>.  
+
+   The OCaml 4.10 Reference Manual section 8.7 gives two examples: one example shows 
+   how to circumvent the "non-strengthing" feature so that a strengthened version 
+   of the signature can be obtained for the purpose of re-definition of part of an 
+   existing module; the other example shows how to exploit the "non-strengthing" 
+   feature to re-implement an existing module. 
+
+   The problems I found with this section are that:
+
+   1. For the first example of Hashtbl (a standard library module), using or 
+   not using the technique taught by the tutorial does not make any difference
+   in terms of circumventing the "non-strengthing" feature;
+
+   2. For the second example, applying the technique taught from the first example 
+   causes a result 
+
+*)
+
+(* Ref Man's Example 1 *)
+
+module type MYHASH = sig
+  include module type of struct include Hashtbl end
+  val replace : ('a, 'b) t -> 'a -> 'b -> unit
+end;;
+
+module MyHash : MYHASH = struct
+  include Hashtbl
+  let replace t k v = remove t k; add t k v
+end;;
+
+let mh = MyHash.create 10;;
+MyHash.add mh "james" (24, 6, 1990);;
+MyHash.find mh "james";;
+MyHash.replace mh "james" (30, 12, 1999);;
+MyHash.find mh "james";;
+
 (* The line 
 
    include module type of struct include Hashtbl end
@@ -692,21 +736,6 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
 
 *)
 
-module type MYHASH = sig
-  include module type of struct include Hashtbl end
-  val replace : ('a, 'b) t -> 'a -> 'b -> unit
-end;;
-
-module MyHash : MYHASH = struct
-  include Hashtbl
-  let replace t k v = remove t k; add t k v
-end;;
-
-let mh = MyHash.create 10;;
-MyHash.add mh "james" (24, 6, 1990);;
-MyHash.find mh "james";;
-MyHash.replace mh "james" (30, 12, 1999);;
-MyHash.find mh "james";;
 
 (* ... But why not just this: *)
 
@@ -727,7 +756,26 @@ MyHash'.find mh "james";;
 MyHash'.replace mh "james" (30, 12, 1999);;
 MyHash'.find mh "james";;
 
+(* Ref Man's Example 2 *)
+
+module type MYSET =
+sig
+  include module type of Set
+end;;
+
+module type MYSET' =
+sig
+  include module type of struct include Set end
+end;;
+
+(* The module type MYSET is identical to the signature of Set, as expected *)
+(* Problem: MYSET' that contains a specification 
+   module Make = Set.Make
+   which does not belong to any syntactic form given in 7.10 of Ref Man v4.10 *)
+
+
 (* SOME EXPLORATION *)
+
 
 (* Re-exported variant type *)
 
@@ -848,17 +896,6 @@ end;;
    whilst the module type of Aa equals A and B'
 *)
 
-module type MYSET =
-sig
-  include module type of Set
-end;;
-
-module type MYSET' =
-sig
-  include module type of struct include Set end
-end;;
-
-(* The module type MYSET is identical to the signature of Set *)
 
 
 (* It seems that for a standard library like Hashtbl, 
@@ -882,8 +919,5 @@ end;;
    but for the standard module Hastble strengthening presents, as in MYHASH'.  *)
 
 
-(* Another problem is with MYSET' that contains a specification 
-   module Make = Set.Make
-   which does not belong to any syntactic form given in 7.10 of Ref Man v4.10 *)
 
 (* END OF EXPLORATION *)
