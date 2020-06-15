@@ -691,6 +691,10 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
    causes a result that contains a syntactic form that does not agree with the language
    syntax (as far as I know)
 
+   The conclusion is that the semantics given by this section works reliably for 
+   user-defined modules; but for standard library modules, it may not be precise and 
+   the behaviour shall be oberved case-by-case.
+
 *)
 
 (* Ref Man's Example 1 *)
@@ -868,15 +872,5 @@ end;;
 (* The module type of Bb equals B'' and B''', 
    whilst the module type of Aa equals A and B'
 *)
-
-(* THE PROBLEMS *)
-
-(* By "strengthening" we mean that asbtract types and datatypes (new records 
-   and variants) from the included module are explicitly related to the included module, 
-   for example, in Bb the types t and v are strengthened.   
-
-   It is curious to see that: strengthening is absent for custom modules (as in B')  
-   and the standart module Set (as in MySet) as prescribed by the language semantics, 
-   but for the standard module Hastble strengthening presents, as in MYHASH'.  *)
 
 (* END OF EXPLORATION *)
