@@ -693,7 +693,7 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
 
    The conclusion is that the semantics given by this section works reliably for 
    user-defined modules; but for standard library modules, it may not be precise and 
-   the behaviour shall be oberved case-by-case.
+   the behaviour shall be observed case-by-case.
 
 *)
 
