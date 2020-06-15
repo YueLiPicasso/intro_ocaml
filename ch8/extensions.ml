@@ -711,32 +711,6 @@ MyHash.find mh "james";;
 MyHash.replace mh "james" (30, 12, 1999);;
 MyHash.find mh "james";;
 
-(* The line 
-
-   include module type of struct include Hashtbl end
-
-   does three things sequentially:
-   1. include Hashtbl in a structure we call S (struct include Hashtbl end)
-   2. infer the module type TS of the structure S (module type of)
-   3. textual inclusion of TS in MYHASH (include)
-
-   MYHASH has a type equation
-
-   type ('a,'b) t = ('a, 'b) Hashtbl.t 
-   
-   because:
-   1. Hashtbl provides an abstract type in the signature
-   2. After Hashtbl is included in the structure S, S gets
-      a type equation E:
-
-      type ('a,'b) t = ('a, 'b) Hashtbl.t 
- 
-   3. The type equation E is then put in the inferred  module
-      type TS.
-   4. Contents of TS is put in MYHASH verbatim.
-
-*)
-
 (* ... But why not just this: *)
 
 module type MYHASH' = sig
