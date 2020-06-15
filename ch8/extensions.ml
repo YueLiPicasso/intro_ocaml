@@ -727,7 +727,7 @@ MyHash'.find mh "james";;
 MyHash'.replace mh "james" (30, 12, 1999);;
 MyHash'.find mh "james";;
 
-(* EXPLANATION *)
+(* SOME EXPLORATION *)
 
 (* Re-exported variant type *)
 
@@ -848,14 +848,42 @@ end;;
    whilst the module type of Aa equals A and B'
 *)
 
+module type MYSET =
+sig
+  include module type of Set
+end;;
+
+module type MYSET' =
+sig
+  include module type of struct include Set end
+end;;
+
+(* The module type MYSET is identical to the signature of Set *)
+
+
 (* It seems that for a standard library like Hashtbl, 
    - include module type of Hashtble
    - include module type of struct include Hashtbl end 
-   give the same result; but for a custom module like Aa, 
-   - include module type of Aa
-   - include module type of struct include Aa end
+   give the same result; but for a custom module like Aa, and for a 
+   standard library like Set,
+   - include module type of Aa/Set
+   - include module type of struct include Aa/Set end
    give different results 
 *)
 
+(* PROBLEMS LEFT *)
 
-(* END OF EXPLANATION *)
+(* By "strengthening" we mean that asbtract types and datatypes (new records 
+   and variants) from the included module are explicitly related to the included module, 
+   for example, in Bb the types t and v are strengthened.   
+
+   It is curious to see that: strengthening is absent for custom modules (as in B')  
+   and the standart module Set (as in MySet) as prescribed by the language semantics, 
+   but for the standard module Hastble strengthening presents, as in MYHASH'.  *)
+
+
+(* Another problem is with MYSET' that contains a specification 
+   module Make = Set.Make
+   which does not belong to any syntactic form given in 7.10 of Ref Man v4.10 *)
+
+(* END OF EXPLORATION *)
