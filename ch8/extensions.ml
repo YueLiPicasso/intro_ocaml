@@ -743,9 +743,15 @@ f (Hi 5);; (* we get ()*)
 (Hi 5 :> mytp);; (* successful *)
 
 (* mytp' re-exports mytp: these two type constructors are 
-   identified and they must has the same representation *)
+   identified and they must have:
+   - the same kind of representation (record or variant) 
+   - exactly the same constructors/ fields 
+   - - in the same order
+   - - with the same arguments 
+   - - the same arity and type constraints (N/A for this example)
+*)
 
-(* semantics of include module type: 
+(* semantics of module signature-level inclusion: 
    - simply performs textual copying
    - overriding is possible  *)
 
@@ -753,6 +759,7 @@ module type A = sig
   type t = Hello | World
   type u = int
   type v
+  type w = mytp = Hi of int | There of bool
   val b : int -> int -> int
   val c : int
 end;;
@@ -763,21 +770,51 @@ module type B = sig
   val b : char
 end;;
 
-(* semantics of inclue module expression *)
+(* semantics of module structure-level inclusion *)
 
-(* Bb re-exports the type t of Aa: 
+(* The module type A, when applied to the structure named Aa, 
+   just makes the type v of Aa abstract; all other definitions 
+   of Aa have their full information available to the user *)
+
+(* Bb re-exports the type t of Aa, for which Aa has a representation, in the way that: 
    - the representation is copied, and
    - a type equation is added, as 
    type t = Aa.t = Hello | World
 
-   Bb also has the equation:
+   Bb also has the equations:
    type u = int
+   which is simply copied from Aa, and 
+
+   type v = Aa.v
+   which is no longer abstract in Bb.
+
+   value declarations are copied from Aa.    
+*)
+
+(* Particular attention shall be paid to type definitions in structure-level inclusion. 
+
+   New variant/record type (no equation, a representation)
+   ---|after inclusion|----> 
+   re-exported variant/record type (an equation, a representation)
+
+   Abstract type (no equation, no representation) 
+   ---|after inclusion|----> 
+   Type abbreviation (an equation, no representation)
+
+   Type abbreviation 
+   ---|after inclusion|----> 
+   (the same) Type abbreviation 
+
+   re-exported variant/record type
+   ---|after inclusion|----> 
+   (the same) re-exported variant/record type 
 *)
 
 module Aa : A = struct
   type t = Hello | World
   type u = int
   type v = Edinburgh | Castle
+  type w = mytp = Hi of int | There of bool
   let b = ( + )
   and c = 3
 end;;
@@ -807,14 +844,16 @@ module type B''' = sig
 end;;
 
 
-(* The inferred type of Bb is just B'' or B''' *)
+(* The inferred type of Bb is just B'' or B''', 
+   whilst the module type of Aa equals A and B'
+*)
 
-(* It seems that for a standard library like Hashtbl, include module type of 
-   - Hashtble
-   - struct include Hashtbl end 
-   give the same result; but for a custom module like Aa, include module type of 
-   - Aa
-   - struct include Aa end
+(* It seems that for a standard library like Hashtbl, 
+   - include module type of Hashtble
+   - include module type of struct include Hashtbl end 
+   give the same result; but for a custom module like Aa, 
+   - include module type of Aa
+   - include module type of struct include Aa end
    give different results 
 *)
 
