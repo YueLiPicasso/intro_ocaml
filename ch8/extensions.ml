@@ -688,7 +688,8 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
    in terms of circumventing the "non-strengthing" feature;
 
    2. For the second example, applying the technique taught from the first example 
-   causes a result 
+   causes a result that contains a syntactic form that does not agree with the language
+   syntax (as far as I know)
 
 *)
 
@@ -736,14 +737,12 @@ MyHash.find mh "james";;
 
 *)
 
-
 (* ... But why not just this: *)
 
 module type MYHASH' = sig
   include module type of Hashtbl
   val replace :  ('a, 'b) t -> 'a -> 'b -> unit
 end;;
-
 
 module MyHash' : MYHASH' = struct
   include Hashtbl
@@ -796,10 +795,10 @@ f (Hi 5);; (* we get ()*)
    - exactly the same constructors/ fields 
    - - in the same order
    - - with the same arguments 
-   - - the same arity and type constraints (N/A for this example)
+   - the same arity and type constraints (N/A for this example)
 *)
 
-(* semantics of module signature-level inclusion: 
+(* semantics of signature-level module inclusion: 
    - simply performs textual copying
    - overriding is possible  *)
 
@@ -818,11 +817,30 @@ module type B = sig
   val b : char
 end;;
 
-(* semantics of module structure-level inclusion *)
+(* semantics of structure-level module inclusion *)
+
+module Aa : A = struct
+  type t = Hello | World
+  type u = int
+  type v = Edinburgh | Castle
+  type w = mytp = Hi of int | There of bool
+  let b = ( + )
+  and c = 3
+end;;
 
 (* The module type A, when applied to the structure named Aa, 
    just makes the type v of Aa abstract; all other definitions 
    of Aa have their full information available to the user *)
+
+module Bb =
+struct
+  include Aa
+end;;
+
+Bb.b 1 2 = 3;;
+
+let f : Bb.t -> unit = fun _ -> ();;
+f Aa.World;;
 
 (* Bb re-exports the type t of Aa, for which Aa has a representation, in the way that: 
    - the representation is copied, and
@@ -858,26 +876,7 @@ end;;
    (the same) re-exported variant/record type 
 *)
 
-module Aa : A = struct
-  type t = Hello | World
-  type u = int
-  type v = Edinburgh | Castle
-  type w = mytp = Hi of int | There of bool
-  let b = ( + )
-  and c = 3
-end;;
-
-module Bb =
-struct
-  include Aa
-end;;
-
-Bb.b 1 2 = 3;;
-
-let f : Bb.t -> unit = fun _ -> ();;
-f Aa.World;;
-
-(* compare B' with B'' and B''' *)
+(* Now compare B' with B'' and B''' *)
 
 module type B' = sig
   include module type of Aa
@@ -892,23 +891,11 @@ module type B''' = sig
 end;;
 
 
-(* The inferred type of Bb is just B'' or B''', 
+(* The module type of Bb equals B'' and B''', 
    whilst the module type of Aa equals A and B'
 *)
 
-
-
-(* It seems that for a standard library like Hashtbl, 
-   - include module type of Hashtble
-   - include module type of struct include Hashtbl end 
-   give the same result; but for a custom module like Aa, and for a 
-   standard library like Set,
-   - include module type of Aa/Set
-   - include module type of struct include Aa/Set end
-   give different results 
-*)
-
-(* PROBLEMS LEFT *)
+(* THE PROBLEMS *)
 
 (* By "strengthening" we mean that asbtract types and datatypes (new records 
    and variants) from the included module are explicitly related to the included module, 
@@ -917,7 +904,5 @@ end;;
    It is curious to see that: strengthening is absent for custom modules (as in B')  
    and the standart module Set (as in MySet) as prescribed by the language semantics, 
    but for the standard module Hastble strengthening presents, as in MYHASH'.  *)
-
-
 
 (* END OF EXPLORATION *)
