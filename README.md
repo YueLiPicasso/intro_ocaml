@@ -2,7 +2,9 @@
 This repo hosts artifects created while I was learning the OCaml language.
 
 
-[ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/).
+[ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/). 
+
+[Hanoi](Hanoi) implements the game Tower of Hanoi.
 
 [summer](summer) contains workouts according to a summer school [tutorial](http://caml.inria.fr/pub/docs/u3-ocaml/index.html) by Didier Remy. 
 

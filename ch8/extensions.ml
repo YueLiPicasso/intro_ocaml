@@ -236,6 +236,14 @@ class map'expr fself =
   end;;
 
 let rec id'expr () e = gcata'expr (new map'expr id'expr) () e;;
+
+let expr3 = Binop ("exp",
+                   (Binop ("*", (Const 4), (Const 2))),
+                   (Binop ("-",
+                           (Var "y"),
+                           (Binop ("+",(Const 4),(Const 4))))));;
+
+
 ExprImO.pretty'expr (id'expr () expr3);;
 
 
@@ -249,12 +257,6 @@ class simplify fself =
   end;;
   
 let rec simplify'expr () e = gcata'expr (new simplify simplify'expr) () e;;
-
-let expr3 = Binop ("exp",
-                   (Binop ("*", (Const 4), (Const 2))),
-                   (Binop ("-",
-                           (Var "y"),
-                           (Binop ("+",(Const 4),(Const 4))))));;
 
 ExprImO.pretty'expr expr3;;
 ExprImO.pretty'expr (simplify'expr () expr3);;
@@ -689,7 +691,9 @@ sort (make_set Stdlib.compare)  [3.43;2.33;1.22;0.99];;
 
    2. For the second example, applying the technique taught from the first example 
    causes a result that contains a syntactic form that does not agree with the language
-   syntax (as far as I know)
+   syntax:
+
+   That belongs to "top-level module aliase", as in section 8.8 of Ref Man.
 
    The conclusion is that the semantics given by this section works reliably for 
    user-defined modules; but for standard library modules, it may not be precise and 

@@ -14,6 +14,7 @@ _build/
 # ocamlbuild targets
 *.byte
 *.native
+*.out
 
 # oasis generated files
 setup.data
@@ -31,3 +32,4 @@ _opam/
 # back up files 
 *.ml~
 *.mli~
+Makefile~
