@@ -5,5 +5,7 @@ cln = $(tgt) Hanoi.cmo Hanoi.cmi
 Hanoi.out: $(src)
 	ocamlc -o $(tgt) $(src)
 
+
+.PHONY : clean
 clean :
 	rm $(cln)
