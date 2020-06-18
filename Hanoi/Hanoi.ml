@@ -76,5 +76,5 @@ let _ =  try print_moves (hanoi 1 B B) with
    https://www.mindgames.com/game/Tower+of+Hanoi
 *)
                           
-let _ =  try print_moves (hanoi 6 A C) with
+let _ =  try print_moves (hanoi 4 A C) with
     Assert_failure _ -> print_string "Immaterial move\n"
