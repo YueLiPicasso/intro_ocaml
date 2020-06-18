@@ -1,4 +1,9 @@
-all: Hanoi.out
+src = Hanoi.ml
+tgt = Hanoi.out
+cln = $(tgt) Hanoi.cmo Hanoi.cmi
 
-Hanoi.out: Hanoi.ml
-	ocamlc -o Hanoi.out Hanoi.ml	
+Hanoi.out: $(src)
+	ocamlc -o $(tgt) $(src)
+
+clean :
+	rm $(cln)
