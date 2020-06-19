@@ -32,4 +32,5 @@ _opam/
 # back up files 
 *.ml~
 *.mli~
+*.pro~
 Makefile~
