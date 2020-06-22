@@ -4,7 +4,7 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 [ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/). 
 
-[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog.
+[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog. Translating the code into [OCanren](https://github.com/JetBrains-Research/OCanren) is an ongoing exercise.
 
 [summer](summer) contains workouts according to a summer school [tutorial](http://caml.inria.fr/pub/docs/u3-ocaml/index.html) by Didier Remy. 
 
@@ -12,9 +12,18 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 ## Installation Notes
 
+### Installing OCanren
+
+Basically, following the instructions given on the OCanren [repo]((https://github.com/JetBrains-Research/OCanren). To make OCanren available system-wide, further run the command `make install` from the OCanren diectory.
+
+Avoid using `sudo`: mixing `make` and `sudo make` during installation may cause problems with locating packages:
+if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it and `make clean` then `make` followed by `make install`.
+
+
 ### Installing OCaml
 
-I set up OCaml following the instructions from [Real World Ocaml](http://dev.realworldocaml.org/install.html). OCaml is very Windows-unfriendly, so I had to learn how to set up a Linux operating system first.  
+I set up OCaml following the instructions from [Real World Ocaml](http://dev.realworldocaml.org/install.html). OCaml is very Windows-unfriendly, so I had to learn how to set up a Linux operating
+system first.  
 
 ### Ubuntu Linux Live USB Setup
 
