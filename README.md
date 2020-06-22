@@ -27,7 +27,7 @@ with the particular source file. For instance, given the source file `<source-na
 
 > `SOURCES = <source-name>.ml`
 
-Then, to run the OCanren source `<source-name>.ml` one shall simply run the shall command `make` in the source directory, followed by the shall command `./<source-name>.native` to oserve the output.   
+Then, to run the OCanren source `<source-name>.ml` one shall simply run the shall command `make` in the source directory, followed by the shall command `./<source-name>.native` to see the output.   
 
 
 ## Installation Notes
