@@ -19,6 +19,11 @@ Basically, following the instructions given on the OCanren [repo](https://github
 Avoid using `sudo`: mixing `make` and `sudo make` during installation may cause problems with locating packages:
 if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it and `make clean` then `make` followed by `make install`.
 
+#### Compiling OCanren Source
+
+An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
+There is certain complication involved in the compilation, but this is simplified  
+
 
 ### Installing OCaml
 
