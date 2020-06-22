@@ -16,7 +16,7 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 Basically, following the instructions given on the OCanren [repo](https://github.com/JetBrains-Research/OCanren). To make OCanren available system-wide, further run the command `make install` from the OCanren source directory.
 
-Avoid using `sudo`: mixing `make` and `sudo make` during installation may cause problems with locating packages:
+Avoid using `sudo`. Mixing `make` and `sudo make` during installation may cause problems with locating packages:
 if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it `sudo rm -Rf _build` then `make clean` then `make` followed by `make install`.
 
 #### Compiling OCanren Source
