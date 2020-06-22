@@ -23,8 +23,9 @@ installation of OCanren system-wide): a `<source-name>.ml` source file and the s
 Some customization is required for the standard makefile so that it could work
 with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
 
-> TOPFILE = <source-name>.native
-> SOURCES = <source-name>.ml
+> `TOPFILE = <source-name>.native`
+
+> `SOURCES = <source-name>.ml`
 
 Then, to run the OCanren source `<source-name>.ml` one shall simply run the shall command `make` in the source directory, followed by the shall command `./<source-name>.native` to oserve the output.   
 
