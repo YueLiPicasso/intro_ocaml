@@ -975,3 +975,60 @@ module type AA = A with type t := [`Hi]
 
 (* Above: this works because perhaps the type [`Hi] is 
    included in the type [< `Hi | `There > `Hi] *)
+
+
+module type S = sig
+  type t
+  module M : (sig type u val f : u -> u end)
+end
+
+module N : sig
+  type u
+  val f : u -> u
+end = struct
+  type u = int
+  let  f =  ( + ) 1
+end
+
+module type SS = S with module M = N;; (* add type equation *)
+module type SS' = S with module M := N;; (* removes redefined module *)
+
+
+(* Local substitution declaration *)
+
+module type S = sig
+  type t = int
+  module Sub : sig
+    type outer = t
+    type t = bool
+    val to_outer : t -> outer
+  end
+end
+
+module SS : S = struct
+  type t = int
+  module Sub : sig
+    type outer = t
+    type t = bool
+    val to_outer : t -> outer
+  end = struct
+    type outer = t
+    type t = bool
+    let to_outer = function true -> 1 | false -> 0
+  end
+end;;
+
+SS.Sub.to_outer true;;       
+
+(* Using local substitutions causes syntax error, why?  
+
+module type S1 = sig
+  type t 
+  module Sub : sig
+    type outer :=  t
+    type t
+    val to_outer : t -> outer
+  end
+end;;
+
+*)
