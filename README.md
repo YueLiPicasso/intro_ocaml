@@ -24,7 +24,9 @@ if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g.
 An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
 There is certain complication involved in the compilation process, but this is simplified  by using a standard
 [makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile). In the simplest case, The OCanren programmer only needs two files in his/her working directory (after
-installation of OCanren system-wide): a `.ml` source file and the standard makefile.     
+installation of OCanren system-wide): a `<source-name>.ml` source file and the standard makefile. Some customization is required for the standard makefile so that it could work
+with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be defined respectively as
+`TOPFILE = <source-name>.native` and `SOURCES = <source-name>.ml`. 
 
 
 ### Installing OCaml
