@@ -878,3 +878,100 @@ end;;
 *)
 
 (* END OF EXPLORATION *)
+
+
+(* Substitution inside a signature *)
+
+module type Printable = sig
+  type t
+  val print : t -> unit
+end
+
+module type Comparable = sig
+  type t
+  val compare : t -> t -> int
+end
+
+(* Merging two signatures sharing a type name, 
+   using destructive substitution *)
+
+(*
+module type PrintableComparable = sig
+  include Printable
+  include Comparable
+end
+
+Gives the error 
+"multiple definition of the type name t"
+*)
+
+
+module type PrintableComparable = sig
+  include Printable
+  include Comparable with type t := t
+end
+(* Above: 
+
+   Comparable with type t := t
+   
+   removes the declaration of the type t from Comparable, 
+   and replaces all occurences of t in the rest of Comparable 
+   with the type constructor (also named t). The effect is 
+   just textual removal of type t declaration from Comparable 
+*)
+ 
+
+(* with := performs substitution alongside removal *)
+module type SS = Comparable with type t := int
+module type SS' = Comparable with type t := bool
+(* above: declaration of type t is removed, and all 
+   occurences of t are replaced by int or bool *)  
+
+module type SSS = sig
+  type u
+  include Comparable with type t := u
+end
+
+(* manifest type is removed as well *)
+
+module type S = Comparable with type t = int;; (* with = simply adds type equations *)
+
+module type SSSS = S with type t := int
+  
+(* Substitution and removal of a manifest type must be done with
+   a compatble type, otherwise the substitution is rejected, as in 
+  
+   module type SSSSS = S with type t := bool
+
+   there is an error " the new definition of t does not match its
+   original definition, type t = bool is not included in 
+   type t = int" 
+*)
+
+
+ (* This is not acceptable:
+
+   module type A = sig
+     type t =  [< `Hi | `There > `Hi ]
+     val f : t -> unit
+   end
+
+   The type checker treats  [< `Hi | `There > `Hi ] like 
+   [< `Hi | `There > `Hi ] as 'a where 'a is an unbound 
+   type variable. I can understand that the closed poly-variant
+   type is a kind of type variable in the sense that it definitely
+   admits the tag `Hi and maybe `There but nothing more. Marking
+   the poly-variant type expression as private eliminates the 
+   "unbound type variable" problem, but not sure why.
+*)
+
+module type A = sig
+  type t = private [< `Hi | `There > `Hi ]
+  val f : t -> unit
+end
+
+
+module type AA = A with type t := [`Hi]
+
+(* Above: this works because perhaps the type [`Hi] is 
+   included in the type [< `Hi | `There > `Hi] *)
