@@ -8,6 +8,9 @@
 *.cmxs
 *.cmxa
 
+# ocanren dependency tracking file
+.depend
+
 # ocamlbuild working directory
 _build/
 
