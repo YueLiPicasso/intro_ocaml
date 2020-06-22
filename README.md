@@ -13,7 +13,7 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 ## Compiling OCanren Source
 
-An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
+An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native  code by default.
 There is certain complication involved in the compilation process, but this is simplified  by using a standard
 [makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile).
 
