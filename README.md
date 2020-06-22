@@ -17,12 +17,14 @@ This repo hosts artifects created while I was learning the OCaml language.
 Basically, following the instructions given on the OCanren [repo](https://github.com/JetBrains-Research/OCanren). To make OCanren available system-wide, further run the command `make install` from the OCanren source directory.
 
 Avoid using `sudo`: mixing `make` and `sudo make` during installation may cause problems with locating packages:
-if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it and `make clean` then `make` followed by `make install`.
+if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it `sudo rm -Rf _build` then `make clean` then `make` followed by `make install`.
 
 #### Compiling OCanren Source
 
 An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
-There is certain complication involved in the compilation, but this is simplified  
+There is certain complication involved in the compilation process, but this is simplified  by using a standard
+[makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile). In the simplest case, The OCanren programmer only needs two files in his/her working directory (after
+installation of OCanren system-wide): a `.ml` source file and the standard makefile.     
 
 
 ### Installing OCaml
