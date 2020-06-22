@@ -10,6 +10,17 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 [from_beginning](from_beginning) is created following a [textbook](http://ocaml-book.com/) by John Whitington.
 
+
+## Compiling OCanren Source
+
+An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
+There is certain complication involved in the compilation process, but this is simplified  by using a standard
+[makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile). In the simplest case, the OCanren programmer only needs two files in his/her working directory (after
+installation of OCanren system-wide): a `<source-name>.ml` source file and the standard makefile. Some customization is required for the standard makefile so that it could work
+with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
+`TOPFILE = <source-name>.native` and `SOURCES = <source-name>.ml`. 
+
+
 ## Installation Notes
 
 ### Installing OCanren
@@ -19,14 +30,6 @@ Basically, following the instructions given on the OCanren [repo](https://github
 Avoid using `sudo`. Mixing `make` and `sudo make` during installation may cause problems with locating packages:
 if any such problem occurs, run `ls -l` under the OCanren directory to see, e.g., if the `_build` folder is created as root, and if so remove it `sudo rm -Rf _build` then `make clean` then `make` followed by `make install`.
 
-#### Compiling OCanren Source
-
-An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native object code by default.
-There is certain complication involved in the compilation process, but this is simplified  by using a standard
-[makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile). In the simplest case, the OCanren programmer only needs two files in his/her working directory (after
-installation of OCanren system-wide): a `<source-name>.ml` source file and the standard makefile. Some customization is required for the standard makefile so that it could work
-with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
-`TOPFILE = <source-name>.native` and `SOURCES = <source-name>.ml`. 
 
 
 ### Installing OCaml
