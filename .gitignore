@@ -18,6 +18,7 @@ _build/
 *.byte
 *.native
 *.out
+*.opt
 
 # oasis generated files
 setup.data

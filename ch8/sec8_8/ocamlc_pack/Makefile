@@ -4,10 +4,10 @@ Mylib.cmo : A.cmo B.cmo
 	ocamlc -pack A.cmo B.cmo -o Mylib.cmo
 
 A.cmo : A.ml
-	ocamlc -c A.ml
+	ocamlc -for-pack Mylib -c A.ml
 
 B.cmo : B.ml
-	ocamlc -c B.ml
+	ocamlc -for-pack Mylib -c B.ml
 
 clean : 
 	rm *.cmo *.cmi
