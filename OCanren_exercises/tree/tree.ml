@@ -59,6 +59,11 @@ let insert' t t' =
   run q (fun q -> inserto q (inj_tree t) (inj_tree t'))
     (fun qs -> qs#prj);;
 
+let insert'' x t' =
+  prj_tree @@ RStream.hd @@
+  run q (fun q -> inserto (nat x) q (inj_tree t'))
+    (fun qs -> qs#prj);;
+
 let _ =
   let insert_list l =
     let rec inner t = function
@@ -74,7 +79,9 @@ let _ =
   ignore @@ insert_list [1;2;3;4];
   let t = insert_list [3;2;4;1] in
   let t' = insert 8 t in
-  Printf.printf "Inverse insert: %d\n" @@ insert' t t';;
+  Printf.printf "Inverse insert: %d\n" @@ insert' t t';
+  Printf.printf "Removing %d from %s results in %s\n%!"
+    4 (show_inttree t) (show_inttree (insert'' 4 t));;
 
 
 
