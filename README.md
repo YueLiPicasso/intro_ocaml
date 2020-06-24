@@ -13,23 +13,24 @@ This repo hosts artifects created while I was learning the OCaml language.
 
 ## Compiling OCanren Source
 
-An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable, as native  code by default.
+An OCanren program is stored in a `.ml` file as normal OCaml sources, and is run not with the OCaml toplevel but with the compiled and linked executable.
 There is certain complication involved in the compilation process, but this is simplified  by using a standard
 [makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile). To learn how to read and write a makefile, see the 
 book [_GNU make_](https://www.gnu.org/software/make/manual/).
 
-In the simplest case, the OCanren programmer only needs two files in his/her working directory (after
+In the simplest case, the OCanren programmer only needs two files in the working directory (after
 installation of OCanren system-wide): a `<source-name>.ml` source file and a copy of the standard makefile.
 
 Some customization is required for the standard makefile so that it could work
 with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
 
-> `TOPFILE = <source-name>.native`
+> `TOPFILE = <source-name>`
 
 > `SOURCES = <source-name>.ml`
 
-Then, to run the OCanren source `<source-name>.ml` one shall simply run the shell command `make` in the source directory, followed by the shell command `./<source-name>.native` to see the output.   
-Note that an executable file containing the native code has the extension `.native` or `.opt` by default, but this is unimportant and the user can use his/her own extension, only to remember to update the recipe for the `clean`  target in the makefile ! 
+Then, to compile and link the OCanren source `<source-name>.ml` one shall simply run the shell command `make` in the source directory, followed by `./<source-name>.opt` to run the executable. 
+
+Note that a native code executable has the extension `.native ` or `.opt` by default, and a byte code executable has the extension `.byte`. The user can use other extensions, only to remember to update the relevant parts the makefile accordingly! 
 
 ## Installation Notes
 
