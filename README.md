@@ -18,7 +18,7 @@ There is certain complication involved in the compilation process, but this is s
 [makefile](https://github.com/YueLiPicasso/intro_ocaml/blob/master/Hanoi/ocanren/Makefile).
 
 In the simplest case, the OCanren programmer only needs two files in his/her working directory (after
-installation of OCanren system-wide): a `<source-name>.ml` source file and the standard makefile.
+installation of OCanren system-wide): a `<source-name>.ml` source file and a copy of the standard makefile.
 
 Some customization is required for the standard makefile so that it could work
 with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
@@ -28,7 +28,7 @@ with the particular source file. For instance, given the source file `<source-na
 > `SOURCES = <source-name>.ml`
 
 Then, to run the OCanren source `<source-name>.ml` one shall simply run the shell command `make` in the source directory, followed by the shell command `./<source-name>.native` to see the output.   
-
+Note that an executable file containing the native code has the extension `.native` or `.opt` by default, but this is unimportant and the user can use his/her own extension, only to remember to update the recipe for the `clean`  target in th emakefile ! 
 
 ## Installation Notes
 
