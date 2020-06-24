@@ -26,7 +26,7 @@ let minmaxo a b min max =
 let rec smallesto l s l' =
   ocanren {
     l == [s] & l' == [] |
-    fresh h, t, s', t' max in
+    fresh h, t, s', t', max in
        l' == max :: t' &
        l == h :: t &
        minmaxo h s' s max &
@@ -38,15 +38,22 @@ let rec smallesto l s l' =
 let tofun_int_list = List.to_list Nat.to_int;;
 (* convert a functional int list to a logic int list *)
 let fromfun_int_list = nat_list;; (* OCanren.nat_list *)
-(* convert logic int * (int list) to functional int * (int list) *)
-let to_il_pair _ = () (* a stub, to do nest *)
+
+(* project a logic pair int * (int list) back to functional domain *)
+let liil_pair_prj pr = Nat.to_int (fst pr), tofun_int_list (snd pr);;
 
 (* wraping samllesto to interface with functional data *)
 (* Using Core.qr for two logical parameters *)
-let smallest l = to_il_pair @@ Stream.hd @@
+let smallest l = liil_pair_prj @@ Stream.hd @@
   run qr
-    (* the goal, which returns reified streams *)
+    (* the goal, which returns reified results *)
     (fun s l' -> smallesto (fromfun_int_list l) s l')
-    (* the reified logic stream handler. For the class of 
+    (* the reified result handler. For the class of 
        reified results, see Logic.mli *)
-    (fun ss l's -> Stream.zip ss#prj l's#prj) 
+    (fun ss l's -> ss#prj, l's#prj)
+
+let _ = let pr = smallest [4;3;2;1;5;6;7;8] in
+  Printf.printf "The smallest is %s and the remainder is: %s\n%!"
+     (show(GT.int) (fst pr)) (show(GT.list) (show(GT.int)) (snd pr));; 
+
+
