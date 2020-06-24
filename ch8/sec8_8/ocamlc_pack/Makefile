@@ -9,5 +9,6 @@ A.cmo : A.ml
 B.cmo : B.ml
 	ocamlc -for-pack Mylib -c B.ml
 
+.PHONY : clean
 clean : 
 	rm -f $(CLEAN)
