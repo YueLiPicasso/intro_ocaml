@@ -1,4 +1,4 @@
-
+CLEAN = $(wildcard *.cmo *.cmi)
 
 Mylib.cmo : A.cmo B.cmo
 	ocamlc -pack A.cmo B.cmo -o Mylib.cmo
@@ -10,4 +10,4 @@ B.cmo : B.ml
 	ocamlc -for-pack Mylib -c B.ml
 
 clean : 
-	rm *.cmo *.cmi
+	rm -f $(CLEAN)

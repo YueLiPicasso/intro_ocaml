@@ -1,4 +1,4 @@
-TOPFILE = Hanoio.native
+TOPFILE = Hanoio.opt
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
