@@ -19,7 +19,7 @@ There is certain complication involved in the compilation process, but this is s
 book [_GNU make_](https://www.gnu.org/software/make/manual/).
 
 In the simplest case, the OCanren programmer only needs two files in the working directory (after
-installation of OCanren system-wide): a `<source-name>.ml` source file and a copy of the standard makefile.
+installation of OCanren system-wide): a `.ml` source file and a copy of the standard makefile.
 
 Some customization is required for the standard makefile so that it could work
 with the particular source file. For instance, given the source file `<source-name>.ml` the two variables TOPFILE and SOURCES (appearing at the top of the makefile) shall be redefined respectively as
