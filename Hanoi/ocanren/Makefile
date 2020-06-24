@@ -1,27 +1,32 @@
-TOPFILE = Hanoio.opt
+TOPFILE = Hanoio
+SOURCES = Hanoio.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
-SOURCES = Hanoio.ml 
+OUTB = $(TOPFILE).byte
+OUTO = $(TOPFILE).opt
 # -dsource --- dump a text *after* camlp5 extension
 CAMLP5 = -syntax camlp5o -package ocanren.syntax,GT.syntax.all 
 PXFLAGS = $(CAMLP5)
 BFLAGS = -rectypes -g
 OFLAGS = $(BFLAGS)
+CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend)
 
-all:.depend $(TOPFILE)
+.PHONY : all clean
+
+all:.depend $(OUTO)
 
 .depend: $(SOURCES)
 	$(OCAMLDEP) $(PXFLAGS) *.ml > .depend
 
-$(TOPFILE): $(SOURCES:.ml=.cmx)
-	$(OCAMLOPT) -o $(TOPFILE) $(OFLAGS) $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmx) 
+$(OUTO): $(SOURCES:.ml=.cmx)
+	$(OCAMLOPT) -o $(OUTO) $(OFLAGS) $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmx) 
 
-$(TOPFILE).byte: $(SOURCES:.ml=.cmo)
-	$(OCAMLC) -o $(TOPFILE).byte $(BFLAGS) $(LIBS) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmo) 
+$(OUTB): $(SOURCES:.ml=.cmo)
+	$(OCAMLC) -o $(OUTB) $(BFLAGS) $(LIBS) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmo) 
 
 clean:
-	rm -Rf *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ .depend
+	rm -Rf $(CLEAN)
 
 -include .depend
 # generic rules

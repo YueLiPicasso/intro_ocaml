@@ -1,5 +1,5 @@
-TOPFILE = tree
-SOURCES = tree.ml
+TOPFILE = sorting
+SOURCES = sorting.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
