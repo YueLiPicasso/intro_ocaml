@@ -34,8 +34,29 @@ let rec smallesto l s l' =
   }
 ;;
 
-(* convert a logic int list to a functional int list *)
+(* In OCanren, data (e.g., nat,list) resides in four levels: 
+
+   GT-level,
+   =============
+   ground-level,
+   =============
+   logic-level,
+   =============
+   groundl-level
+   =============
+
+   Functional programming is done at GT-level, and 
+   logic programming is done at groundl-level.
+*)
+
+(* convert a ground-level int list to a GT-level int list *)
+(* Nat.to_int    : Nat.ground -> int *)
+(* List.to_list  : ('a -> 'b) -> 'a List.ground -> 'b GT.list *)
+(* -             : Nat.ground List.ground -> int GT.list *)
 let tofun_int_list = List.to_list Nat.to_int;;
+
+
+
 (* convert a functional int list to a logic int list *)
 let fromfun_int_list = nat_list;; (* OCanren.nat_list *)
 
@@ -56,4 +77,11 @@ let _ = let pr = smallest [4;3;2;1;5;6;7;8] in
   Printf.printf "The smallest is %s and the remainder is: %s\n%!"
      (show(GT.int) (fst pr)) (show(GT.list) (show(GT.int)) (snd pr));; 
 
-
+(* wrap minmaxo in a functional context: 
+   provide min and max, returns a and b *)
+(* Use OCanren.Std.nat to inject OCaml int to 
+   LNat.ground and finally to logic domain*)
+let minmaxr min max =
+  Stream.take ~n:2 @@
+  run qr (fun a b -> minmaxo (nat a) (nat b) min max)
+    (fun as bs -> as#prj, bs#prj)
