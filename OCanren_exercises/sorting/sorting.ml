@@ -51,18 +51,19 @@ let rec smallesto l s l' =
    groundl-level via ground-level and logic-level.
 *)
 
-(* convert a ground-level int list to a GT-level int list *)
+
+(* Raise an int list from ground-level to GT-level *)
 (* Nat.to_int    : Nat.ground -> int *)
 (* List.to_list  : ('a -> 'b) -> 'a List.ground -> 'b GT.list *)
 (* -             : Nat.ground List.ground -> int GT.list *)
 let tofun_int_list = List.to_list Nat.to_int;;
 
 
-
-(* convert a functional int list to a logic int list *)
+(* Push an int list from GT-level to groundl-level *)
 let fromfun_int_list = nat_list;; (* OCanren.nat_list *)
 
-(* project a logic pair int * (int list) back to functional domain *)
+
+(* Raise an int * (int list) pair from ground-level to GT-level *)
 let liil_pair_prj pr = Nat.to_int (fst pr), tofun_int_list (snd pr);;
 
 (* wraping samllesto to interface with functional data *)
