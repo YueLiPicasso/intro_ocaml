@@ -75,6 +75,7 @@ let smallest l =
     (* the reified result handler. For the class of 
        reified results, see Logic.mli *)
     (fun ss l's -> ss#prj, l's#prj)
+    
 
 let _ = let pr = smallest [4;3;2;1;5;6;7;8] in
   Printf.printf "The smallest is %s and the remainder is: %s\n%!"
