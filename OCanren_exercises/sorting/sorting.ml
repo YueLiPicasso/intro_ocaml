@@ -46,7 +46,9 @@ let rec smallesto l s l' =
    =============
 
    Functional programming is done at GT-level, and 
-   logic programming is done at groundl-level.
+   logic programming is done at groundl-level. Libraries
+   provide routines to convert data from GT-level to 
+   groundl-level via ground-level and logic-level.
 *)
 
 (* convert a ground-level int list to a GT-level int list *)
