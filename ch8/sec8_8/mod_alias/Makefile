@@ -12,8 +12,12 @@ LIBOBJS =  $(PACKINGOBJ) $(AOBJ) $(BOBJ)
 OCAMLC = ocamlc -c -no-alias-deps -open Mylib
 CLEAN = $(wildcard *.cmo *.cmi *.cma)
 
+.DEFAULT_GOAL := show
 
-.PHONY: clean
+.PHONY: clean show
+
+
+
 
 $(TOPFILE) : $(LIBOBJS)
 	ocamlc -a -o $(TOPFILE) $(LIBOBJS)
@@ -29,3 +33,18 @@ $(PACKINGOBJ) : $(PACKINGDEPS)
 
 clean :
 	rm -f $(CLEAN)
+
+file_list != find . -name '*.ml'
+foo := foo
+bar = bar
+
+undefine foo
+
+show :
+	@echo $(file_list)
+	$(info printed by info)
+	$(info $(origin foo))
+	$(info $(origin bar))
+	$(info $(flavor foo))
+	$(info $(flavor bar))
+
