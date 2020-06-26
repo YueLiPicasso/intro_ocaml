@@ -79,8 +79,23 @@ let smallest l =
 
 let _ = let pr = smallest [4;3;2;1;5;6;7;8] in
   Printf.printf "The smallest is %s and the remainder is: %s\n%!"
-     (show(GT.int) (fst pr)) (show(GT.list) (show(GT.int)) (snd pr));; 
+    (show(GT.int) (fst pr)) (show(GT.list) (show(GT.int)) (snd pr));;
 
+
+let smallest' l' = 
+  (* raise int list * int from ground-level to GT-level *)
+  let raise = fun ilst, it ->  tofun_int_list ilst, Nat.to_int it in
+  L.map raise  @@  Stream.take @@
+  run qr (fun l s -> smallesto l s (fromfun_int_list l'))
+    (fun ls ss -> ls#prj,ss#prj)
+
+let _ =
+  let res = smallest' [5;6;4;7;8] in
+  (* to-string printer of int GT.list * int *)
+  let sprinter = fun ilst,it ->
+    (show(GT.list) string_of_int ilst) ^ ", " ^ (show(GT.int) it) ^ "\n"
+  in
+  L.iter print_string (L.map sprinter res);; 
 
 (* wrapping minmaxo to interface with GT-level data, 
    The user provides min and max, minmaxr returns a pair (a, b) *)
@@ -96,3 +111,11 @@ let minmaxr min max =
   raise @@ Stream.take ~n:2 @@
   run qr (fun a b -> minmaxo  a  b (nat min) (nat max))
     (fun ast bs -> ast#prj, bs#prj);;
+
+
+let _ = let mi,mx = 2,3 in
+  let lp = minmaxr mi mx in
+  Printf.printf "Each of the following pairs has min %d and max %d:\n%s\n%!" 
+    mi mx (show(GT.list) (fun x,y -> Printf.sprintf "(%d,%d)" x y) lp);;
+
+
