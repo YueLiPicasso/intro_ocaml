@@ -110,17 +110,18 @@ let _ = try
 
 
 (* use the empty list as input *)
-(* The result is a list of pairs of objects of the class ('a, 'b) reified
-   and since there are free logic variables we cannot write
-   (fun ls ss -> ls#prj,ss#prj) 
-
+let smallest'e =
   begin
     Stream.take @@
     run qr (fun l s -> smallesto l s (fromfun_int_list []))
-      (fun ls ss -> ls,ss)
-  end
+      (fun ls ss -> ls#reify(List.reify Nat.reify),ss#reify(Nat.reify))
+  end;;
 
-*)
+
+@type tmp = (Nat.logic List.logic * Nat.logic) GT.list with show;;
+
+let _ = Printf.printf "smallest'e is %s" (show(tmp) smallest'e);;
+
 
 (* wrapping minmaxo to interface with GT-level data, 
    The user provides min and max, minmaxr returns a pair (a, b) *)
