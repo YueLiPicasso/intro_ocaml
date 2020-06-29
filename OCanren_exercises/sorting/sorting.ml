@@ -34,6 +34,7 @@ let rec smallesto l s l' =
   }
 ;;
 
+
 (* In OCanren, data (e.g., nat,list) resides in four levels: 
 
    GT-level,
@@ -86,8 +87,11 @@ let smallest' l' =
   (* raise int list * int from ground-level to GT-level *)
   let raise = fun ilst, it ->  tofun_int_list ilst, Nat.to_int it in
   L.map raise  @@  Stream.take @@
-  run qr (fun l s -> smallesto l s (fromfun_int_list l'))
-    (fun ls ss -> ls#prj,ss#prj)
+  if l' = [] then Stdlib.raise (Invalid_argument "Empty list for samllest'.")
+  else
+    run qr (fun l s -> smallesto l s (fromfun_int_list l'))
+      (fun ls ss -> ls#prj,ss#prj)
+
 
 let _ =
   let res = smallest' [5;6;4;7;8] in
@@ -96,6 +100,27 @@ let _ =
     (show(GT.list) string_of_int ilst) ^ ", " ^ (show(GT.int) it) ^ "\n"
   in
   L.iter print_string (L.map sprinter res);; 
+
+
+let _ = try
+    begin
+      let res = smallest' [] in
+      Stdlib.ignore res
+    end with Invalid_argument s -> print_string s; print_newline ();; 
+
+
+(* use the empty list as input *)
+(* The result is a list of pairs of objects of the class ('a, 'b) reified
+   and since there are free logic variables we cannot write
+   (fun ls ss -> ls#prj,ss#prj) 
+
+  begin
+    Stream.take @@
+    run qr (fun l s -> smallesto l s (fromfun_int_list []))
+      (fun ls ss -> ls,ss)
+  end
+
+*)
 
 (* wrapping minmaxo to interface with GT-level data, 
    The user provides min and max, minmaxr returns a pair (a, b) *)
