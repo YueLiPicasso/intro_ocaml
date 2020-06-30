@@ -43,13 +43,13 @@ let rec smallesto l s l' =
    =============
    logic-level,
    =============
-   groundl-level
+   groundi-level
    =============
 
    Functional programming is done at GT-level, and 
-   logic programming is done at groundl-level. Libraries
+   logic programming is done at groundi-level. Libraries
    provide routines to convert data from GT-level to 
-   groundl-level via ground-level and logic-level.
+   groundi-level via ground-level and logic-level.
 *)
 (* The type error massages could be helpful for debugging *)
 
@@ -60,7 +60,7 @@ let rec smallesto l s l' =
 let tofun_int_list = List.to_list Nat.to_int;;
 
 
-(* Push an int list from GT-level to groundl-level *)
+(* Push an int list from GT-level to groundi-level *)
 let fromfun_int_list = nat_list;; (* OCanren.nat_list *)
 
 
@@ -118,9 +118,56 @@ let smallest'e =
   end;;
 
 
-@type tmp = (Nat.logic List.logic * Nat.logic) GT.list with show;;
+let module Smallest'e = struct
+  @type t = (Nat.logic List.logic * Nat.logic) with show;;
+end in L.iter print_string @@
+(L.map
+   (fun dt -> sprintf "smallest'e is %s\n%!" (show(Smallest'e.t) dt))
+   smallest'e);;
 
-let _ = Printf.printf "smallest'e is %s" (show(tmp) smallest'e);;
+
+let smallest'' =
+  Stream.take ~n:100 @@
+  run qrs (fun q r s -> smallesto q r s)
+    (fun qs rs ss -> qs#reify(List.reify Nat.reify),
+                     rs#reify(Nat.reify),
+                     ss#reify(List.reify Nat.reify));;
+
+
+let module Smallest'' = struct
+  @type t = (Nat.logic List.logic * Nat.logic * Nat.logic List.logic)
+            with show;;
+end in L.iter print_string @@
+(L.map
+   (fun dt -> sprintf "smallest'' is %s\n%!" (show(Smallest''.t) dt))
+   smallest'');;
+
+
+let smallest''' s l' = L.map tofun_int_list @@
+  let f = fromfun_int_list and f' = OCanren.Std.nat in 
+  Stream.take @@
+  run q (fun q -> smallesto q (f' s) (f l')) (fun qs -> qs#prj);;
+
+
+let sml s l' =
+  let l = smallest''' s l' in 
+  let module Smallest''' = struct @type t = int GT.list with show;; end in
+  let il2str = show(Smallest'''.t) in
+  L.iter (fun s -> print_string s;print_newline()) (L.map il2str l);
+  printf "Above: samllest''' %d %s\n" s (il2str l')
+in
+(* below: gives all permutations of 2..3 *)
+sml 2 [3];
+(* below: gives all permutations of 1..3 *)
+sml 1 [2;3];
+sml 1 [3;2];
+(* below: gives all permutations of 0..3 *)
+sml 0 [1;2;3];
+sml 0 [1;3;2];
+sml 0 [2;1;3];
+sml 0 [2;3;1];
+sml 0 [3;1;2];
+sml 0 [3;2;1];;
 
 
 (* wrapping minmaxo to interface with GT-level data, 
@@ -144,4 +191,59 @@ let _ = let mi,mx = 2,3 in
   Printf.printf "Each of the following pairs has min %d and max %d:\n%s\n%!" 
     mi mx (show(GT.list) (fun x,y -> Printf.sprintf "(%d,%d)" x y) lp);;
 
+
+(* forward *)
+let rec sorto x y =
+  ocanren {
+    x == [] & y == [] |
+    fresh s, xs, xs' in
+     smallesto x s xs &
+        y == s :: xs' &
+        sorto xs xs' }
+
+
+(* backward *)
+let rec sorto' x y =
+  ocanren {
+    x == [] & y == [] |
+    fresh s, xs, xs' in
+     y == s :: xs' &
+     sorto' xs xs'  &
+     smallesto x s xs   }
+
+
+(* sort GT-level nat list l *)
+let sort l = tofun_int_list @@ Stream.hd @@ run q
+    (fun q -> sorto (fromfun_int_list l) q) (fun qs -> qs#prj);;
+
+
+let _ = let ls' =  [0;1;9;2;8;3;7;4;6;5] in
+  let ls = sort ls' and shil x = (show(GT.list) (show(GT.int)) x) in
+  Printf.printf "%s is sorted into %s.\n%!"
+    (shil ls') (shil ls);;
+
+
+let rec factorial n = if n = 0 then 1
+  else if n < 0 then Stdlib.raise @@ Invalid_argument "factorial"
+      else n * factorial (n - 1);; 
+
+
+let perm l = L.map tofun_int_list @@ Stream.take @@ run q
+    (fun q -> sorto' q (fromfun_int_list l)) (fun qs -> qs#prj);;
+
+
+(* smallesto is the core of permutation *)
+let module Perm  = struct @type t = int GT.list with show;; end
+in let ls =  [0;1;2] in
+let lls = perm ls in
+L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
+Printf.printf
+  "%s is permutated into %d lists, but it should have %d permutations:\n"
+  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);
+let ls =  [2;1;0] in
+let lls = perm ls in
+L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
+Printf.printf
+  "%s is permutated into %d lists, but it should have %d permutations:\n"
+  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);;
 
