@@ -16,7 +16,7 @@ open OCanren.Std;;
 
 (* The keyword '@type' has the same semantics as the keyword 'type' 
    except that it additionally invokes the GT package to automatically
-   generate useful functons on this type, such as 'show' for pretty-
+   generate useful functons for the defined type, such as 'show' for pretty-
    printing and 'gmap' for applying a function over the parameter type,
    for instance, gmap : ('a -> 'b) -> 'a move -> 'b move, just like the
    'map' function from the OCaml standard library List. *)
