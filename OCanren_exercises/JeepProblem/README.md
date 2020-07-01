@@ -1,7 +1,5 @@
 # The Jeep Problem 
 
-https://mathworld.wolfram.com/JeepProblem.html 
-
 ## Background
 
 A jeep is going to cross a desert: traveling from base A on one side
@@ -53,3 +51,7 @@ A, B --- bases
 L --- maximum fuel capacity of the jeep, in liters 
 D --- maximum distance capacity by the jeep, in miles
 C --- abstract fuel/distance capacity of the jeep, in units
+
+## Reference
+
+https://mathworld.wolfram.com/JeepProblem.html 
