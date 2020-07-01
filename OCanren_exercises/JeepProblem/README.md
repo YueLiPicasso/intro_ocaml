@@ -62,8 +62,8 @@ Letter | Meaning | Type | Unit
 --- | --- | --- | ---
 A, B | bases | N/A | N/A
 L | maximum fuel capacity of the jeep | positive real | liter
-D | maximum distance capacity of the jeep | positive real | mile
-C | abstract fuel/distance capacity of the jeep | positive interger | unit
+D | maximum distance capacity of the jeep on L | positive real | mile
+C | abstract fuel or distance capacity of the jeep | positive interger | unit
 
 ## Reference
 
