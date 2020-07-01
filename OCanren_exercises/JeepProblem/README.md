@@ -1,5 +1,8 @@
 # The Jeep Problem 
 
+We describe the general idea of the jeep problem, followed by introducing
+some abstraction in order to formulate and solve it mathematically.
+
 ## Background
 
 A jeep is going to cross a desert: traveling from base A on one side
