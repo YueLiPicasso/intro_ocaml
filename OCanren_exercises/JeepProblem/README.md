@@ -44,9 +44,10 @@ Moreover, we assume that the jeep consumes fuel and covers distance in a discret
 a time,  resulting in one unit of distance traveled.
 
 Transfer of fuel between the tank and bottles is also discrete:  only whole units
-of fuel is possible. For example, if the jeep has 3 units of fuel left in the tank
-that has a capacity of 5 units, then the ony possible refuel amounts are 1 unit or
-2 units, and the only possible amount of dumped fuel are 1 unit, 2 units, or 3 units. 
+are allowed. For example, if the jeep has 3 units of fuel left in the tank
+that has a capacity of 5 units, then it can only refuel (from base A or mini fuel dumps)
+for 1 unit or 2 units, and can only transfer (to and from mini fuel dumps) for 1 unit, 2 units,
+or 3 units. 
 
 These are all assumed to be done unit-by-unit.
 
