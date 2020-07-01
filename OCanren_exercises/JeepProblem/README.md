@@ -70,8 +70,11 @@ C | abstract fuel or distance capacity of the jeep | positive interger | unit
 Although the value of the abstract capacity C is arbitrarily picked, we must set it
 to at least 3. If we set C = 1 or 2, then it would be impossible for the jeep to reach
 the destination, given our _discrete motion_ and _discrete fuel transfer_ assumptions.
-For instance, C = 1 implies that the jeep would run full steam
-ahead until out of fuel, then get stuck. C = 2 implies that two possibilities: 1) 
+For instance, C = 1 implies that the jeep would move forward for 1 unit of distance, 
+runnning out of fuel and getting stuck.  C = 2 implies three possibilities: 1) moving
+forward for 2 units of distance, runnning out of fuel and getting stuck; 2) moving
+forward for 1 unit, deposit 1 unit (the remaining) fuel, and then get stuck; 3) moving
+forward for 1 unit and backward for 1 unit, returning to base A and making no progress.
 
 ## Reference
 
