@@ -1,7 +1,8 @@
 # The Jeep Problem 
 
 We describe the general idea of the jeep problem, followed by introducing
-some abstraction in order to formulate and solve it mathematically.
+some abstraction in order to formulate and solve it mathematically. Then we
+remark on  some simple cases.
 
 ## Background
 
