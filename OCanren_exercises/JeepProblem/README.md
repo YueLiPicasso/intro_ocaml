@@ -12,7 +12,7 @@ maximum and with which it can run for D miles at the most.
 
 There is a fuel station in base A, providing practically unlimited
 fuel for the jeep.  However, the road linking bases A and B is much longer
-than D, which means that the jeep, fully fueled at base A, must refuel
+than D miles, meaning that the jeep, fully fueled at base A, must refuel
 somewhere in between the bases A and B in order to complete the journey.
 Unfortunately there is no more fuel stations on the way, and at any time
 the jeep can carry at the most one tank of fuel.
