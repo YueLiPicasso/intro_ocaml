@@ -19,8 +19,8 @@ distance covered.
 There is a fuel station in base A, providing practically unlimited
  fuel. The way between base A and B is much longer
 than ten units, i.e.,  the longest distance coverable by one full tank of fuel,
-, but unfortunately there is no more fuel stations along the way,
-and at any time the jeep can carry at most one tank (i.e., ten units) of fuel.
+ but unfortunately there is no more fuel stations along the way,
+and at any time the jeep can carry at most one tank (equals ten units) of fuel.
 
  
 The specific strategy that the jeep uses to cross the desert in this situation
