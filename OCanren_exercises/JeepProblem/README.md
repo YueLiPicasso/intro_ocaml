@@ -55,7 +55,7 @@ We summarize all mentioned notation in the following table.
 Letter | Meaning | Type | Unit
 --- | --- | --- | ---
 A, B | bases | N/A | N/A
-L | maximum fuel capacity of the jeep | positive real | liters 
+L | maximum fuel capacity of the jeep | positive real | liter
 D | maximum distance capacity by the jeep | positive real | mile
 C | abstract fuel/distance capacity of the jeep | positive interger | unit
 
