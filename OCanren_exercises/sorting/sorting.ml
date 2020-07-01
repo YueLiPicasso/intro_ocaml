@@ -227,23 +227,42 @@ let rec factorial n = if n = 0 then 1
   else if n < 0 then Stdlib.raise @@ Invalid_argument "factorial"
       else n * factorial (n - 1);; 
 
-
+(* compute all permutations of an ascending nat list l *)
 let perm l = L.map tofun_int_list @@ Stream.take @@ run q
     (fun q -> sorto' q (fromfun_int_list l)) (fun qs -> qs#prj);;
 
 
+let perm' l = L.map tofun_int_list @@ Stream.take @@
+  run q (fun q -> fresh (r) (sorto (fromfun_int_list l) r)
+                    (sorto' q r)) project;; 
+
+
 (* smallesto is the core of permutation *)
-let module Perm  = struct @type t = int GT.list with show;; end
-in let ls =  [0;1;2] in
+module Perm  = struct @type t = int GT.list with show;; end;;
+
+let ls =  [0;1;2] in
 let lls = perm ls in
 L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
 Printf.printf
   "%s is permutated into %d lists, but it should have %d permutations:\n"
-  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);
+  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);;
+
+
 let ls =  [2;1;0] in
 let lls = perm ls in
 L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
 Printf.printf
   "%s is permutated into %d lists, but it should have %d permutations:\n"
   (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);;
+
+
+let ls =  [0;1;2;3;4;5;6;7] in
+let lls = perm' ls in
+L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
+Printf.printf
+  "%s is permutated into %d lists, but it should have %d permutations:\n"
+  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls)
+;;
+
+
 
