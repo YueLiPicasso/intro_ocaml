@@ -47,14 +47,17 @@ Transfer of fuel between the tank and bottles is also discrete:  only whole unit
 are allowed. For example, if the jeep has 3 units of fuel left in the tank
 that has a capacity of 5 units, then it can only refuel (from base A or mini fuel dumps)
 for 1 unit or 2 units, and can only transfer (to and from mini fuel dumps) for 1 unit, 2 units,
-or 3 units. 
+or 3 units.
 
-These are all assumed to be done unit-by-unit.
+We summarize all mentioned notation in the following table. 
 
-A, B --- bases
-L --- maximum fuel capacity of the jeep, in liters 
-D --- maximum distance capacity by the jeep, in miles
-C --- abstract fuel/distance capacity of the jeep, in units
+
+Letter | Meaning | Type | Unit
+--- | --- | --- | ---
+A, B | bases | N/A | N/A
+L | maximum fuel capacity of the jeep | positive real | liters 
+D | maximum distance capacity by the jeep | positive real | mile
+C | abstract fuel/distance capacity of the jeep | positive interger | unit
 
 ## Reference
 
