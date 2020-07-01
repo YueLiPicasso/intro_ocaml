@@ -30,7 +30,7 @@ The questions are: how should the jeep create mini fuel dumps and
 refuel in order to complete the journey, and  what is the minimum amount of 
 fuel needed ?   
 
-## Abstraction and Simplification
+## Abstraction
 
 We could abstract from the jeep and its fuel tank's details.
 
@@ -64,6 +64,14 @@ A, B | bases | N/A | N/A
 L | maximum fuel capacity of the jeep | positive real | liter
 D | maximum distance capacity of the jeep on L | positive real | mile
 C | abstract fuel or distance capacity of the jeep | positive interger | unit
+
+## Remarks
+
+Although the value of the abstract capacity C is arbitrarily picked, we must set it
+to at least 3. If we set C = 1 or 2, then it would be impossible for the jeep to reach
+the destination, given our _discrete motion_ and _discrete fuel transfer_ assumptions.
+For instance, C = 1 implies that the jeep would run full steam
+ahead until out of fuel, then get stuck. C = 2 implies that two possibilities: 1) 
 
 ## Reference
 
