@@ -34,6 +34,8 @@ fuel needed ?
 
 We could abstract from the fuel tank's details.
 
+### Discrete Motion
+
 For some arbitrary positive interger C, we take (L/C) liters as one unit of fuel
 and take (D/C) miles as one unit of distance, and say that the jeep's tank has a
 maximum capacity of C units of fuel, and with which it can run for C units of
@@ -43,11 +45,15 @@ Moreover, we assume that the jeep consumes fuel and covers distance in a discret
 (or unit-by-unit) and propotional manner, where one unit of fuel is consumed at
 a time,  resulting in one unit of distance traveled.
 
+### Discrete Fuel Trasnfer 
+
 Transfer of fuel between the tank and bottles is also discrete:  only whole units
 are allowed. For example, if the jeep has 3 units of fuel left in the tank
 that has a capacity of 5 units, then it can only refuel (from base A or mini fuel dumps)
 for 1 unit or 2 units, and can only transfer (to and from mini fuel dumps) for 1 unit, 2 units,
 or 3 units.
+
+### Notation
 
 We summarize all mentioned notation in the following table. 
 
