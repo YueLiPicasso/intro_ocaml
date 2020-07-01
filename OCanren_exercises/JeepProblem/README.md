@@ -32,7 +32,7 @@ fuel needed ?
 
 ## Abstraction and Simplification
 
-We could abstract from the fuel tank's details.
+We could abstract from the jeep and its fuel tank's details.
 
 ### Discrete Motion
 
