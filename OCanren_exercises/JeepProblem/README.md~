@@ -18,7 +18,7 @@ than one unit, but unfortunately there is no more fuel stations along the way,
 and at any time the jeep can carry at most one unit of fuel.
 
  
-The specific strategy that the jeep uses to cross the desert in this situation
+The specific strategy that jeep uses to cross the desert in this situation
 is that it carries empty bottles:  on the way it could transfer some fuel 
 from the tank to some bottles and leave the bottles there, thus creating 
 mini fuel dumps in the desert. The jeep could refuel by going back to base 
