@@ -11,7 +11,7 @@ The jeep has a fuel tank. Suppose that the tank holds L liters of fuel
 maximum and with which it can run for D miles at the most.
 
 There is a fuel station in base A, providing practically unlimited
-fuel for the jeep.  However, the road linking base A and B is much longer
+fuel for the jeep.  However, the road linking bases A and B is much longer
 than D, which means that the jeep, fully fueled at base A, must refuel
 somewhere in between the bases A and B in order to complete the journey.
 Unfortunately there is no more fuel stations on the way, and at any time
