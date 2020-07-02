@@ -21,8 +21,10 @@ open OCanren.Std;;
 
 
 (* We use the 'ocanren {...}'  construct to push down types to 
-   logic-level. The types expanded into can be found near the
-   definitions *) 
+   logic-level. The type expressions expanded into can be found 
+   near the definitions. The 'ocanren {...}' construct does not 
+   recur through type abbreviations. Possible mistakes are high-
+   lighted with the 'bad' type constructors. *) 
    
 
 
@@ -62,10 +64,13 @@ open OCanren.Std;;
 
 
 (* sequence of moves *)
-(* type movso = move OCanren.logic GT.list OCanren.logic 
-   type movso_bad = moves OCanren.logic 
-   type movos = movo GT.list
-   type movso' = movos OCanren.logic *)
+(* type movso      = move OCanren.logic GT.list OCanren.logic 
+   type movso_bad  = moves OCanren.logic 
+                   = move GT.list OCanren.logic
+   type movos      = movo GT.list
+                   = move OCanren.logic GT.list
+   type movso'     = movos OCanren.logic
+                   = move OCanren.logic GT.list OCanren.logic *)
 
 
 @type moves  = move GT.list with show;;
@@ -73,6 +78,9 @@ open OCanren.Std;;
 @type movso_bad = ocanren { moves } with show;;
 @type movos  = movo GT.list with show;;
 @type movso' = ocanren { movos } with show;;
+
+
+(* verify the type equality movso = movso' *)
 
 
 module Mvo = struct
