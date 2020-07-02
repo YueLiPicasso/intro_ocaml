@@ -15,8 +15,29 @@ open GT;;
    can be observed using the -i option of the OCaml compiler *)
 
 
+(* Set L as an alias of the OCaml standard library List *)
+
+
 module L = List;;
+
+
+(* Provide short names for items of the OCanren module, namely,  
+   - items from Logic.mli, Core.mli;
+   - the Stream module path,
+   - the Std module path, for OCanren standrd library  *)
+
+
 open OCanren;;
+
+
+(* Provide short names for items of the OCanren.Std sub-module, e.g., 
+   - logical-data libraries Pair, Nat, Option, Bool and List, the 
+     last three of which override OCaml's standard libraries of
+     the same names;
+   - logical list constructors (%), (%<), (!<) and nil;
+   - generators/converters of logical-data.  *)
+
+
 open OCanren.Std;;
 
 
@@ -153,6 +174,22 @@ module Stato = struct
 end;;
 
 
-(* *)
+(* construct groundi/injected-level data *)
+(* The unary operator (!!) comes from OCanren/Logic 
+
+   val forward  : pos  -> (move, move OCanren.logic) OCanren.injected
+   val backward : pos  -> (move, move OCanren.logic) OCanren.injected
+   val unload   : fuel -> (move, move OCanren.logic) OCanren.injected
+   val fill     : fuel -> (move, move OCanren.logic) OCanren.injected  *)
+
+
+let forward x = !! (Forward x)
+and backward x =  !! (Backward x)
+and unload x = !! (Unload x)
+and fill x = !! (Fill x);;
+
+  
+
+
 
 
