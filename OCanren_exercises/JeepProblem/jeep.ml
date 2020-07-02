@@ -27,7 +27,6 @@ open OCanren.Std;;
    lighted with the 'bad' type constructors. *) 
    
 
-
 (* we use (postive) intergers to count units.
    Use 'unitt' rather than 'unit', for the latter 
    is a built-in type *)
@@ -91,11 +90,27 @@ end;;
 
 (* mini fuel dumps: where they are 
    and how much fuel each has *)
-(* type dumpso =
-    (pos logic, fuel logic) Pair.logic GT.list logic *)
+(* type dumpo   = (pos logic, fuel logic) Pair.logic
+   type dumpos  = dumpo GT.list
+                = (pos logic, fuel logic) Pair.logic GT.list
+   type dumpso  = (pos logic, fuel logic) Pair.logic GT.list logic 
+   type dumpso' = dumpos logic
+                = (pos logic, fuel logic) Pair.logic GT.list logic  *)
 
-@type dumps = (pos * fuel) GT.list with show;;
-@type dumpso = ocanren { (pos * fuel) GT.list } with show;;
+@type dump   = pos * fuel with show;;
+@type dumpo  = ocanren { pos * fuel } with show;;
+@type dumpos = dumpo GT.list with show;;
+
+
+@type dumps   = (pos * fuel) GT.list with show;;
+@type dumpso  = ocanren { (pos * fuel) GT.list } with show;;
+@type dumpso' = ocanren { dumpos } with show;;
+
+
+module Dump = struct
+  let f  = fun x -> (x : dumpso  :> dumpso' );;
+  let f' = fun x -> (x : dumpso' :> dumpso  );;
+end;;
 
 
 (* the state of the jeep: where it is, how much fuel 
@@ -109,14 +124,33 @@ end;;
    = (pos logic, (fuel logic, dumpso) Pair.logic) Pair.logic
                               ^^^^^^ 
 
+   type stato' 
+   = (pos logic,
+      (fuel logic, dumpos logic) Pair.logic)
+     Pair.logic
+   = (pos logic,
+      (fuel logic, 
+        (pos logic, fuel logic) Pair.logic GT.list logic) 
+      Pair.logic)
+     Pair.logic
+   = stato
+
+
    type stato_bad 
    = (pos logic, (fuel logic, dumpso logic) Pair.logic) Pair.logic
                               ^^^^^^^^^^^^                          *)
 
 
-@type state = pos * fuel * dumps with show;;
-@type stato = ocanren { pos * fuel * (pos * fuel) GT.list } with show;;
+@type state     = pos * fuel * dumps with show;;
+@type stato     = ocanren { pos * fuel * (pos * fuel) GT.list } with show;;
+@type stato'    = ocanren { pos * fuel * dumpos } with show;;
 @type stato_bad = ocanren { pos * fuel * dumpso } with show;;
+
+
+module Stato = struct
+  let f  = fun x -> (x : stato  :> stato' );;
+  let f' = fun x -> (x : stato' :> stato  );;
+end;;
 
 
 (* *)
