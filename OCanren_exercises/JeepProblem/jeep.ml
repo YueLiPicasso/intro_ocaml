@@ -89,21 +89,35 @@ module Mvo = struct
 end;;
 
 
-
 (* mini fuel dumps: where they are 
    and how much fuel each has *)
-
+(* type dumpso =
+    (pos logic, fuel logic) Pair.logic GT.list logic *)
 
 @type dumps = (pos * fuel) GT.list with show;;
+@type dumpso = ocanren { (pos * fuel) GT.list } with show;;
 
 
 (* the state of the jeep: where it is, how much fuel 
    it has in the tank, and what dumps it has now *)
+(* type stato 
+   = (pos logic, 
+      (fuel logic, 
+        (pos logic, fuel logic) Pair.logic GT.list logic)
+      Pair.logic)
+     Pair.logic
+   = (pos logic, (fuel logic, dumpso) Pair.logic) Pair.logic
+                              ^^^^^^ 
+
+   type stato_bad 
+   = (pos logic, (fuel logic, dumpso logic) Pair.logic) Pair.logic
+                              ^^^^^^^^^^^^                          *)
 
 
 @type state = pos * fuel * dumps with show;;
-@type stato = ocanren { pos * fuel * dumps } with show;;
-@type stato_bad = ocanren { state } with show;;
+@type stato = ocanren { pos * fuel * (pos * fuel) GT.list } with show;;
+@type stato_bad = ocanren { pos * fuel * dumpso } with show;;
+
 
 (* *)
 
