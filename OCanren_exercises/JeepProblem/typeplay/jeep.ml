@@ -4,6 +4,13 @@ open OCanren;;
 open OCanren.Std;;
 
 
+(* We use the 'ocanren {...}'  construct to push down types to 
+   logic-level. The type expressions expanded into can be found 
+   near the definitions. The 'ocanren {...}' construct does not 
+   recur through type abbreviations. Possible mistakes are high-
+   lighted with the 'bad' type constructors. *) 
+   
+
 module Typeplay = struct
 
   (* ww use (postive) intergers to count units.

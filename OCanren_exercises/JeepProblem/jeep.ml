@@ -1,6 +1,5 @@
 open GT;;
 
-
 (* The keyword '@type' has the same semantics as the keyword 'type' 
    except that it additionally invokes the GT package to automatically
    generate useful functons for the defined type, such as 'show' for 
@@ -41,14 +40,6 @@ open OCanren;;
 open OCanren.Std;;
 
 
-(* We use the 'ocanren {...}'  construct to push down types to 
-   logic-level. The type expressions expanded into can be found 
-   near the definitions. The 'ocanren {...}' construct does not 
-   recur through type abbreviations. Possible mistakes are high-
-   lighted with the 'bad' type constructors. *) 
-   
-
-
 (* Given the position d of the jeep, see if there is any fuel dump 
    there, by searching for d in an association list l consisting of 
    <fuel dump position>-<dump fuel amount> pairs, the indices of 
@@ -65,8 +56,8 @@ let rec lookupo d l fl =
       l == (p', fl') :: l' &
     { d == p' & Some fl' == fl   |
       d >  p' & lookupo d l' fl |
-      d <  p' & fl == None }}
-;;
+      d <  p' & fl == None }} ;;
+
 
 (* val lookupo : 
    Nat.groundi ->
