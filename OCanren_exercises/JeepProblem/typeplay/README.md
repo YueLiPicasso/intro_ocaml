@@ -4,7 +4,6 @@ I tried to define alternative types that seem simpler than the reference. Howeve
 type errors occured when I compiled.
 
 ```ocaml
-[
 (* Types of moves *)
 @type 'nat move =
   Forward  of 'nat
@@ -12,7 +11,7 @@ type errors occured when I compiled.
 | Unload   of 'nat
 | Fill     of 'nat
 with show, gmap
-]
+```
 
 The problem is that
 in the following OCanren snippet:
