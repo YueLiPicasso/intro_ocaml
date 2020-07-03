@@ -4,7 +4,7 @@ I tried to define alternative types that seem simpler than the reference.
 However, type errors occured when I compiled. Here is a description of the
 problem.
 
-The type of a basic move of the jeep is defind bby the reference as:
+The type of a basic move of the jeep is defind by the reference as:
 
 ```ocaml
 (* Types of moves *)
