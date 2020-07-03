@@ -33,7 +33,7 @@ for additional comments):
  with show;;
 ```
 
-The problem is from the following OCanren snippet:
+The problem is from the following OCanren [snippet](https://github.com/YueLiPicasso/intro_ocaml/blob/bc738c6cf1744d764ee2c4d7c4a1c4fcc2072e0d/OCanren_exercises/JeepProblem/typeplay/jeep.ml#L204):
 
 ```ocaml
 fresh d, pos', fuel' in
