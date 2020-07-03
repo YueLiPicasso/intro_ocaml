@@ -1,3 +1,5 @@
+(* From Dmitri Boulytchev *)
+
 open GT
 open OCanren
 open OCanren.Std

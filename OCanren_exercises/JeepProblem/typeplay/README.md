@@ -1,3 +1,4 @@
+
 # Type exercises
 
 I tried to define alternative types that seem simpler than the reference.
@@ -32,9 +33,18 @@ for additional comments):
  with show;;
 ```
 
-The problem is that
-in the following OCanren snippet:
+The problem is from the following OCanren snippet:
 
-`fresh d, .., in ... Forward d ...`
+```ocaml
+...
 
-if using my simple definition of 
+fresh d, pos', fuel' in
+          move == Forward d
+	                  ^
+...
+
+```
+
+Referring to the `d` (over ^), the type checker reports that:
+> This expression has type ('a, 'b) Logic.injected,
+       but an expression was expected of type Typeplay.pos = int
