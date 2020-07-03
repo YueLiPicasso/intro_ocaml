@@ -18,7 +18,7 @@ with show, gmap
 ```
 
 I thought that the type parameter `'nat` is unnecessary,
-so I defined it instead as (see the source file typeplay.ml
+so I defined it instead as (see the source file [jeep.ml](jeep.ml)
 for additional comments):
 
 ```ocaml
