@@ -36,13 +36,9 @@ for additional comments):
 The problem is from the following OCanren snippet:
 
 ```ocaml
-...
-
 fresh d, pos', fuel' in
           move == Forward d
 	                  ^
-...
-
 ```
 
 Referring to the `d` (over ^), the type checker reports that:
