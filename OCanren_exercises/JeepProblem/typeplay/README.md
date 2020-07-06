@@ -81,7 +81,7 @@ I shall redefine `move` as:
 
 A `distrib` function comes from application of one of the `Fmap` functors.
 For example, for a type constructor with two type parameters,
-we shall use the `Fmap2' functor, which provides, among others, a function
+we shall use the `Fmap2` functor, which provides, among others, a function
 `distrib` that moves the injection from the type parameters
  level to the outer type constructor level
  (see also [here](https://github.com/JetBrains-Research/
