@@ -109,5 +109,7 @@ module type T2 =
 ```
 
 It actually is a necessity to make `move` polymorphic, so that its value
-constructors (like `Forward`) can accept data  from both the logic domain and
- the functional domain, which are  distinguished by their types.   
+constructors (like `Forward`) can accept arguments from both the logic domain
+and the functional domain, which are  distinguished by their types, thus
+ allowing the same user-type data to reside in different
+ domains.
