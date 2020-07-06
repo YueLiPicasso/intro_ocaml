@@ -84,9 +84,7 @@ For example, for a type constructor with two type parameters,
 we shall use the `Fmap2` functor, which provides, among others, a function
 `distrib` that moves the injection from the type parameters
  level to the outer type constructor level
- (see also [here](https://github.com/JetBrains-Research/
- OCanren/blob/26ac06ce87eaa1f1e598190b1b6daeac2bee7eac/src/
- core/Logic.mli#L143)): 
+ (see also [here](https://github.com/JetBrains-Research/OCanren/blob/26ac06ce87eaa1f1e598190b1b6daeac2bee7eac/src/core/Logic.mli#L143)): 
 
 ```ocaml
 module Fmap2 (T : T2) :
