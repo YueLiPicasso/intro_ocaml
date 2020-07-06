@@ -40,6 +40,21 @@ open OCanren;;
 open OCanren.Std;;
 
 
+@type unitt = int with show;;
+@type pos = unitt with show;;
+@type fuel = unitt with show;;
+@type ('a, 'b) move =
+       Forward of 'a        (* The type 'pos'  is intended for 'a *)
+     | Backward of 'a
+     | Unload of 'b         (* The type 'fuel' is intended for 'b *)
+     | Fill of 'b
+ with show, gmap;;
+
+
+module Fmove = Fmap2(struct)
+
+
+
 (* Given the position d of the jeep, see if there is any fuel dump 
    there, by searching for d in an association list l consisting of 
    <fuel dump position>-<dump fuel amount> pairs, the indices of 
