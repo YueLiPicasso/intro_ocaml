@@ -109,3 +109,7 @@ type ('a, 'b) t
 val fmap : ('a -> 'b) -> 'a t -> 'b t
 end
 ```
+
+It actually is a necessity to make `move` polymorphic, so that its value
+constructors (like `Forward`) can accept data  from both the logic domain and
+ the functional domain, which are  distinguished by their types.   
