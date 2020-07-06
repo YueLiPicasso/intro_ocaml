@@ -51,7 +51,38 @@ open OCanren.Std;;
  with show, gmap;;
 
 
-module Fmove = Fmap2(struct)
+module MoveLogic : sig
+  
+  val forward :
+    ('a, 'b) injected ->
+    (('a, 'c) move, ('b, 'd) move logic) injected;;
+  val backward :
+    ('a, 'b) injected ->
+    (('a, 'c) move, ('b, 'd) move logic) injected;;
+  val unload :
+    ('c, 'd) injected ->
+    (('a, 'c) move, ('b, 'd) move logic) injected;;
+  val fill :
+    ('c, 'd) injected ->
+    (('a, 'c) move, ('b, 'd) move logic) injected;;
+      
+end = struct
+  
+  module T = struct
+    type ('a, 'b) t = ('a, 'b) move;;
+    let fmap = gmap_move;;
+  end;;
+
+  module Fmove = Fmap2(T);;
+
+  let di x = inj @@ Fmove.distrib x;;
+  
+  let forward x =  di (Forward x)
+  and backward x =  di (Backward x)
+  and unload x = di (Unload x)
+  and fill x = di (Fill x);;
+
+end;;
 
 
 
@@ -137,10 +168,11 @@ let maximum_capacity = nat 5;;
 
 
 (* One-step state transition of the jeep *)
-(*
+
 
 let step pre_state move post_state =
   let open Nat in
+  let open MoveLogic in  (* exports invoked implicitly *)              
   ocanren {
     fresh pos, fuel, dumps in
       pre_state == (pos, fuel, dumps)  &
@@ -174,4 +206,18 @@ let step pre_state move post_state =
   
 
       } }
+
+(* The inferred type for the parameter 'pre_state' is:
+(
+   ( Nat.ground, 
+     (Nat.ground, (Nat.ground, Nat.ground) Pair.ground List.ground) Pair.ground
+   ) Pair.ground,
+
+   (Nat.logic *
+    (Nat.logic, (Nat.logic, Nat.logic) Pair.logic List.logic) Pair.logic) Logic.logic
+
+)  Logic.injected 
+
+
+Why the * , not Pair.logic ?
 *)
