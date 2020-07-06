@@ -104,7 +104,7 @@ module Fmap2 (T : T2) :
 module type T2 =
  sig
    type ('a, 'b) t
-   val fmap : ('a -> 'b) -> 'a t -> 'b t
+   val fmap : ('a1 -> 'a2) -> ('b1 -> 'b2) -> ('a1, 'b1) t -> ('a2, 'b2) t
  end
 ```
 
