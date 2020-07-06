@@ -102,10 +102,10 @@ module Fmap2 (T : T2) :
 
 ```ocaml
 module type T2 =
-sig
-type ('a, 'b) t
-val fmap : ('a -> 'b) -> 'a t -> 'b t
-end
+ sig
+   type ('a, 'b) t
+   val fmap : ('a -> 'b) -> 'a t -> 'b t
+ end
 ```
 
 It actually is a necessity to make `move` polymorphic, so that its value
