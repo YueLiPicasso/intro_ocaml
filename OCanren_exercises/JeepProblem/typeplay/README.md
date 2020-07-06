@@ -110,6 +110,6 @@ module type T2 =
 
 It actually is a necessity to make `move` polymorphic.  Provided that value
 constructors (like `Forward`) of `move` have arguments, and we need to
-transporting the arguments back-and-forth between the logic domain
+transport the arguments back-and-forth between the logic domain
 and the functional domain, and that values in these domains have distinct types,
  we must let  value constructors of `move` to have polymorphic  argument type.
