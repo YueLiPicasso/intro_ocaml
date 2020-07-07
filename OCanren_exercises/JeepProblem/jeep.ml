@@ -153,13 +153,21 @@ let positive n = ocanren { fresh x in n == Nat.succ x };;
 let rec reseto p fl l ln =
   let open Nat in
   ocanren {
-    l == [] & { fl == 0 & ln == [] | positive fl & ln == [(p,fl)] } |
+    l == []            &
+    {
+      fl == 0        &
+      ln == []
+      |
+      positive fl    &
+      ln == [(p,fl)]
+    }
+    |
     fresh p_1, fl_1, l_res, ln_res in
-l == (p_1,fl_1)::l_res &
-{ { p == p_1 & { fl == 0 & ln == l_res | positive fl & ln == (p,fl)::l_res} } |
-  { p >  p_1 & reseto p fl l_res ln_res & ln == (p_1,fl_1)::ln_res }          |
-  { p <  p_1 & {fl == 0 & l == ln | positive fl & ln == (p,fl)::l } }
-} }
+      l == (p_1,fl_1)::l_res &
+      { { p == p_1 & { fl == 0 & ln == l_res | positive fl & ln == (p,fl)::l_res} } |
+        { p >  p_1 & reseto p fl l_res ln_res & ln == (p_1,fl_1)::ln_res }          |
+        { p <  p_1 & {fl == 0 & l == ln | positive fl & ln == (p,fl)::l } }
+      } }
 
 
 (* capacity of the tank *)
