@@ -203,7 +203,7 @@ let step pre_state move post_state =
       | fresh q, fuel', dumps' in        (* q: fuel unloaded; fuel': new fuel level; dumps': new dumps configuration *)
           move == Unload q             & (* confirm the kind of move: unload fuel *)
              q <= maximum_capacity     & (* cannot unload more than the capacity *)
-             q <= fuel                 & (* cannot unload more than the actual fuwl level *)
+             q <= fuel                 & (* cannot unload more than the actual fuel level *)
            (+) q fuel' fuel            & (* compute new fuel level *)
           { lookupo pos dumps None     & (* if there is no dump here yet *)
             reseto  pos q dumps dumps'   (* create a new dump with q, updating the dumps configuration *)
