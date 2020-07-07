@@ -184,7 +184,7 @@ let step pre_state move post_state =
     fresh pos, fuel, dumps in
       pre_state == (pos, fuel, dumps)  &
       {
-        fresh d, pos', fuel' in          (* d: distance moved; pos': new position; fuel': new fuel level *)
+        fresh d, pos', fuel'   in        (* d: distance moved; pos': new position; fuel': new fuel level *)
           move == Forward d            & (* confirm the kind of move: forward *)
              d <= maximum_capacity     & (* cannot move more than the tank's capacity  *)
              d <= fuel                 & (* cannot move more than allowed by the actual fuel level *)
@@ -192,7 +192,7 @@ let step pre_state move post_state =
            (+) fuel' d fuel            & (* compute new fuel level *)
     post_state == (pos', fuel', dumps)   (* the dumps list does not change in the new state *)
 
-      | fresh d, pos', fuel' in          (* d: distance moved; pos': new position; fuel': new fuel level *)
+      | fresh d, pos', fuel'   in        (* d: distance moved; pos': new position; fuel': new fuel level *)
           move == Backward d           & (* confirm the kind of move: backward *)
              d <= maximum_capacity     & (* cannot move more than the tank's capacity  *)
              d <= fuel                 & (* cannot move more than allowed by the actual fuel level *)
@@ -214,22 +214,26 @@ let step pre_state move post_state =
           reseto pos q'' dumps dumps'} & (* update the dumps configuration *)
     post_state == (pos, fuel', dumps')   (* only the position does not change in the new state *) 
   
-      | fresh q, fuel', q', q'', dumps' in
-          move == Fill q               &
-             q <= maximum_capacity     &
-         { pos == 0                    & (* fill at the base *)
-    post_state == (pos, fuel',dumps)   &
-           (+) fuel q fuel'            &
-         fuel' <= maximum_capacity     |
+       | fresh q, fuel'        in        (* q: fuel added; fuel': new fuel level *)
+          move == Fill q               & (* confirm the kind of move: fuel the jeep *)
+             q <= maximum_capacity     & (* cannot add more fuel than the capacity *)
+         fuel' <= maximum_capacity     & (* new fuel level cannot exceed the capacity *)
+         { pos == 0                    & (* if fill at the base *)
+           (+) fuel q fuel'            & (* compute the new fuel level *)
+    post_state == (pos, fuel',dumps)   & (* only the fuel level changes in the new state *)
+         |                               (* or *)
+           positive pos                & (* if fill on the way *)
+           fresh q',q'',                 (* q': fuel of the dump before filling; q'': fuel of the dump after filling *)
+                 dumps' in               (* dumps': new dumps configuration *)
+    
+    lookupo pos dumps (Some q')        & (* there is a dump here with fuel q' *)
+             q <= q'                   & (* use no more than what the dump has *)
+           (+) fuel q fuel'            & (* update fuel in the tank*)
+           (+) q'' q q'                & (* compute remaining fuel q'' of the dump *)
+    reseto pos q'' dumps dumps'        & (* update the dumps configuration *)
+    post_state == (pos, fuel', dumps')   (* only the position does not change in the new state *)
+} } }
 
-         positive pos                  & (* fill on the way *)
-    post_state == (pos, fuel', dumps') &
-    lookupo pos dumps (Some q')        &
-             q <= q'                   & (* fill no more than what the dump has  *)
-         (+) fuel q fuel'              & (* update fuel in the tank*)
-         fuel' <= maximum_capacity     & (* no more fuel in the tank tha its capacity *)
-         (+) q'' q q'                  & (* compute remaining fuel q'' of the dump *)
-         reseto pos q'' dumps dumps' } } }
 
 (* The inferred type for the parameter 'pre_state' is:
 
