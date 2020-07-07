@@ -278,7 +278,8 @@ module Kind : sig
 end = struct
 
   
-  (* Use !(...) to locally turn off ocanren syntax extension *)
+  (* Use !(...) to locally turn off ocanren syntax extension: in this module
+     it seems just a matter of taste to use kind instead of kind' *)
 
   
   let kind move code =
@@ -300,13 +301,21 @@ end = struct
       which is compatible with (Nat.ground, Nat.logic) Logic.injected *)
 
 
+   (* simple comparison *)
+
+
    let one = ocanren { 1 }
-   and one' = !!1;;
+   and one' = ocanren { !(1) }
+   and one'' = ocanren { !( !!1 ) }
+   and one''' = !!1;;
 
 
-(* val one : OCanren.Std.Nat.groundi 
-             = (Nat.ground, Nat.logic) injected
-   val one' : (int, int logic) injected 
+(* val one    : OCanren.Std.Nat.groundi 
+              = (Nat.ground, Nat.logic) injected
+   val one'   : int
+   val one''  : (int, int logic) injected
+   val one''' : (int, int logic) injected
+
 
    Note that Nat.ground is  the type for peano numbers *)
 
