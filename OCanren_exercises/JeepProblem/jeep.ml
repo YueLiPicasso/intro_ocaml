@@ -220,12 +220,11 @@ let step pre_state move post_state =
          fuel' <= maximum_capacity     & (* new fuel level cannot exceed the capacity *)
          { pos == 0                    & (* if fill at the base *)
            (+) fuel q fuel'            & (* compute the new fuel level *)
-    post_state == (pos, fuel',dumps)   & (* only the fuel level changes in the new state *)
+    post_state == (pos, fuel',dumps)     (* only the fuel level changes in the new state *)
          |                               (* or *)
            positive pos                & (* if fill on the way *)
            fresh q',q'',                 (* q': fuel of the dump before filling; q'': fuel of the dump after filling *)
                  dumps' in               (* dumps': new dumps configuration *)
-    
     lookupo pos dumps (Some q')        & (* there is a dump here with fuel q' *)
              q <= q'                   & (* use no more than what the dump has *)
            (+) fuel q fuel'            & (* update fuel in the tank*)
