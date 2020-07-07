@@ -261,6 +261,62 @@ let step pre_state move post_state =
 
 
 
+module Kind : sig
+
+  
+  (* numeric encoding of non-zero moves. 
+     forward/backward: 0 
+     unload/fill:      1   *)
+
+
+  val kind :
+    ((Nat.ground, Nat.ground) move,
+     (Nat.logic,  Nat.logic) move logic) injected
+    -> (int, int logic) injected -> goal ;;
+
+  
+end = struct
+
+  
+  (* Use !(...) to locally turn off ocanren syntax extension *)
+
+  
+  let kind move code =
+    let open MoveLogic in
+    ocanren {
+      fresh x , y in
+      { move == Forward x | move == Backward x} & x =/= 0 & code == !(!!0)
+    | { move == Unload y  | move == Fill y } & y =/= 0 &  code == !(!!1)
+    };; (* 'code' has type (int, int Logic.logic) Logic.injected  *)
+
+
+  let kind' move code =
+    let open MoveLogic in
+    ocanren {
+      fresh x , y in
+      { move == Forward x | move == Backward x} & x =/= 0 & code == 0
+    | { move == Unload y  | move == Fill y } & y =/= 0 &  code == 1
+    };; (* 'code' has type (Nat.ground, Nat.logic Nat.t Logic.logic) Logic.injected 
+      which is compatible with (Nat.ground, Nat.logic) Logic.injected *)
+
+
+   let one = ocanren { 1 }
+   and one' = !!1;;
+
+
+(* val one : OCanren.Std.Nat.groundi 
+             = (Nat.ground, Nat.logic) injected
+   val one' : (int, int logic) injected 
+
+   Note that Nat.ground is  the type for peano numbers *)
+
+
+end;;
+
+
+open Kind;;
+
+
 (* Where I'm now*)
 (* tree, sorting, jeep--half way  *)
 
