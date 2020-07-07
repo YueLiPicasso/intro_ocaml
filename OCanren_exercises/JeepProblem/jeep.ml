@@ -200,18 +200,19 @@ let step pre_state move post_state =
            (+) fuel' d fuel            & (* compute new fuel level *)
     post_state == (pos', fuel', dumps)   (* the dumps list does not change in the new state *)
 
-      | fresh q, fuel', dumps' in
-          move == Unload q             &
-             q <= maximum_capacity     & 
-             q <= fuel                 &
-    post_state == (pos, fuel', dumps') &
-          (+) q fuel' fuel             &
-          { lookupo pos dumps None     &
-            reseto pos q dumps dumps'  |
-            fresh q', q'' in
-          lookupo pos dumps (Some q')  &
-          (+) q' q q''                 &
-          reseto pos q'' dumps dumps'}
+      | fresh q, fuel', dumps' in        (* q: fuel unloaded; fuel': new fuel level; dumps': new dumps configuration *)
+          move == Unload q             & (* confirm the kind of move: unload fuel *)
+             q <= maximum_capacity     & (* cannot unload more than the capacity *)
+             q <= fuel                 & (* cannot unload more than the actual fuwl level *)
+           (+) q fuel' fuel            & (* compute new fuel level *)
+          { lookupo pos dumps None     & (* if there is no dump here yet *)
+            reseto  pos q dumps dumps'   (* create a new dump with q, updating the dumps configuration *)
+          |                              (* or *)
+            fresh q', q'' in             (* q': fuel in the existing dump here; q'': updated fuel in the dump *)
+          lookupo pos dumps (Some q')  & (* if there is already a dump here with fuel q' *)
+          (+) q' q q''                 & (* compute the dump's fuel q'' after unloading *)
+          reseto pos q'' dumps dumps'} & (* update the dumps configuration *)
+    post_state == (pos, fuel', dumps')   (* only the position does not change in the new state *) 
   
       | fresh q, fuel', q', q'', dumps' in
           move == Fill q               &
