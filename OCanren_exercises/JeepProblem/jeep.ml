@@ -70,7 +70,8 @@ end = struct
   
   module T = struct
     type ('a, 'b) t = ('a, 'b) move;;
-    let fmap = gmap_move;;
+    let fmap = fun x -> gmap(move) x;;
+    (* let fmap = gmap(move);; *)     (* problem caused by value restriction *)
   end;;
 
   module Fmove = Fmap2(T);;
@@ -141,7 +142,7 @@ let positive n = ocanren { fresh x in n == Nat.succ x };;
      - if just this dump is to be reset (p == p_1), then:
        - if the new amount is 0, then this dump is simply removed from the list;
        - if the new amount is not 0 (positive), then set the fuel to this new amount
-     - if p is after p_1 (p > p_1), then resett p to fl in l_res to get ln_res, 
+     - if p is after p_1 (p > p_1), then reset p to fl in l_res to get ln_res, 
        and ln is (p_1,fl_1)::ln_res;
      - if p is before p_1, then:
        - if the new fuel amount is 0, then nothing is done;
@@ -170,6 +171,12 @@ let maximum_capacity = nat 5;;
 (* One-step state transition of the jeep *)
 
 
+(* Definition of ocanren {.. }? This construct performs translation where, among others,
+   value constructor applications are detected and all constructors are converted to lower 
+   case. For example, 'Forward d' in the definition of 'step' is converted into 'forward d'.
+   Therefore we locally open the module MoveLogic to provide such a function 'forward'.  *)
+
+
 let step pre_state move post_state =
   let open Nat in
   let open MoveLogic in  (* exports invoked implicitly *)              
@@ -177,23 +184,25 @@ let step pre_state move post_state =
     fresh pos, fuel, dumps in
       pre_state == (pos, fuel, dumps)  &
       {
-        fresh d, pos', fuel' in
-          move == Forward d            &
-    post_state == (pos', fuel', dumps) &
-             d <= fuel                 &
-          (+) pos d pos'               &
-          (+) fuel' d fuel
+        fresh d, pos', fuel' in          (* d: distance moved; pos': new position; fuel': new fuel level *)
+          move == Forward d            & (* confirm the kind of move: forward *)
+             d <= maximum_capacity     & (* cannot move more than the tank's capacity  *)
+             d <= fuel                 & (* cannot move more than allowed by the actual fuel level *)
+           (+) pos   d pos'            & (* compute new position *)
+           (+) fuel' d fuel            & (* compute new fuel level *)
+    post_state == (pos', fuel', dumps)   (* the dumps list does not change in the new state *)
 
-      | fresh d, pos', fuel' in
-          move == Backward d           &
-    post_state == (pos', fuel', dumps) &
-             d <= fuel                 &
-          (+) pos' d pos               &
-          (+) fuel' d fuel
+      | fresh d, pos', fuel' in          (* d: distance moved; pos': new position; fuel': new fuel level *)
+          move == Backward d           & (* confirm the kind of move: backward *)
+             d <= maximum_capacity     & (* cannot move more than the tank's capacity  *)
+             d <= fuel                 & (* cannot move more than allowed by the actual fuel level *)
+           (+) pos'  d pos             & (* compute new position *)
+           (+) fuel' d fuel            & (* compute new fuel level *)
+    post_state == (pos', fuel', dumps)   (* the dumps list does not change in the new state *)
 
       | fresh q, fuel', dumps' in
           move == Unload q             &
-          (* q <= maximum_capacity     & *)
+             q <= maximum_capacity     & 
              q <= fuel                 &
     post_state == (pos, fuel', dumps') &
           (+) q fuel' fuel             &
@@ -204,12 +213,26 @@ let step pre_state move post_state =
           (+) q' q q''                 &
           reseto pos q'' dumps dumps'}
   
+      | fresh q, fuel', q', q'', dumps' in
+          move == Fill q               &
+             q <= maximum_capacity     &
+         { pos == 0                    & (* fill at the base *)
+    post_state == (pos, fuel',dumps)   &
+           (+) fuel q fuel'            &
+         fuel' <= maximum_capacity     |
 
-      } }
+         positive pos                  & (* fill on the way *)
+    post_state == (pos, fuel', dumps') &
+    lookupo pos dumps (Some q')        &
+             q <= q'                   & (* fill no more than what the dump has  *)
+         (+) fuel q fuel'              & (* update fuel in the tank*)
+         fuel' <= maximum_capacity     & (* no more fuel in the tank tha its capacity *)
+         (+) q'' q q'                  & (* compute remaining fuel q'' of the dump *)
+         reseto pos q'' dumps dumps' } } }
 
 (* The inferred type for the parameter 'pre_state' is:
-(
-   ( Nat.ground, 
+
+(  ( Nat.ground, 
      (Nat.ground, (Nat.ground, Nat.ground) Pair.ground List.ground) Pair.ground
    ) Pair.ground,
 
@@ -219,5 +242,20 @@ let step pre_state move post_state =
 )  Logic.injected 
 
 
-Why the * , not Pair.logic ?
-*)
+   Why the * , not Pair.logic ?
+
+   Not sure, but they are compatible. 
+   See LPair.mli from the OCanren standard library. *)
+
+
+
+(* Where I'm now*)
+(* tree, sorting, jeep--half way  *)
+
+(* next *)
+(* jeep, WGC, Hanoi, aircraft range? *)
+
+(* capacity issue: permute list of length 8 maximun *)
+(* Paper: mproving Refutational Completeness of Relational Search via Divergence Test  *)
+
+(* APLAS, miniKanren workshop ICFP ---online  *)
