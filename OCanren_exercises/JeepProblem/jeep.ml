@@ -333,6 +333,6 @@ open Kind;;
 (* jeep, WGC, Hanoi, aircraft range? *)
 
 (* capacity issue: permute list of length 8 maximun *)
-(* Paper: mproving Refutational Completeness of Relational Search via Divergence Test  *)
+(* Paper: improving Refutational Completeness of Relational Search via Divergence Test  *)
 
 (* APLAS, miniKanren workshop ICFP ---online  *)
