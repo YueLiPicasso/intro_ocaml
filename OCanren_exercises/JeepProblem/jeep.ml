@@ -325,6 +325,43 @@ end;;
 
 open Kind;;
 
+module Steps = struct
+  
+  let f = Tabling.(tabledrec four) (* use tabling to avoid looping *)
+      (fun f k pre_state moves post_state ->
+         ocanren {
+           moves == [] & pre_state == post_state |
+           fresh mid_state, m, mres, k_m in
+             moves == m :: mres                  &
+             kind m k_m                          &
+             k_m =/= k                           & (* no conseqcutive moves of the same kind *)
+             step pre_state m mid_state          &
+             f k_m mid_state mres post_state  })
+end;;
+
+
+let steps pre_state moves post_state =
+  Steps.f !!2 pre_state moves post_state;;
+
+
+(* project from logic domain to function domain *)
+
+
+let prj_moves x = List.to_list (gmap(move) Nat.to_int Nat.to_int) (project x);;
+let prj_state st =
+  let x,(y,z) = project st in
+  (Nat.to_int x, Nat.to_int y,
+   List.to_list (fun (a,b) -> Nat.to_int a, Nat.to_int b) z );;
+
+
+(* initial state *)
+
+
+let init = pair (nat 0) @@ pair maximum_capacity (nil ());;
+
+
+(* type : moves, lmoves, state, lstate *)
+
 
 (* Where I'm now*)
 (* tree, sorting, jeep--half way  *)

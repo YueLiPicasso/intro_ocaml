@@ -212,6 +212,15 @@ let rec sorto' x y =
      smallesto x s xs   }
 
 
+(* tabling *)
+let sorto'' = Tabling.(tabledrec two) (fun sorto'' x y ->
+  ocanren { x == [] & y == [] |
+    fresh s, xs, xs' in
+     y == s :: xs' &
+     sorto'' xs xs'  &
+     smallesto x s xs})
+
+
 (* sort GT-level nat list l *)
 let sort l = tofun_int_list @@ Stream.hd @@ run q
     (fun q -> sorto (fromfun_int_list l) q) (fun qs -> qs#prj);;
@@ -236,6 +245,10 @@ let perm' l = L.map tofun_int_list @@ Stream.take @@
   run q (fun q -> fresh (r) (sorto (fromfun_int_list l) r)
                     (sorto' q r)) project;; 
 
+(* provide sorted list *)
+let perm'' l = L.map tofun_int_list @@ Stream.take @@ run q
+    (fun q -> sorto'' q (fromfun_int_list l)) (fun qs -> qs#prj);;
+
 
 (* smallesto is the core of permutation *)
 module Perm  = struct @type t = int GT.list with show;; end;;
@@ -256,8 +269,17 @@ Printf.printf
   (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls);;
 
 
-let ls =  [0;1;2;3;4;5;6;7] in
+let ls =  [0;1;2;3] in
 let lls = perm' ls in
+L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
+Printf.printf
+  "%s is permutated into %d lists, but it should have %d permutations:\n"
+  (show(Perm.t) ls) (L.length lls) (factorial @@ L.length ls)
+;;
+
+
+let ls =  [1;2;3;4;5;6;7] in
+let lls = perm'' ls in
 L.iter (fun s -> print_string s;print_newline()) (L.map (show(Perm.t)) lls);
 Printf.printf
   "%s is permutated into %d lists, but it should have %d permutations:\n"
