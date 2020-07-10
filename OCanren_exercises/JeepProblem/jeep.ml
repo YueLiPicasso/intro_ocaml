@@ -379,23 +379,23 @@ let init = pair (nat 0) @@ pair maximum_capacity (nil ());;
 
 
 let open MoveLogic in
- (* L.iter (fun q -> Printf.printf "State when reachinng 6: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {steps init [Forward 2;Unload 1;Backward 2;Fill 5;Forward 2;Fill 1;Forward 4] q}) prj_state;
+L.iter (fun q -> Printf.printf "State when reachinng 6: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren {steps init [Forward 2;Unload 1;Backward 2;Fill 5;Forward 2;Fill 1;Forward 4] q}) prj_state;
 
-  L.iter (fun q -> Printf.printf "Make some dumps: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {steps init [Forward 1;Unload 2;Backward 1;Fill 4;Forward 2;Unload 1;Backward 2] q}) prj_state;
+L.iter (fun q -> Printf.printf "Make some dumps: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren {steps init [Forward 1;Unload 2;Backward 1;Fill 4;Forward 2;Unload 1;Backward 2] q}) prj_state;
 
-  L.iter (fun q -> Printf.printf "Find moves given final state (2,2,[(1,2)]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {steps init q (2,2,[(1,2)])}) prj_moves;
+L.iter (fun q -> Printf.printf "Find moves given final state (2,2,[(1,2)]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren {steps init q (2,2,[(1,2)])}) prj_moves;
 
-  (* we take 4, and see that the first is the optimal: it is the suffix of all other
-    solutions, whose prefixes does nothing but wasting the fuel *)
-  L.iter (fun q -> Printf.printf "Find moves given final state (6,0,[]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:4 @@
-  run q (fun q -> ocanren {steps init q (6,0,[])}) prj_moves;
-  
-  (* This takes more time ! *)
-   L.iter (fun q -> Printf.printf "Find moves given final state (8,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {fresh r, s in steps init q (8,r,s)}) prj_moves; 
+(* we take 4, and see that the first is the optimal: it is the suffix of all other
+     solutions, whose prefixes does nothing but wasting the fuel *)
+L.iter (fun q -> Printf.printf "Find moves given final state (6,0,[]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:4 @@
+run q (fun q -> ocanren {steps init q (6,0,[])}) prj_moves;
+ 
+(* This takes more time ! *)
+L.iter (fun q -> Printf.printf "Find moves given final state (8,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren {fresh r, s in steps init q (8,r,s)}) prj_moves; 
 
 let l = ocanren {
     [Forward (1); Unload (1); Backward (1); Fill (2); Forward (1);
@@ -406,23 +406,30 @@ let l = ocanren {
      Fill (4); Forward (1); Fill (2); Forward (1); Fill (1);
      Forward (1); Fill (1); Forward (5)] } in 
 L.iter (fun q -> Printf.printf "Find final state given moves: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
-run q (fun q -> ocanren { steps init !(l) q}) prj_state;
-*)
+run q (fun q -> ocanren { steps init !(l) q}) prj_state;;
+
+
+(* Set maximum capacity to 6, and then : *)(*
+
+let open MoveLogic in
 
 (* This takes more time ! *)
-   L.iter (fun q -> Printf.printf "Find moves given final state (12,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
-   run q (fun q -> ocanren {fresh r, s in steps init q (12,r,s)}) prj_moves;
+   L.iter (fun q -> Printf.printf "Find moves given final state (9,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+   run q (fun q -> ocanren {fresh r, s in steps init q (9,r,s)}) prj_moves;
 
-() ;; 
+let l = ocanren {
+    [Forward (2); Unload (1); Backward (2); Fill (5); Forward (1);
+     Unload (3); Backward (1); Fill (5); Forward (3); Unload (1);
+     Backward (2); Fill (1); Backward (1); Fill (5); Forward (1);
+     Fill (2); Forward (1); Fill (1); Forward (1); Fill (1); Forward (6)] } in
+L.iter (fun q -> Printf.printf "Find final state given moves: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren { steps init !(l) q}) prj_state ;; 
 
-
-  (* Where I'm now*)
-(* tree, sorting, jeep--half way  *)
+*)
 
 (* next *)
-(* jeep, WGC, Hanoi, aircraft range? *)
+(* WGC, Hanoi, aircraft range? *)
 
-(* capacity issue: permute list of length 8 maximun *)
-(* Paper: improving Refutational Completeness of Relational Search via Divergence Test  *)
-
-(* APLAS, miniKanren workshop ICFP ---online  *)
+(* capacity issue: permute list of length 8 maximun; 
+   jeep problem 15 units of tank capacity for 23 units of distance: 
+   process killed *)
