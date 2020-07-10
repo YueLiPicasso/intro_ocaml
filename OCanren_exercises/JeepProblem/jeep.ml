@@ -170,7 +170,7 @@ let rec reseto p fl l ln =
       } }
 
 
-(* capacity of the tank *)
+(* capacity of the tank, or how many units we divide the tank into *)
 
 
 let maximum_capacity = nat 5;;
@@ -260,7 +260,6 @@ let step pre_state move post_state =
    See LPair.mli from the OCanren standard library. *)
 
 
-
 module Kind : sig
 
   
@@ -323,9 +322,10 @@ end = struct
 end;;
 
 
-open Kind;;
-
 module Steps = struct
+
+  open Kind;;
+
   
   let f = Tabling.(tabledrec four) (* use tabling to avoid looping *)
       (fun f k pre_state moves post_state ->
@@ -360,10 +360,63 @@ let prj_state st =
 let init = pair (nat 0) @@ pair maximum_capacity (nil ());;
 
 
-(* type : moves, lmoves, state, lstate *)
+(* Exercises: 
+   1. Use the -i option of the ocamlc/ocamlopt compiler to print 
+   the types of prj_moves and init; 
+   2. Refer to LList.mli, Logic.mli, OCanren.ml etc to find out the types of
+   to_list, project, to_int, pair, nat, etc;
+   3. Deduce by hand the types in 1 using knowledge from 2.  *)
 
 
-(* Where I'm now*)
+(* type shortcuts for pretty-printing purposes *)
+(* Note that type constructor application binds tighter 
+   than pair formation '*'. *)
+
+
+@type moves = (pos, fuel) move GT.list with show;;
+@type state = pos * fuel * (pos * fuel) GT.list with show;;
+
+
+
+let open MoveLogic in
+ (* L.iter (fun q -> Printf.printf "State when reachinng 6: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+  run q (fun q -> ocanren {steps init [Forward 2;Unload 1;Backward 2;Fill 5;Forward 2;Fill 1;Forward 4] q}) prj_state;
+
+  L.iter (fun q -> Printf.printf "Make some dumps: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+  run q (fun q -> ocanren {steps init [Forward 1;Unload 2;Backward 1;Fill 4;Forward 2;Unload 1;Backward 2] q}) prj_state;
+
+  L.iter (fun q -> Printf.printf "Find moves given final state (2,2,[(1,2)]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+  run q (fun q -> ocanren {steps init q (2,2,[(1,2)])}) prj_moves;
+
+  (* we take 4, and see that the first is the optimal: it is the suffix of all other
+    solutions, whose prefixes does nothing but wasting the fuel *)
+  L.iter (fun q -> Printf.printf "Find moves given final state (6,0,[]): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:4 @@
+  run q (fun q -> ocanren {steps init q (6,0,[])}) prj_moves;
+  
+  (* This takes more time ! *)
+   L.iter (fun q -> Printf.printf "Find moves given final state (8,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+  run q (fun q -> ocanren {fresh r, s in steps init q (8,r,s)}) prj_moves; 
+
+let l = ocanren {
+    [Forward (1); Unload (1); Backward (1); Fill (2); Forward (1);
+     Unload (2); Backward (1); Fill (5); Forward (1); Unload (1);
+     Backward (1); Fill (3); Forward (1); Fill (1); Forward (1);
+     Unload (2); Backward (2); Fill (5); Forward (3); Unload (1);
+     Backward (1); Fill (1); Backward (1); Fill (1); Backward (1);
+     Fill (4); Forward (1); Fill (2); Forward (1); Fill (1);
+     Forward (1); Fill (1); Forward (5)] } in 
+L.iter (fun q -> Printf.printf "Find final state given moves: %s\n%!" @@ show(state) q) @@ Stream.take ~n:1 @@
+run q (fun q -> ocanren { steps init !(l) q}) prj_state;
+*)
+
+(* This takes more time ! *)
+   L.iter (fun q -> Printf.printf "Find moves given final state (12,?,?): %s\n%!" @@ show(moves) q) @@ Stream.take ~n:1 @@
+   run q (fun q -> ocanren {fresh r, s in steps init q (12,r,s)}) prj_moves;
+
+() ;; 
+
+
+  (* Where I'm now*)
 (* tree, sorting, jeep--half way  *)
 
 (* next *)
