@@ -54,6 +54,6 @@ and straightforward facts. OCanren involves a syntactic extension to OCaml
 using the advanced camlp5 utility. This extension is signalled by the
 `ocanren { }` construct. Exploration of this was in the context of the Jeep
 problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library could
-be gained.
+be attempted.
 
 
