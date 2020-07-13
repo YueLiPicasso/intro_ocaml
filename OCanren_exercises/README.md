@@ -33,7 +33,7 @@ The [tree](tree) sample served as my frst exposure to OCanren programming.
 I dashed ahead through it to have a feel of the various language constructs,
 and I had to accept the fact that sometimes I was just
 typing the code without knowing for sure what they do. The impression was
-that there are some perculiariies related to how one should define a custom
+that there are some perculiarities related to how one should define a custom
 type, and there are boilerplate pieces for injecting and projecting data which
 sandwitches the actual relational programming in between. 
 
