@@ -26,6 +26,6 @@ and semantics (or using one word, just grammar), although examples are still ind
 2010, and I learnt, in chronological order, C, C++, Matlab, Java, Haskell,
 Prolog, Scheme and OCaml. It was not until early 2020 when I started to
 develop an interest in the formal syntax and semantics of the programming
-language that I am learning. Before that I just learnt by examples and forgot
+language that I was learning. Before that I just learnt by examples and forgot
 the syntactic details quickly after the projects finished. 
               
