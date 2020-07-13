@@ -21,6 +21,21 @@ reproduce (or even creatively modify) the examples.
 
 ## The OCanren exercises
 
+The helpful expectation is not to understand OCanren in a strict axiomatic
+manner, but rather like drawing a converging spiral: you first know what the
+components are, and what are their layout, and then go deeper into each
+component.   
+
+
+The [tree](tree) sample served as my frst exposure to OCanren programming.
+I dashed ahead through it to have a feel of the various language constructs,
+and I had to accept the fact that sometimes I was just
+typing the code without knowing for sure what they do. The impression was
+that there are some perculiariies related to how oe should define a custom
+type, and there are boilerplate pieces for injecting and projecting data which
+sandwitches the actual relational programming in between. 
+
+
 
 OCanren inherits much terminology from miniKanren,
 such as reification (replacing logical variables by terms of the host language),
@@ -29,5 +44,5 @@ substitutions) etc. A major difference from miniKanren is that OCanren adopts
 a delicate type hierarchy for static typing purposes, and this hierarchy is
 best learnt using the [sorting](sorting) sample, accompanied by reading the
 simplest OCanren standard library interface files [LNat](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli) and [LList](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli), where the
-letter _L_ stands for _logic_. 
+letter _L_ stands for _Logic_. 
 
