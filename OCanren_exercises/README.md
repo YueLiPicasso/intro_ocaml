@@ -57,11 +57,3 @@ problem. Also at this point a better understanding of the [LPair](https://github
 be gained.
 
 
-## Some Remarks
-
-
-Since there are too many things to learn, planning your time is important.
-List your targets on paper and think about how much time you would allocate to
-each task: one morning, one day, one week, one month, two months, etc. 
-
-
