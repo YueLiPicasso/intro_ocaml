@@ -1,10 +1,10 @@
 # How I Learnt OCanren 
 
-After spending about two and a half months working through the OCaml
-tutorials that come with the reference manual, I got a degree of familiarity
-with the OCaml language, and then I  started to get my hands
-on OCanren.
-
+OCanren is implementation of miiniKanren in OCaml. Its obvious prerequisites
+are miniKanren (Scheme-based) and OCaml. A good knowledge of Prolog and
+SLD-resolution is also very helpful for understanding the high-level behavior
+of OCanren (and miniKanren as well). 
+ 
 ## My OCaml learning experience
 
 The OCaml tutorial (Part I of the [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/)) covers the features of the core language, such as types,
@@ -28,4 +28,11 @@ Prolog, Scheme and OCaml. It was not until early 2020 when I started to
 develop an interest in the formal syntax and semantics of the programming
 language that I was learning. Before that I just learnt by examples and forgot
 the syntactic details quickly after the projects finished. 
-              
+
+## About the OCanren exercises
+
+Before I started to learn OCaml, I spent about two and half
+months learning about the implementation of miniKanren in Scheme. So after
+five months of preparation, half on Scheme/miniKanren, and half on Ocaml, I
+started  
+
