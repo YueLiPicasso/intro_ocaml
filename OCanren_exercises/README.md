@@ -1,4 +1,4 @@
-# How I Learnt OCanren 
+# On Learning OCanren 
 
 OCanren is implementation of miiniKanren in OCaml. Its obvious prerequisites
 are miniKanren (Scheme-based) and OCaml. A good knowledge of Prolog and
