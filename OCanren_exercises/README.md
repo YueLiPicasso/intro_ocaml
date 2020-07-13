@@ -16,7 +16,7 @@ the formal syntax and (informal) semantics of all features of the core
 language. Almost for each feature that I learnt from Part I, I would go to this chapter to read about
 the underlying formal syntax and semantics. Jumping between examples and grammar in this way inevitably slows down your speed, but it gives you a firmer
 grasp of the language which otherwise could not be gained when you merely
-reproduce (or even modifying) the examples.  
+reproduce (or even creatively modify) the examples.  
 
 
 ## The OCanren exercises
