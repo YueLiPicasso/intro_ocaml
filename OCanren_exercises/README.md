@@ -48,8 +48,8 @@ simplest OCanren standard library interface files [LNat](https://github.com/JetB
 letter _L_ stands for _Logic_. This was my second exercise.
 
 
-Next come the Jeep Problem. Being mathematically complicated, a relational
-encoding of the problem howver is no more than stating the most immediate
+Next comes the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
+encoding of the problem, however, is no more than stating the most immediate
 and straight forward facts. 
 
 
