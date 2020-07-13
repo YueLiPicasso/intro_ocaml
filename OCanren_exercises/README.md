@@ -22,7 +22,7 @@ to learn mainly by memorizing examples, and very little (perhaps < 5%) of the
 time was spent on the grammar; however when learning a formal
 (or computer programming) language, a deeper sense of certainty could not be
 gained without reading the theory about the language itself, i.e., its syntax
-and semantics (or using onw word, just grammar), although examples are still indispensable. On the other hand, I started to learn programming languages from
+and semantics (or using one word, just grammar), although examples are still indispensable. On the other hand, I started to learn programming languages from
 2010, and I learnt, in chronological order, C, C++, Matlab, Java, Haskell,
 Prolog, Scheme and OCaml. It was not until early 2020 when I started to
 develop an interest in the formal syntax and semantics of the programming
