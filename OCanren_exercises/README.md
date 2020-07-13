@@ -54,6 +54,14 @@ and straightforward facts. OCanren involves a syntactic extension to OCaml
 using the advanced camlp5 uility. This extension is signalled by the
 `ocanren { }` construct. Exploration of this was in the context of the Jeep
 problem. Also at this point a better understaning of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library could
-be gained. 
+be gained.
+
+
+## Some Remarks
+
+
+Since there are too many things to learn, planning your time is important.
+List your targets on paper and think about how much time you would allocate to
+each task, one day, one week, one month, etc. 
 
 
