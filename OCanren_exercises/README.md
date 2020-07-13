@@ -17,7 +17,7 @@ the underlying formal syntax and semantics. The interesting observation is that
 when I learnt a natural language, e.g., English or Russian, it feels sufficient
 to learn mainly by memorizing examples, and very little (perhaps < 5%) of the
 time was spent on the grammar; however when learning a formal
-(or computer programming)language, a deeper sense of certainty could not be
+(or computer programming) language, a deeper sense of certainty could not be
 gained without reading the theory about the language itself, i.e., its syntax
 and grammar, although examples are still indispensable. 
               
