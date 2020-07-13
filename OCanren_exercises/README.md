@@ -16,7 +16,7 @@ language. Almost for each feature that I learnt from Part I, I would go to this 
 the underlying formal syntax and semantics.
 
 The interesting observation is that
-when I learnt a natural language, e.g., English or Russian, and even my mother
+when I learnt a natural language, e.g., English or Russian, or even my mother
 tongue Chinese,  it feels sufficient
 to learn mainly by memorizing examples, and very little (perhaps < 5%) of the
 time was spent on the grammar; however when learning a formal
