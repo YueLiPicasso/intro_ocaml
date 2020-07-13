@@ -14,9 +14,9 @@ also learnt the first few sections of the [language extensions](http://caml.inri
 I found it very helpful to refer frequently to [The OCaml language](http://caml.inria.fr/pub/docs/manual-ocaml/language.html) chapter, which presents systematically
 the formal syntax and (informal) semantics of all features of the core
 language. Almost for each feature that I learnt from Part I, I would go to this chapter to read about
-the underlying formal syntax and semantics. Jumping between examples and grammar in this way inevitably slows down your speed, but gives your firmer grasp of
-the language which otherwise could not be gained if you merely reproduce
-(or even modifying) the examples.  
+the underlying formal syntax and semantics. Jumping between examples and grammar in this way inevitably slows down your speed, but it gives your a firmer
+grasp of the language which otherwise could not be gained when you merely
+reproduce (or even modifying) the examples.  
 
 
 ## The OCanren exercises
