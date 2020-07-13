@@ -24,7 +24,7 @@ time was spent on the grammar; however when learning a formal
 gained without reading the theory about the language itself, i.e., its syntax
 and semantics (or using onw word, just grammar), although examples are still indispensable. On the other hand, I started to learn programming languages from
 2010, and I learnt, in chronological order, C, C++, Matlab, Java, Haskell,
-Prolog, and Scheme and OCaml. It was not until early 2020 when I started to
+Prolog, Scheme and OCaml. It was not until early 2020 when I started to
 develop an interest in the formal syntax and semantics of the programming
 language that I am learning. Before that I just learnt by examples and forgot
 the syntactic details quickly after the projects finished. 
