@@ -25,7 +25,7 @@ The helpful expectation is not to understand OCanren in a strict axiomatic
 manner, but rather like following a spiral: you first know what the
 components are, and what is their layout, and then go deeper into the
 components round by round, and for each round aiming for a half-clear
-(not crystal-clear) uderstanding. Day-by-day, you would be be able to
+(not crystal-clear) understanding. Day-by-day, you would be be able to
 see the intricacies more and understand what previously puzzled you. 
 
 
