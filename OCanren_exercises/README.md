@@ -14,7 +14,7 @@ I found it very helpful to refer to [The OCaml language](http://caml.inria.fr/pu
 the formal syntax and (informal) semantics of all features of the core
 language. Almost for each feature that I learnt from Part I, I would go to this chapter to read about
 the underlying formal syntax and semantics. The interesting observation is that
-when I leanrt a natural language, e.g., English or Russian, it feels sufficient
+when I learnt a natural language, e.g., English or Russian, it feels sufficient
 to learn mainly by memorizing examples, and very little (perhaps < 5%) of the
 time was spent on the grammar; however when learning a formal
 (or computer programming)language, a deeper sense of certainty could not be
