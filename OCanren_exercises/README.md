@@ -22,7 +22,7 @@ reproduce (or even creatively modify) the examples.
 ## The OCanren exercises
 
 The helpful expectation is not to understand OCanren in a strict axiomatic
-manner, but rather like drawing a converging spiral: you first know what the
+manner, but rather like following a spiral: you first know what the
 components are, and what are their layout, and then go deeper into each
 component.   
 
