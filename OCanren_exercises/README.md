@@ -23,7 +23,7 @@ reproduce (or even creatively modify) the examples.
 
 The helpful expectation is not to understand OCanren in a strict axiomatic
 manner, but rather like following a spiral: you first know what the
-components are, and what are their layout, and then go deeper into each
+components are, and what is their layout, and then go deeper into each
 component.   
 
 
