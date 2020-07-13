@@ -1,6 +1,6 @@
 # On Learning OCanren 
 
-OCanren is a unique implementation of miiniKanren in OCaml. Its obvious prerequisites
+OCanren is a unique implementation of miniKanren in OCaml. Its obvious prerequisites
 are miniKanren (Scheme-based) and OCaml. A good knowledge of Prolog and
 SLD-resolution is also very helpful for understanding the high-level behavior
 of OCanren (and miniKanren as well). 
