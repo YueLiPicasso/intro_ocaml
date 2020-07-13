@@ -29,7 +29,7 @@ components round by round, and for each round aiming for a half-clear
 see the intricacies more and understand what previously puzzled you. 
 
 
-The [tree](tree) sample served as my frst exposure to OCanren programming.
+The [tree](tree) sample served as my first exposure to OCanren programming.
 I dashed ahead through it to have a feel of the various language constructs,
 and I had to accept the fact that sometimes I was just
 typing the code without knowing for sure what they do. The impression was
