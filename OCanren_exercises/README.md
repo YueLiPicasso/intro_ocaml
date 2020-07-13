@@ -23,8 +23,10 @@ reproduce (or even creatively modify) the examples.
 
 The helpful expectation is not to understand OCanren in a strict axiomatic
 manner, but rather like following a spiral: you first know what the
-components are, and what is their layout, and then go deeper into each
-component.   
+components are, and what is their layout, and then go deeper into the
+components round by round, and for each round aiming for a half-clear
+(not crystal-clear) uderstanding. Day-by-day, you would be be able to
+see the intricacies more and understand what previously puzzled you. 
 
 
 The [tree](tree) sample served as my frst exposure to OCanren programming.
@@ -34,7 +36,6 @@ typing the code without knowing for sure what they do. The impression was
 that there are some perculiariies related to how one should define a custom
 type, and there are boilerplate pieces for injecting and projecting data which
 sandwitches the actual relational programming in between. 
-
 
 
 OCanren inherits much terminology from miniKanren,
