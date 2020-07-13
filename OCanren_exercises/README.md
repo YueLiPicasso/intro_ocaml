@@ -62,6 +62,6 @@ be gained.
 
 Since there are too many things to learn, planning your time is important.
 List your targets on paper and think about how much time you would allocate to
-each task, one day, one week, one month, etc. 
+each task: one morning, one day, one week, one month, two months, etc. 
 
 
