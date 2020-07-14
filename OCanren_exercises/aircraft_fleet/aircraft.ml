@@ -222,6 +222,6 @@ let _ =
     let showpos = show(pos) and showfuel = show(fuel_profile) in
     show(actions) showpos showfuel al, show(state) st
   in
-  L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:1 @@
-  run qr (fun q r -> ocanren { fresh fp in r == (6, fp) & steps init_two q r })
+  L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:6 @@
+  run qr (fun q r -> ocanren { fresh fp in r == (7, fp) & steps init_two q r })
          (fun qs rs -> prj_actions qs, prj_state rs);;
