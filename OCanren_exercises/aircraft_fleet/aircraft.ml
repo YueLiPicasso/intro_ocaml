@@ -167,4 +167,9 @@ run q (fun q -> ocanren { subtract_all 3 [3;4;5;6;7;8;9] q } ) project;
 fuel_profile_printer @@
 run q (fun q -> ocanren { subtract_all 7 [3;4;5;6;7;8;9] q } ) project;
 fuel_profile_printer @@
-run q (fun q -> ocanren { subtract_all 2 [3;4;5;6;7;8;9] q } ) project;;
+run q (fun q -> ocanren { subtract_all 2 [3;4;5;6;7;8;9] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { share_fuel 2 [1;1;1;2;3;4] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { share_fuel 4 [4;4;4] q } ) project;;
+
