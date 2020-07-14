@@ -99,6 +99,10 @@ let abandono fl fl' =
 
 let positive x = ocanren { fresh n in x == Nat.succ n };;
 
+(* check a list is not empty *)
+
+let non_empty l = ocanren { fresh h,t in  l == h :: t };;
+
 (* single step state transition  *)
 
 let step pre_state action post_state =
@@ -114,6 +118,7 @@ let step pre_state action post_state =
           action == Forward d  &
           positive d           &
           d <= tank_capacity   &
+          non_empty l          &
           subtract_all d l l'  &
           (+) d p p'           &
           post_state == (p', l')
@@ -196,22 +201,27 @@ and init_four   = init_fleet 4
 and init_five   = init_fleet 5
 and init_six    = init_fleet 6
 and init_twenty = init_fleet 20;;
-  
-(* type abbreviations *)
 
-type gactions = (Nat.ground, Nat.ground List.ground) action List.ground;;
-type gstate = (Nat.ground, Nat.ground List.ground) Pair.ground;;
+(* reification primitives *)
 
-(* project action-list from ground-level to GT-level *)
-
-let prj_actions ls :  (pos, fuel_profile) action GT.list =
+let prj_actions ls : (pos, fuel_profile) action GT.list =
   List.to_list (gmap(action) Nat.to_int (List.to_list Nat.to_int)) (project ls);;
 
 let prj_state x : state =
   match project x with  (p,l) -> Nat.to_int p, (List.to_list Nat.to_int l);;
 
-let hh = Stream.take @@
-run qr (fun q r -> ocanren { fresh fp in
-                              r == (7, fp) &
-                              steps init_two q r })
-       (fun qs rs -> prj_actions qs, prj_state rs)
+(* type abbreviation for pretty-printing *)
+
+@type ('a,'b) actions = ('a,'b) action GT.list with show;;
+
+let _ =
+  let print_actions_state (acts, stas) =
+    Printf.printf "The actions are : \n %s \n The final state is : %s\n%!" acts stas
+  and
+    actions_state_to_string (al, st) =
+    let showpos = show(pos) and showfuel = show(fuel_profile) in
+    show(actions) showpos showfuel al, show(state) st
+  in
+  L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:1 @@
+  run qr (fun q r -> ocanren { fresh fp in r == (6, fp) & steps init_two q r })
+         (fun qs rs -> prj_actions qs, prj_state rs);;
