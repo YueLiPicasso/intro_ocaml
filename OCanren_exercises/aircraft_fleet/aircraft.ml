@@ -204,15 +204,14 @@ type gstate = (Nat.ground, Nat.ground List.ground) Pair.ground;;
 
 (* project action-list from ground-level to GT-level *)
 
-let prj_actions : gactions -> (pos, fuel_profile) action GT.list =
-  fun ls -> List.to_list (gmap(action) Nat.to_int (List.to_list Nat.to_int)) ls;;
+let prj_actions ls :  (pos, fuel_profile) action GT.list =
+  List.to_list (gmap(action) Nat.to_int (List.to_list Nat.to_int)) (project ls);;
 
-let prj_state : gstate -> state =
-  fun (p,l) -> Nat.to_int p, (List.to_list Nat.to_int l);;
-
+let prj_state x : state =
+  match project x with  (p,l) -> Nat.to_int p, (List.to_list Nat.to_int l);;
 
 let hh = Stream.take @@
 run qr (fun q r -> ocanren { fresh fp in
                               r == (7, fp) &
                               steps init_two q r })
-       (fun qs rs -> qs#prj, rs#prj)
+       (fun qs rs -> prj_actions qs, prj_state rs)
