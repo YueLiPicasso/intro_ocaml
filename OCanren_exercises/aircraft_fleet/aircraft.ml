@@ -197,7 +197,19 @@ and init_five   = init_fleet 5
 and init_six    = init_fleet 6
 and init_twenty = init_fleet 20;;
   
-(* type abbreviations for pretty-printing *)
+(* type abbreviations *)
+
+type gactions = (Nat.ground, Nat.ground List.ground) action List.ground;;
+type gstate = (Nat.ground, Nat.ground List.ground) Pair.ground;;
+
+(* project action-list from ground-level to GT-level *)
+
+let prj_actions : gactions -> (pos, fuel_profile) action GT.list =
+  fun ls -> List.to_list (gmap(action) Nat.to_int (List.to_list Nat.to_int)) ls;;
+
+let prj_state : gstate -> state =
+  fun (p,l) -> Nat.to_int p, (List.to_list Nat.to_int l);;
+
 
 let hh = Stream.take @@
 run qr (fun q r -> ocanren { fresh fp in
