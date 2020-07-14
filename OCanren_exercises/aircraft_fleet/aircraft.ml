@@ -214,7 +214,7 @@ let prj_state x : state =
 
 @type ('a,'b) actions = ('a,'b) action GT.list with show;;
 
-let _ =
+let print_solution x =
   let print_actions_state (acts, stas) =
     Printf.printf "The actions are : \n %s \n The final state is : %s\n%!" acts stas
   and
@@ -222,6 +222,11 @@ let _ =
     let showpos = show(pos) and showfuel = show(fuel_profile) in
     show(actions) showpos showfuel al, show(state) st
   in
-  L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:6 @@
-  run qr (fun q r -> ocanren { fresh fp in r == (7, fp) & steps init_two q r })
+  L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:1 @@ x
+in
+print_solution @@
+  run qr (fun q r -> ocanren { fresh fp in r == (7, fp) & steps init_two q r })  (* take more, and see if any improvement can be done *)
+         (fun qs rs -> prj_actions qs, prj_state rs);
+print_solution @@
+  run qr (fun q r -> ocanren { fresh fp in r == (11, fp) & steps init_five q r })
          (fun qs rs -> prj_actions qs, prj_state rs);;
