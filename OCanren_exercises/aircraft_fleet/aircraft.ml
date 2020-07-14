@@ -154,22 +154,53 @@ end;;
 
 let steps pre acts post = Steps.steps !!2 pre acts post;;
 
-
-(* type abbreviations for pretty-printing *)
+(* test the helpers *)
 
 let fuel_profile_printer r =
   let convert = List.to_list Nat.to_int in
   L.iter (fun x -> print_string x;print_newline()) @@
   L.map (fun x -> show(fuel_profile) @@ convert x) @@ Stream.take @@ r
 in
+Printf.printf "subtract_all\n\n";
 fuel_profile_printer @@
 run q (fun q -> ocanren { subtract_all 3 [3;4;5;6;7;8;9] q } ) project;
 fuel_profile_printer @@
 run q (fun q -> ocanren { subtract_all 7 [3;4;5;6;7;8;9] q } ) project;
 fuel_profile_printer @@
 run q (fun q -> ocanren { subtract_all 2 [3;4;5;6;7;8;9] q } ) project;
+Printf.printf "\nshare_fuel\n\n";
 fuel_profile_printer @@
 run q (fun q -> ocanren { share_fuel 2 [1;1;1;2;3;4] q } ) project;
 fuel_profile_printer @@
-run q (fun q -> ocanren { share_fuel 4 [4;4;4] q } ) project;;
+run q (fun q -> ocanren { share_fuel 4 [4;4;4] q } ) project;
+Printf.printf "\nabandono\n\n";
+fuel_profile_printer @@
+run q (fun q -> ocanren { abandono [4;4;4;4] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { abandono [] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { abandono [3;1;1;1;1;1] q } ) project;;
 
+(* initialize arbitrarily-sized fleet *)
+
+let init_fleet n =
+  let l = List.list (L.init n (fun _ -> tank_capacity))
+  and p = nat 0 in
+  Pair.pair p l;; 
+
+(* possible initial states of the fleet *)
+
+let init_two    = init_fleet 2
+and init_three  = init_fleet 3
+and init_four   = init_fleet 4
+and init_five   = init_fleet 5
+and init_six    = init_fleet 6
+and init_twenty = init_fleet 20;;
+  
+(* type abbreviations for pretty-printing *)
+
+let hh = Stream.take @@
+run qr (fun q r -> ocanren { fresh fp in
+                              r == (7, fp) &
+                              steps init_two q r })
+       (fun qs rs -> qs#prj, rs#prj)
