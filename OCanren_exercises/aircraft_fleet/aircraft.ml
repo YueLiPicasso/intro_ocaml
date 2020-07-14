@@ -95,11 +95,9 @@ let abandono fl fl' =
      share_fuel h t fl'
 };;
 
-
 (* postive natural number *)
 
 let positive x = ocanren { fresh n in x == Nat.succ n };;
-
 
 (* single step state transition  *)
 
