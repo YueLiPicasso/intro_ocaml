@@ -114,15 +114,57 @@ let step pre_state action post_state =
           action == Forward d  &
           positive d           &
           d <= tank_capacity   &
+          subtract_all d l l'  &
           (+) d p p'           &
-          subtract_all d l l'  &  
           post_state == (p', l')
 
-        | fresh l' in (* updated fuel profile *)
-           action == Abandon l' &
-           abandono l l' &
-           post_state == (p, l')
+       | fresh l' in (* updated fuel profile *)
+          action == Abandon l' &
+          abandono l l' &
+          post_state == (p, l')
        }
-  };;
+};;
+
+(* helper relation to ensure alternating actions: 
+   every action act is given a unique code co  *)
+
+let kind act co =
+  let open Action in
+  ocanren {
+    fresh x, y in
+     act == Forward x & co == !(!!0)
+   | act == Abandon y & co == !(!!1)
+};;
+
+(* sequencing multiple steps *)
+module Steps = struct
+
+let rec steps co pre acts post =
+  ocanren {
+    acts == [] & pre == post |
+    fresh mid, hact, tact, co' in
+     acts == hact :: tact &
+     kind hact co'        &
+     co =/= co'           &
+     step pre hact mid    &
+     steps co' mid tact post
+};;
+
+end;;
+
+let steps pre acts post = Steps.steps !!2 pre acts post;;
 
 
+(* type abbreviations for pretty-printing *)
+
+let fuel_profile_printer r =
+  let convert = List.to_list Nat.to_int in
+  L.iter (fun x -> print_string x;print_newline()) @@
+  L.map (fun x -> show(fuel_profile) @@ convert x) @@ Stream.take @@ r
+in
+fuel_profile_printer @@
+run q (fun q -> ocanren { subtract_all 3 [3;4;5;6;7;8;9] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { subtract_all 7 [3;4;5;6;7;8;9] q } ) project;
+fuel_profile_printer @@
+run q (fun q -> ocanren { subtract_all 2 [3;4;5;6;7;8;9] q } ) project;;
