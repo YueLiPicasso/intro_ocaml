@@ -40,15 +40,16 @@ that has a capacity of 5 units, then it can only refuel for 1 unit or 2 units.
 
 Although the value of the abstract capacity B is arbitrarily picked, we must set it
 to at least 2. If we set B = 1 then it would be impossible for the fleet to reach
-the target, given our _discrete motion_ and _discrete fuel transfer_ assumptions.
+the target (now B < D < NB), given our _discrete motion_ and _discrete fuel transfer_ assumptions.
 
 
 For instance, B = 1 implies that the fleet would move forward for 1 unit of distance, 
-running out of fuel and all aircraft abandoned.  B = 2 implies two possibilities:
+running out of fuel and all aircraft abandoned.  If the fleet has two aircraft, and B = 2,
+then there are  two possibilities:
 
-1. moving forward for 2 units of distance, and then running out of fuel;
-1. moving forward for 1 unit, then abandoning one aircraft, tansferring its fuel to the other, who
-continues to fly for 2 units. Thus the fleet achieves the range of 3 units.
+1. The fleet flies for 2 units of distance, and then run out of fuel before reaching the target;
+1. The fleet flies for 1 unit, then one aircraft abandoned, transferring the fuel (1 unit) to the other, who
+then continues to fly for 2 units. Thus the fleet achieves the range of 3 units.
 
 
 ## Reference
