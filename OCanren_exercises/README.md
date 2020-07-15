@@ -1,22 +1,11 @@
 # On Learning OCanren 
 
-OCanren is a unique implementation of miniKanren in OCaml. Its obvious prerequisites
-are miniKanren (Scheme-based) and OCaml. A good knowledge of Prolog and
-SLD-resolution is also very helpful for understanding the high-level behavior
-of OCanren (and miniKanren as well). 
-
-
-## Learning OCaml
-
-The OCaml tutorial (Part I of the [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/)) covers the features of the core language, such as types,
-let-bindings, pattern matching, exception handling, modules and classes etc. I
-also learnt the first few sections of the [language extensions](http://caml.inria.fr/pub/docs/manual-ocaml/extn.html) chapter. When working with the tutorials,
-I found it very helpful to refer frequently to [The OCaml language](http://caml.inria.fr/pub/docs/manual-ocaml/language.html) chapter, which presents systematically
-the formal syntax and (informal) semantics of all features of the core
-language. Almost for each feature that I learnt from Part I, I would go to this chapter to read about
-the underlying formal syntax and semantics. Jumping between examples and grammar in this way inevitably slows down your speed, but it gives you a firmer
-grasp of the language which otherwise could not be gained when you merely
-reproduce (or even creatively modify) the examples.  
+OCanren is a unique implementation of miniKanren in OCaml. Its obvious
+prerequisites are miniKanren (Scheme-based) and OCaml. A good knowledge
+of Prolog and SLD-resolution is also very helpful for understanding the
+high-level behavior of OCanren (and miniKanren as well). Here I share
+my experience of learning OCanren using the exercises in this folder.
+A few comments on learning OCaml is also appended. 
 
 
 ## The OCanren exercises
@@ -60,4 +49,17 @@ be attempted.
 All the above exercises are based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
 is my original contribution to the collection of OCanren samples. It also serves as a test of my skills with OCanren after several months of learning. I found the reference paper
 when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
-technicalities such as types to represent the state and the actions of the fleet, and I finished with the work in the following day.  
+technicalities such as types to represent the state and the actions of the fleet, and I finished with the work in the following day.
+
+
+## Learning OCaml
+
+The OCaml tutorial (Part I of the [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/)) covers the features of the core language, such as types,
+let-bindings, pattern matching, exception handling, modules and classes etc. I
+also learnt the first few sections of the [language extensions](http://caml.inria.fr/pub/docs/manual-ocaml/extn.html) chapter. When working with the tutorials,
+I found it very helpful to refer frequently to [The OCaml language](http://caml.inria.fr/pub/docs/manual-ocaml/language.html) chapter, which presents systematically
+the formal syntax and (informal) semantics of all features of the core
+language. Almost for each feature that I learnt from Part I, I would go to this chapter to read about
+the underlying formal syntax and semantics. Jumping between examples and grammar in this way inevitably slows down your speed, but it gives you a firmer
+grasp of the language which otherwise could not be gained when you merely
+reproduce (or even creatively modify) the examples.  

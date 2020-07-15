@@ -228,6 +228,6 @@ print_solution @@
   run qr (fun q r -> ocanren { fresh fp in r == (11, fp) & steps init_five q r })
 (fun qs rs -> prj_actions qs, prj_state rs); *)
 print_solution @@
-  run qr (fun q r -> ocanren { fresh fp in r == (17, fp) & steps init_seven q r })  
+  run qr (fun q r -> ocanren { fresh fp in r == (13, fp) & steps init_seven q r })  
          (fun qs rs -> prj_actions qs, prj_state rs);;
 
