@@ -7,7 +7,7 @@ There is a fleet of N identical aircraft, where every aircraft has a fuel capaci
 fuel efficiency of R miles per liter of fuel. The fleet has a mission of reaching some target located
 at a distance D from the airbase, where CR < D < NCR. Once taking off, there
 is no more airbase along the way for the fleet to land and refuel. The fleet adopts such a  strategy that
-at any stage, any one aircraft could be abandoned, whose fuel is simultanously transferred to some fellow
+at any stage, any one aircraft could be abandoned, whose fuel is simultaneously transferred to some fellow
 aircraft. The mission is considered as successful if  at least
 one aircraft  finally reaches the target.
 
