@@ -193,11 +193,13 @@ let init_fleet n =
   and p = nat 0 in
   Pair.pair p l;; 
 
-(* possible initial states of the fleet *)
+(* some initial states of the fleet *)
 
 let init_two    = init_fleet 2
+and init_three  = init_fleet 3
+and init_four   = init_fleet 4
 and init_five   = init_fleet 5
-and init_seven = init_fleet 7;;
+and init_six    = init_fleet 6;;
 
 (* reification primitives *)
 
@@ -220,14 +222,20 @@ let print_solution x =
     show(actions) showpos showfuel al, show(state) st
   in
   L.iter print_actions_state @@ L.map actions_state_to_string @@ Stream.take ~n:1 @@ x (* try ~n:4 *)
-in (*
+in 
 print_solution @@
   run qr (fun q r -> ocanren { fresh fp in r == (7, fp) & steps init_two q r })  
          (fun qs rs -> prj_actions qs, prj_state rs);
 print_solution @@
-  run qr (fun q r -> ocanren { fresh fp in r == (11, fp) & steps init_five q r })
-(fun qs rs -> prj_actions qs, prj_state rs); *)
+  run qr (fun q r -> ocanren { fresh fp in r == (9, fp) & steps init_three q r })  
+         (fun qs rs -> prj_actions qs, prj_state rs);
 print_solution @@
-  run qr (fun q r -> ocanren { fresh fp in r == (13, fp) & steps init_seven q r })  
-         (fun qs rs -> prj_actions qs, prj_state rs);;
+  run qr (fun q r -> ocanren { fresh fp in r == (10, fp) & steps init_four q r })  
+         (fun qs rs -> prj_actions qs, prj_state rs);
+print_solution @@
+  run qr (fun q r -> ocanren { fresh fp in r == (11, fp) & steps init_five q r })
+(fun qs rs -> prj_actions qs, prj_state rs);
+print_solution @@
+  run qr (fun q r -> ocanren { fresh fp in r == (12, fp) & steps init_six q r })
+(fun qs rs -> prj_actions qs, prj_state rs);;
 
