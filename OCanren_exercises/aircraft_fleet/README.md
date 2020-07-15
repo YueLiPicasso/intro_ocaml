@@ -48,7 +48,7 @@ running out of fuel and all aircraft abandoned.  If the fleet has two aircraft, 
 then there are  two possibilities:
 
 1. The fleet flies for 2 units of distance, and then run out of fuel before reaching the target;
-1. The fleet flies for 1 unit, then one aircraft abandoned, transferring the fuel (1 unit) to the other, who
+1. The fleet flies for 1 unit, then one aircraft is abandoned, transferring the fuel (1 unit) to the other, who
 then continues to fly for 2 units. Thus the fleet achieves the range of 3 units.
 
 
