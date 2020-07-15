@@ -14,6 +14,9 @@ one aircraft  finally reaches the target.
 
 ## Abstraction
 
+We adopt the following abstractions in order to compute the sequence of actions needed by
+the fleet to accomplish its mission. 
+
 
 ### Discrete Motion
 
