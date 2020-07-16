@@ -11,9 +11,15 @@ could they divide the balsam into equal portions ?
 
 One of the several solutions is as follows:
 
-The vessels can contain       | 24 oz. | 13 oz. |  11 oz. | 5 oz.
----                           | ---    | ---    | ---     | ---
-Their constents originaly are | 24     | 0      |  0      | 0
+The vessels can contain        | 24 oz. | 13 oz. |  11 oz. | 5 oz.
+---                            | ---    | ---    | ---     | ---
+Their constents originally are | 24     | 0      |  0      | 0
+First, make their contents     | 0      | 8      | 11      | 5
+Second, make their contents    | 16     | 8      |  0      | 0
+Third, make their contents     | 16     | 0      | 8       | 0
+Fourth, make their contents    | 3      | 13     | 8       | 0
+Fifth, make their contents     | 3      | 8      | 8       | 5
+Lastly, make their contents    | 8      | 8      | 8       | 0
 
 
 ## Reference
