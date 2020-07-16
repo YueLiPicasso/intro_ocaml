@@ -39,18 +39,34 @@ let how_much state ves (vol : Nat.groundi) =
     | ves == ves_d & vol == d }
 };;
 
+(* To set the content of a specified vessel and update the state *)
+
+let refresh_state ves bal pre_state post_state =
+  let open Vessel in
+  ocanren {
+    fresh a, b, c, d in
+    pre_state == (a, b, c, d) &
+    { ves == ves_a & post_state == (bal, b, c, d) |
+      ves == ves_b & post_state == (a, bal, c, d) |
+      ves == ves_c & post_state == (a, b, bal, d) |
+      ves == ves_d & post_state == (a, b, c, bal) }
+};;
+
 
 
 let transfer_balsam from_ves to_ves from_state to_state =
   ocanren {
-    fresh val_from_ves, (* balsam in from_ves *)
-          val_to_ves    (* balsam in to_ves *)
+    fresh val_from_ves , (* balsam in from_ves before transfer *)
+          val_from_ves', (* balsam in from_ves after transfer *)
+          val_to_ves   , (* balsam in to_ves before transfer *)
+          val_to_ves'  , (* balsam in to_ves after transfer *)
+          volm_to_ves  , (* volumn of to_ves *)
+          free_to_ves    (* empty space in to_ves *)
     in how_much from_state from_ves val_from_ves &
        how_much from_state to_ves   val_to_ves   &
-    fresh volm_to_ves,  (* volumn of to_ves *)
-          free_to_ves   (* available space in to_ves *)
-    in volumn to_ves volm_to_ves                 &
-       (+) free_to_ves val_to_ves volm_to_ves    
+        volumn to_ves volm_to_ves                &
+       (+) free_to_ves val_to_ves volm_to_ves    & 
+       { val_from_ves <= free_to_ves & }
   };;
 
 
@@ -61,10 +77,6 @@ let vessel_A = ocanren { 24 }
 and vessel_B = ocanren { 13 }
 and vessel_C = ocanren { 11 }
 and vessel_D = ocanren { 5  };;
-
-
-
-
 
 
 
