@@ -24,7 +24,7 @@ Lastly, make their contents    | 8      | 8      | 8       | 0
 
 ## Reference
 
-The above problem description is quoted verbatim from: 
+The above problem description was quoted verbatim from: 
 
 W. W. Rouse Ball and H. S. M. Coxeter 1947 
  _Mathematical Recreations and Essays (12 ed.)_
