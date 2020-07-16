@@ -53,23 +53,34 @@ let refresh_state ves bal pre_state post_state =
 };;
 
 
-
 let transfer_balsam from_ves to_ves from_state to_state =
+  let open Nat in
   ocanren {
     fresh val_from_ves , (* balsam in from_ves before transfer *)
           val_from_ves', (* balsam in from_ves after transfer *)
           val_to_ves   , (* balsam in to_ves before transfer *)
           val_to_ves'  , (* balsam in to_ves after transfer *)
           volm_to_ves  , (* volumn of to_ves *)
-          free_to_ves    (* empty space in to_ves *)
+          free_to_ves  , (* empty space in to_ves before transfer *)
+          aux_state      (* helper variable *)
     in how_much from_state from_ves val_from_ves &
        how_much from_state to_ves   val_to_ves   &
-        volumn to_ves volm_to_ves                &
+       volumn to_ves volm_to_ves                 &
        (+) free_to_ves val_to_ves volm_to_ves    & 
-       { val_from_ves <= free_to_ves & }
-  };;
+       { val_from_ves <= free_to_ves                           
+       & (+) val_from_ves val_to_ves val_to_ves'               
+       & refresh_state from_ves zero from_state aux_state      
+       & refresh_state to_ves val_to_ves' aux_state to_state 
+       |
+         val_from_ves > free_to_ves                            
+       & (+) free_to_ves val_from_ves' val_from_ves            
+       & refresh_state from_ves val_from_ves' from_state aux_state
+       & refresh_state to_ves volm_to_ves aux_state to_state
+       }
+};;
 
 
+(* do some test next for the above relations *)
 
 (*
 
