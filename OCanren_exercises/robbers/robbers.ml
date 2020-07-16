@@ -16,7 +16,7 @@ end;;
 
 @type state = int * int * int * int with show;;
 
-(* volumns of each vessel *)
+(* volumn of each vessel *)
 
 let volumn ves (vol : Nat.groundi) =
   let open Vessel in
