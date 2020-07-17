@@ -3,123 +3,160 @@ open OCanren;;
 module L = Stdlib.List;;
 open OCanren.Std;;
 
-(* To label the four vessels *)
-
-@type vessel = A | B | C | D with show;;
-
-(* injection primitives *)
-
 module Vessel =struct
+
+  @type vessel = A | B | C | D with show;; (* To label the four vessels *)
+  @type move = vessel * vessel with show;;
+  @type moves = move GT.list with show;;
+  @type state = int * int * int * int with show;; (* state of the vessels *)
+
+  (* injection primitives *)
+  
   let ves_a = !!A and ves_b = !!B and ves_c = !!C and ves_d = !!D;;
+  
+  let ves_inj = function A -> ves_a | B -> ves_b | C -> ves_c | D -> ves_d;;
+  
+  let move_inj (m : move) = match m with a,b -> ocanren { (ves_inj a, ves_inj b) };;
+
+  let moves_inj (ms : moves) = List.list (L.map move_inj ms);;
+
+  (* reification primitives *)
+
+  let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d );;
+  
+  let prj_moves x = List.to_list (fun (a,b) -> a,b) @@ project x;;
+
+  module Action = struct
+
+    (* volumn of each vessel *)
+
+    let volumn ves (vol : Nat.groundi) =
+      ocanren {
+        ves == ves_a & vol == 24
+      | ves == ves_b & vol == 13
+      | ves == ves_c & vol == 11
+      | ves == ves_d & vol == 5 };;
+
+    (* To query how much balsam a vessel contains in a given state *)
+
+    let how_much state ves (vol : Nat.groundi) =
+      ocanren {
+        fresh a, b, c, d in state == (a,b,c,d) &
+                            { ves == ves_a & vol == a
+                            | ves == ves_b & vol == b
+                            | ves == ves_c & vol == c
+                            | ves == ves_d & vol == d }};;
+
+    (* To set the content of a specified vessel and update the state *)
+
+    let refresh_state ves bal pre_state post_state =
+      ocanren {
+        fresh a, b, c, d in
+          pre_state == (a, b, c, d) &
+        { ves == ves_a & post_state == (bal, b, c, d) |
+          ves == ves_b & post_state == (a, bal, c, d) |
+          ves == ves_c & post_state == (a, b, bal, d) |
+          ves == ves_d & post_state == (a, b, c, bal) }};;
+
+    (* To specify  valid directions of balsam transfer *)
+
+    let from_to ves_1 ves_2 =
+      ocanren { ves_1 == ves_a & ves_2 == ves_b |
+                ves_1 == ves_a & ves_2 == ves_c |
+                ves_1 == ves_a & ves_2 == ves_d |
+            
+                ves_1 == ves_b & ves_2 == ves_a |
+                ves_1 == ves_b & ves_2 == ves_c |
+                ves_1 == ves_b & ves_2 == ves_d |
+            
+                ves_1 == ves_c & ves_2 == ves_a |
+                ves_1 == ves_c & ves_2 == ves_b |
+                ves_1 == ves_c & ves_2 == ves_d |
+            
+                ves_1 == ves_d & ves_2 == ves_a |
+                ves_1 == ves_d & ves_2 == ves_b |
+                ves_1 == ves_d & ves_2 == ves_c };;
+
+
+     let transfer_balsam from_ves to_ves from_state to_state =
+       let open Nat in
+       ocanren {
+         fresh val_from_ves , (* balsam in from_ves before transfer *)
+           val_from_ves', (* balsam in from_ves after transfer *)
+           val_to_ves   , (* balsam in to_ves before transfer *)
+           val_to_ves'  , (* balsam in to_ves after transfer *)
+           volm_to_ves  , (* volumn of to_ves *)
+           free_to_ves  , (* empty space in to_ves before transfer *)
+           aux_state      (* helper variable *)
+         in from_to from_ves to_ves                   &
+            how_much from_state from_ves val_from_ves &
+            val_from_ves > zero                       &
+            how_much from_state to_ves val_to_ves     &
+            volumn to_ves volm_to_ves                 &
+            (+) free_to_ves val_to_ves volm_to_ves    &
+            free_to_ves > zero                        &
+            { val_from_ves <= free_to_ves
+              & (+) val_from_ves val_to_ves val_to_ves'               
+              & refresh_state from_ves zero        from_state aux_state      
+              & refresh_state to_ves   val_to_ves' aux_state  to_state 
+            |
+              val_from_ves > free_to_ves                            
+              & (+) free_to_ves val_from_ves' val_from_ves            
+              & refresh_state from_ves val_from_ves' from_state aux_state
+              & refresh_state to_ves   volm_to_ves   aux_state  to_state
+            }};;
+  end;;
+
 end;;
-
-(* state of the vessels *)
-
-@type state = int * int * int * int with show;;
-
-(* volumn of each vessel *)
-
-let volumn ves (vol : Nat.groundi) =
-  let open Vessel in
-  ocanren {
-    ves == ves_a & vol == 24
-  | ves == ves_b & vol == 13
-  | ves == ves_c & vol == 11
-  | ves == ves_d & vol == 5 
-  };;
-
-(* To query how much balsam a vessel contains in a given state *)
-
-let how_much state ves (vol : Nat.groundi) =
-  let open Vessel in
-  ocanren {
-    fresh a, b, c, d in state == (a,b,c,d) &
-    { ves == ves_a & vol == a
-    | ves == ves_b & vol == b
-    | ves == ves_c & vol == c
-    | ves == ves_d & vol == d }
-};;
-
-(* To set the content of a specified vessel and update the state *)
-
-let refresh_state ves bal pre_state post_state =
-  let open Vessel in
-  ocanren {
-    fresh a, b, c, d in
-    pre_state == (a, b, c, d) &
-    { ves == ves_a & post_state == (bal, b, c, d) |
-      ves == ves_b & post_state == (a, bal, c, d) |
-      ves == ves_c & post_state == (a, b, bal, d) |
-      ves == ves_d & post_state == (a, b, c, bal) }
-};;
-
-
-let from_to ves_1 ves_2 =
-  let open Vessel in
-  ocanren { ves_1 == ves_a & ves_2 == ves_b |
-            ves_1 == ves_a & ves_2 == ves_c |
-            ves_1 == ves_a & ves_2 == ves_d |
-            
-            ves_1 == ves_b & ves_2 == ves_a |
-            ves_1 == ves_b & ves_2 == ves_c |
-            ves_1 == ves_b & ves_2 == ves_d |
-            
-            ves_1 == ves_c & ves_2 == ves_a |
-            ves_1 == ves_c & ves_2 == ves_b |
-            ves_1 == ves_c & ves_2 == ves_d |
-            
-            ves_1 == ves_d & ves_2 == ves_a |
-            ves_1 == ves_d & ves_2 == ves_b |
-            ves_1 == ves_d & ves_2 == ves_c 
-          };;
-
-
-let transfer_balsam from_ves to_ves from_state to_state =
-  let open Nat in
-  ocanren {
-    fresh val_from_ves , (* balsam in from_ves before transfer *)
-          val_from_ves', (* balsam in from_ves after transfer *)
-          val_to_ves   , (* balsam in to_ves before transfer *)
-          val_to_ves'  , (* balsam in to_ves after transfer *)
-          volm_to_ves  , (* volumn of to_ves *)
-          free_to_ves  , (* empty space in to_ves before transfer *)
-          aux_state      (* helper variable *)
-    in from_to from_ves to_ves                   &
-       how_much from_state from_ves val_from_ves &
-       val_from_ves > zero                       &
-       how_much from_state to_ves val_to_ves     &
-       volumn to_ves volm_to_ves                 &
-       (+) free_to_ves val_to_ves volm_to_ves    &
-       free_to_ves > zero                        &
-       { val_from_ves <= free_to_ves
-       & (+) val_from_ves val_to_ves val_to_ves'               
-       & refresh_state from_ves zero        from_state aux_state      
-       & refresh_state to_ves   val_to_ves' aux_state  to_state 
-       |
-         val_from_ves > free_to_ves                            
-       & (+) free_to_ves val_from_ves' val_from_ves            
-       & refresh_state from_ves val_from_ves' from_state aux_state
-       & refresh_state to_ves   volm_to_ves   aux_state  to_state
-       }
-};;
 
 
 module Steps = struct
-  let f = Tabling.(tabledrec three) (* use tabling to avoid looping *)
-      (fun f moves pre_state post_state ->
-         ocanren {
-           moves == [] & pre_state == post_state |
-           fresh mid_state, m, ms, fves, tves in
-               moves == m :: ms                 
-             & m == (fves, tves) 
-             & transfer_balsam fves tves pre_state mid_state         
-             & f ms mid_state post_state  })
+
+  open Vessel;;
+  open Vessel.Action;;
+  
+  let f =
+    let f' = Tabling.(tabledrec four) 
+        (fun f' last_mv moves pre_state post_state ->
+           ocanren {
+             moves == [] & pre_state == post_state |
+             fresh mid_state, m, ms, fves, tves in
+               moves == m :: ms
+             & m =/= last_mv
+             & m == (fves, tves)
+             & last_mv =/= (tves, fves)
+             & transfer_balsam fves tves pre_state mid_state 
+             & f' m ms mid_state post_state  })
+    in let open Vessel in fun mvs fstat tstat -> ocanren { f' (ves_a, ves_a) mvs fstat tstat } ;;
+
+(*
+      let rec no_loop history state =
+      ocanren {
+        history == [] |
+        fresh h, t in history == h :: t & state =/= h & no_loop t state };;
+
+  let rec distinct_states history =
+      ocanren {
+        history == [] |
+        fresh h, t in history == h :: t & no_loop t h & distinct_states t };;
+
+ 
+     let rec g history =
+           ocanren {
+             fresh cdr_states, mid_states in
+               List.appendo [init_state] cdr_states history
+             & List.appendo mid_states [target_state] cdr_states
+             & fresh fves, tves, s, ss in mid_states == s :: ss    
+             & transfer_balsam fves tves init_state s
+                 { mid_state == target_state & histail == [mid_state]
+                 }
+             & hist' = mid_state :: hist              
+             & history == start_state :: hist'
+             & g hist' mid_state post_state }
+    in let open Vessel in fun mvs fstat tstat -> ocanren { g' [fstat] (ves_a, ves_a) mvs fstat tstat } ;;
+*)
 end;;
 
-(* reification primitives *)
-
-let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d )                                                        
-and prj_moves x = List.to_list (fun (a,b) -> a,b) @@ project x;;
 
 (* do some test next for the above relations *)
 
@@ -143,84 +180,7 @@ let rec print_moves =
                                     
 
 let _  =
-print_moves @@ Stream.take ~n:10000 @@ 
+print_moves @@ Stream.take ~n:5 @@ 
 run q (fun q -> ocanren {Steps.f q (24,0,0,0) (8,8,8,0)}) prj_moves ;;
   
 
-(*
-
-let vessel_A = ocanren { 24 }
-and vessel_B = ocanren { 13 }
-and vessel_C = ocanren { 11 }
-and vessel_D = ocanren { 5  };;
-
-
-
-(* possible moves to transfer balsam from one vessel to another *)
-
-@type move = 
-     From_A_to_B
-   | From_A_to_C
-   | From_A_to_D
-   | From_B_to_A
-   | From_B_to_C
-   | From_B_to_D
-   | From_C_to_A
-   | From_C_to_B
-   | From_C_to_D
-   | From_D_to_A
-   | From_D_to_B
-   | From_D_to_C 
- with show;;
-
-(* injection primitives *)
-
-let from_A_to_B = !!From_A_to_B
-and from_A_to_C = !!From_A_to_C
-and from_A_to_D = !!From_A_to_D
-and from_B_to_A = !!From_B_to_A
-and from_B_to_C = !!From_B_to_C
-and from_B_to_D = !!From_B_to_D
-and from_C_to_A = !!From_C_to_A
-and from_C_to_B = !!From_C_to_B
-and from_C_to_D = !!From_C_to_D
-and from_D_to_A = !!From_D_to_A
-and from_D_to_B = !!From_D_to_B
-and from_D_to_C = !!From_D_to_C
-;;
-
-    
-(* valid state of the vessels: basic constraints *)
-
-let valid_vessels_state a b c d =
-  let open Nat in
-  ocanren {
-   a >= zero  & a <= !(vessel_A) &
-   b >= zero  & b <= !(vessel_B) &
-   c >= zero  & c <= !(vessel_C) &
-   d >= zero  & d <= !(vessel_D) &
-     fresh ab, abc, abcd in
-       (+) a   b ab   &
-       (+) ab  c abc  &
-       (+) abc d abcd &
-       abcd <= !(vessel_A)
-  };; 
-
-
-(* valid single step *)
-
-let step move vessels vessels' =
-  let open Nat in 
-  ocanren {
-    fresh a , b , c , d  in vessels  == (a , b , c , d ) &
-    fresh a', b', c', d' in vessels' == (a', b', c', d') &
-    { move == from_A_to_B &
-      fresh b_free in
-      (+) b b_free vessel_B &
-      {  a <= b_free & a' == zero      & (+) b a b'     & c == c' & d == d'
-       | a > b_free  & (+) a' b_free a & b' == vessel_B & c == c' & d == d'} 
-    }
-  };;
-
-
-*)
