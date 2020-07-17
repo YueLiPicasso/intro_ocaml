@@ -16,8 +16,9 @@ manner, but rather like following a spiral: you first know what the
 components are, and what is their layout, and then go deeper into the
 components round by round, and for each round aiming for a half-clear
 (not crystal-clear) understanding. Day-by-day, you would be  able to
-see the intricacies more and understand what previously puzzled you. 
+see the intricacies more and understand what previously puzzled you.
 
+### Tree
 
 The [tree](tree) sample served as my first exposure to OCanren programming.
 I dashed ahead through it to have a feel of the various language constructs,
@@ -27,6 +28,7 @@ that there are some perculiarities related to how one should define a custom
 type, and there are boilerplate pieces for injecting and projecting data which
 sandwitches the actual relational programming in between. 
 
+### Sorting
 
 OCanren inherits much terminology from miniKanren,
 such as reification (replacing logical variables by terms of the host language),
@@ -37,6 +39,7 @@ best learnt using the [sorting](sorting) sample, accompanied by reading the
 simplest OCanren standard library interface files [LNat](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli) and [LList](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli), where the
 letter _L_ stands for _Logic_. This was my second exercise.
 
+### Jeep Problem 
 
 Next comes the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
 encoding of the problem, however, is no more than stating the most immediate
@@ -46,12 +49,15 @@ using the advanced camlp5 utility. This extension is signalled by the
 problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library could
 be attempted.
 
+### Range of a Fleet of Aircraft
 
 All the above three exercises are based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
 is my first and original contribution to the collection of OCanren samples. It also serves as a test of my skills with OCanren after several months of learning. I found the reference paper
 when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
 technicalities such as types to represent the states and the actions of the fleet, and I finished with the work in the following day.
 
+
+### Robbers Problem
 
 With the confidence gained from the earlier success, in the subsequent two days
 I found and encoded the [Robber's Problem](robbers) in OCanren. This problem
