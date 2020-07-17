@@ -9,20 +9,25 @@ module Vessel =struct
   @type move = vessel * vessel with show;;
   @type moves = move GT.list with show;;
   @type state = int * int * int * int with show;; (* state of the vessels *)
-
+  @type states = state GT.list with show;;
+  
   (* injection primitives *)
   
   let ves_a = !!A and ves_b = !!B and ves_c = !!C and ves_d = !!D;;
   
-  let ves_inj = function A -> ves_a | B -> ves_b | C -> ves_c | D -> ves_d;;
+  let inj_ves = function A -> ves_a | B -> ves_b | C -> ves_c | D -> ves_d;;
   
-  let move_inj (m : move) = match m with a,b -> ocanren { (ves_inj a, ves_inj b) };;
+  let inj_move (m : move) = match m with a,b -> ocanren { (inj_ves a, inj_ves b) };;
 
-  let moves_inj (ms : moves) = List.list (L.map move_inj ms);;
+  let inj_moves (ms : moves) = List.list (L.map inj_move ms);;
 
-  (* reification primitives *)
+  (* projection primitives *)
 
-  let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d );;
+  let to_int_quads = fun (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d );;
+  
+  let prj_state x = to_int_quads @@ project x;; 
+
+  let prj_states x = List.to_list to_int_quads  @@ project x;;
   
   let prj_moves x = List.to_list (fun (a,b) -> a,b) @@ project x;;
 
@@ -127,7 +132,19 @@ module Steps = struct
              & last_mv =/= (tves, fves)
              & transfer_balsam fves tves pre_state mid_state 
              & f' m ms mid_state post_state  })
-    in let open Vessel in fun mvs fstat tstat -> ocanren { f' (ves_a, ves_a) mvs fstat tstat } ;;
+    in fun mvs fstat tstat -> ocanren { f' (ves_a, ves_a) mvs fstat tstat } ;;
+
+   (* simple procedure to compute the states given actions *)
+
+   let rec g actions init_state all_states =
+     ocanren {
+            actions == [] & all_states == [init_state] | 
+            fresh act, acts, fves, tves, next_state, tail_states in
+              actions  == act :: acts
+            & act == (fves, tves)
+            & transfer_balsam fves tves init_state next_state
+            & all_states == init_state :: tail_states
+            & g acts next_state tail_states };;
 
 (*
       let rec no_loop history state =
@@ -140,47 +157,38 @@ module Steps = struct
         history == [] |
         fresh h, t in history == h :: t & no_loop t h & distinct_states t };;
 
- 
-     let rec g history =
-           ocanren {
-             fresh cdr_states, mid_states in
-               List.appendo [init_state] cdr_states history
-             & List.appendo mid_states [target_state] cdr_states
-             & fresh fves, tves, s, ss in mid_states == s :: ss    
-             & transfer_balsam fves tves init_state s
-                 { mid_state == target_state & histail == [mid_state]
-                 }
-             & hist' = mid_state :: hist              
-             & history == start_state :: hist'
-             & g hist' mid_state post_state }
-    in let open Vessel in fun mvs fstat tstat -> ocanren { g' [fstat] (ves_a, ves_a) mvs fstat tstat } ;;
-*)
+ *)
+    
 end;;
 
+module Test = struct
 
-(* do some test next for the above relations *)
+  open Vessel;;
+  open Vessel.Action;;
 
-let print_str_nl s = print_string s; print_newline ();; 
+  let print_str_nl s = print_string s; print_newline ();; 
+(*
+  let _ = 
+    L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
+    run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (24,0,0,0) q }) prj_state ;
+    print_newline();
+    L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
+    run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (11,13,0,0) q }) prj_state ;;
 
-let _ = 
-L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
-run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (24,0,0,0) q }) prj_state ;
-print_newline();
-L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
-run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (11,13,0,0) q }) prj_state ;;
-
-@type moves = (vessel * vessel) GT.list with show;;
-
-let rec print_moves = 
-  function [] -> ()
-         | ms :: mss' ->
-           print_str_nl (show(moves) ms);
-           Printf.printf "Or\n";
-           print_moves mss';;
+  let rec print_moves = 
+    function [] -> ()
+          | ms :: mss' ->
+            print_str_nl (show(moves) ms);
+            Printf.printf "Or\n";
+            print_moves mss';;
                                     
+  let _  = 
+    print_moves @@ Stream.take ~n:5 @@ 
+    run q (fun q -> ocanren {Steps.f q (24,0,0,0) (8,8,8,0)}) prj_moves ;;
+*)
+  let _  =
+  let imvs = inj_moves [(A, D); (A, C); (D, A); (A, B); (B, D); (C, A); (D, A); (B, C); (A, B); (B, D); (D, A)] in
+    L.iter print_str_nl @@ L.map (show(states))  @@ Stream.take @@
+    run q (fun q -> ocanren {Steps.g imvs (24,0,0,0) q }) prj_states ;;
 
-let _  =
-print_moves @@ Stream.take ~n:5 @@ 
-run q (fun q -> ocanren {Steps.f q (24,0,0,0) (8,8,8,0)}) prj_moves ;;
-  
-
+end;;
