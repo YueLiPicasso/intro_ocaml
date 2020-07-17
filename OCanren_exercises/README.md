@@ -60,7 +60,7 @@ technicalities such as types to represent the states and the actions of the flee
 ### Robbers Problem
 
 With the confidence gained from the earlier success, in the subsequent two days
-I found and encoded the [Robber's Problem](robbers) in OCanren. This problem
+I found and encoded the [Robbers Problem](robbers) in OCanren. This problem
 again (like the Jeep Problem) requires using tabling to avoid getting lost in
 loops, and benefits from mixed functional-relational programming. Injection
 and projection becomes more natural for me now, but the correct way to pattern
