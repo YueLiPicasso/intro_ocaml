@@ -427,9 +427,7 @@ run q (fun q -> ocanren { steps init !(l) q}) prj_state ;;
 
 *)
 
-(* next *)
-(* WGC, Hanoi, aircraft range? *)
 
-(* capacity issue: permute list of length 8 maximun; 
-   jeep problem 15 units of tank capacity for 23 units of distance: 
+(* computation capacity issue: 
+   jeep problem: 15 units of tank capacity for 23 units of distance: 
    process killed *)

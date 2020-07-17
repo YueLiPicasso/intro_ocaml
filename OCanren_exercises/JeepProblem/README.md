@@ -91,6 +91,25 @@ reaching base B, in the following way:
 1. fill 1 unit (from the mini fuel dump, now the tank is full again, and the jeep is 1 unit from base A);
 1. forward 3 units (if the distance between the bases is 4 units, then the jeep has now completed the journey).   
 
+## OCanren's Solution
+
+We can use OCanren to find the sequence of moves in order to reach a certain distance. For C = 5, OCanren
+gives the following stragety to help the jeep go for 6 units of distance:
+
+```ocaml
+[Forward (1); Unload (1); Backward (1); Fill (3); Forward (1); Fill (1); Forward (5)]
+```
+
+And to go for 8 units of distance, OCanren found the solution below:
+
+```ocaml
+ [Forward (1); Unload (1); Backward (1); Fill (2); Forward (1); Unload (2); Backward (1);
+  Fill (5); Forward (1); Unload (1); Backward (1); Fill (3); Forward (1); Fill (1);
+  Forward (1); Unload (2); Backward (2); Fill (5); Forward (3); Unload (1); Backward (1);
+  Fill (1); Backward (1); Fill (1); Backward (1); Fill (4); Forward (1); Fill (2);
+  Forward (1); Fill (1); Forward (1); Fill (1); Forward (5)]
+```
+
 ## Reference
 
 https://mathworld.wolfram.com/JeepProblem.html 
