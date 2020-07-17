@@ -1,5 +1,6 @@
 open GT;;
 open OCanren;;
+module L = Stdlib.List;;
 open OCanren.Std;;
 
 (* To label the four vessels *)
@@ -53,6 +54,26 @@ let refresh_state ves bal pre_state post_state =
 };;
 
 
+let from_to ves_1 ves_2 =
+  let open Vessel in
+  ocanren { ves_1 == ves_a & ves_2 == ves_b |
+            ves_1 == ves_a & ves_2 == ves_c |
+            ves_1 == ves_a & ves_2 == ves_d |
+            
+            ves_1 == ves_b & ves_2 == ves_a |
+            ves_1 == ves_b & ves_2 == ves_c |
+            ves_1 == ves_b & ves_2 == ves_d |
+            
+            ves_1 == ves_c & ves_2 == ves_a |
+            ves_1 == ves_c & ves_2 == ves_b |
+            ves_1 == ves_c & ves_2 == ves_d |
+            
+            ves_1 == ves_d & ves_2 == ves_a |
+            ves_1 == ves_d & ves_2 == ves_b |
+            ves_1 == ves_d & ves_2 == ves_c 
+          };;
+
+
 let transfer_balsam from_ves to_ves from_state to_state =
   let open Nat in
   ocanren {
@@ -63,24 +84,42 @@ let transfer_balsam from_ves to_ves from_state to_state =
           volm_to_ves  , (* volumn of to_ves *)
           free_to_ves  , (* empty space in to_ves before transfer *)
           aux_state      (* helper variable *)
-    in how_much from_state from_ves val_from_ves &
-       how_much from_state to_ves   val_to_ves   &
+    in from_to from_ves to_ves                   &
+       how_much from_state from_ves val_from_ves &
+       val_from_ves > zero                       &
+       how_much from_state to_ves val_to_ves     &
        volumn to_ves volm_to_ves                 &
-       (+) free_to_ves val_to_ves volm_to_ves    & 
-       { val_from_ves <= free_to_ves                           
+       (+) free_to_ves val_to_ves volm_to_ves    &
+       free_to_ves > zero                        &
+       { val_from_ves <= free_to_ves
        & (+) val_from_ves val_to_ves val_to_ves'               
-       & refresh_state from_ves zero from_state aux_state      
-       & refresh_state to_ves val_to_ves' aux_state to_state 
+       & refresh_state from_ves zero        from_state aux_state      
+       & refresh_state to_ves   val_to_ves' aux_state  to_state 
        |
          val_from_ves > free_to_ves                            
        & (+) free_to_ves val_from_ves' val_from_ves            
        & refresh_state from_ves val_from_ves' from_state aux_state
-       & refresh_state to_ves volm_to_ves aux_state to_state
+       & refresh_state to_ves   volm_to_ves   aux_state  to_state
        }
 };;
 
 
+(* reification primitives *)
+
+let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d );;
+
 (* do some test next for the above relations *)
+
+let print_str_nl s = print_string s; print_newline ();; 
+
+let _ = 
+L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
+run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (24,0,0,0) q }) prj_state ;
+print_newline();
+L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
+run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (11,13,0,0) q }) prj_state ;;
+
+
 
 (*
 
