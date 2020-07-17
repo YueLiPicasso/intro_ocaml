@@ -58,7 +58,7 @@ Let B = 5 and OCanren suggested the following solutions
 for fleets of various sizes to achieve certain ranges. In the
 table, `Forward (x)` means that (all aircraft in) the fleet fly
 forward for x units of distance; `Abandon([a1,...,an])` means that
-the after abondoning one aircraft, the new state of the fleet is
+ after abondoning one aircraft, the new state of the fleet is
 `[a1,...,an]` where `a1,...,an` are fuel available for each aircraft
 in the fleet. Without loss of generality, we always abandon the left
 most aircraft in the list. It took about 10 mins to compute for the
