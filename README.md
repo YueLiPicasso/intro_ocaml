@@ -1,14 +1,22 @@
-# OCaml Study Notes
-This repo hosts artifects created while I was learning the OCaml language.
+# OCaml and OCanren Study Notes
+
+This repo hosts artifects created while I was learning the OCaml language and
+subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren).
+
+## OCanren Examples
+
+The [OCanren_exericese](OCanren_exericese) directory contains several interesting (recreational)
+mathematical problems solved using OCanren, such as planning for a jeep the strategy to
+cross a desert, or for a aircraft fleet the way to achieve a ccertain range, or even for a group
+robbers the way to evenly share their booty !
 
 
-[ch1](ch1), ch2, etc. correspond to chapter 1, 2, ... of the OCaml [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/). 
+## Other Goodies
 
-[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog. Translating the code into [OCanren](https://github.com/JetBrains-Research/OCanren) is an ongoing exercise.
+The [sessions](sessions) folder are exercise code that I wrote following several OCaml resources.
 
-[summer](summer) contains workouts according to a summer school [tutorial](http://caml.inria.fr/pub/docs/u3-ocaml/index.html) by Didier Remy. 
+[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog. Translating the code into OCanren  is an ongoing exercise.
 
-[from_beginning](from_beginning) is created following a [textbook](http://ocaml-book.com/) by John Whitington.
 
 
 ## Compiling OCanren Source
