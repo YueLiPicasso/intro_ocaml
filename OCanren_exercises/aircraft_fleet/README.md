@@ -52,6 +52,26 @@ then there are  two possibilities:
 then continues to fly for 2 units. Thus the fleet achieves the range of 3 units.
 
 
+## OCanren's Solution
+
+Let B = 5 and OCanren suggested the following solutions
+for fleets of various sizes to achieve certain ranges. In the
+table, `Forward (x)` means that (all aircraft in) the fleet fly
+forward for x units of distance; `Abandon([a1,...,an])` means that
+the after abondoning one aircraft, the new state of the fleet is
+`[a1,...,an]` where `a1,...,an` are fuel available for each aircraft
+in the fleet. Without loss of generality, we always abandon the left
+most aircraft in the list. It took about 10 mins to compute for the
+6-aircraft fleet.
+
+Fleet Size | Range | Moves
+---        | ---   | ---
+2          | 7     | [Forward (2); Abandon ([5]); Forward (5)] 
+3          | 9     | [Forward (2); Abandon ([4; 5]); Forward (2); Abandon ([5]); Forward (5)] 
+4          | 10    | [Forward (2); Abandon ([5; 4; 3]); Forward (1); Abandon ([4; 5]); Forward (2); Abandon ([5]); Forward (5)] 
+5          | 11    | [Forward (1); Abandon ([5; 5; 5; 4]); Forward (1); Abandon ([5; 5; 5]); Forward (2); Abandon ([4; 5]); Forward (2); Abandon ([5]); Forward (5)] 
+6          | 12    | [Forward (1); Abandon ([5; 5; 5; 5; 4]); Forward (1); Abandon ([5; 5; 5; 4]); Forward (1); Abandon ([5; 5; 5]); Forward (2); Abandon ([4; 5]); Forward (2); Abandon ([5]); Forward (5)]
+
 ## Reference
 
 J. N. Franklin _[The Range of a Fleet of Aircraft](https://doi.org/10.1137/0108039)_
