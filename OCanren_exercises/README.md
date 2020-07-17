@@ -41,18 +41,18 @@ letter _L_ stands for _Logic_. This was my second exercise.
 
 ### Jeep Problem 
 
-Next comes the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
+Next came the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
 encoding of the problem, however, is no more than stating the most immediate
 and straightforward facts. OCanren involves a syntactic extension to OCaml
 using the advanced camlp5 utility. This extension is signalled by the
 `ocanren { }` construct. Exploration of this was in the context of the Jeep
-problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library could
+problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library was
 be attempted.
 
 ### Range of a Fleet of Aircraft
 
-All the above three exercises are based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
-is my first and original contribution to the collection of OCanren samples. It also serves as a test of my skills with OCanren after several months of learning. I found the reference paper
+All the above three exercises were based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
+was my first and original contribution to the collection of OCanren samples. It also served as a test of my skills with OCanren after several months of learning. I found the reference paper
 when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
 technicalities such as types to represent the states and the actions of the fleet, and I finished with the work in the following day.
 
@@ -61,9 +61,9 @@ technicalities such as types to represent the states and the actions of the flee
 
 With the confidence gained from the earlier success, in the subsequent two days
 I found and encoded the [Robbers Problem](robbers) in OCanren. This problem
-again (like the Jeep Problem) requires using tabling to avoid getting lost in
-loops, and benefits from mixed functional-relational programming. Injection
-and projection becomes more natural for me now, but the correct way to pattern
+again (like the Jeep Problem) required using tabling to avoid getting lost in
+loops, and benefitted from mixed functional-relational programming. Injection
+and projection became more natural for me, but the correct way to pattern
 match injected pairs was not found until some surprise and observation. This
 was my second original contribution to the OCanren sample collection.
 
