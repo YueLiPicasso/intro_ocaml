@@ -104,9 +104,22 @@ let transfer_balsam from_ves to_ves from_state to_state =
 };;
 
 
+module Steps = struct
+  let f = Tabling.(tabledrec three) (* use tabling to avoid looping *)
+      (fun f moves pre_state post_state ->
+         ocanren {
+           moves == [] & pre_state == post_state |
+           fresh mid_state, m, ms, fves, tves in
+               moves == m :: ms                 
+             & m == (fves, tves) 
+             & transfer_balsam fves tves pre_state mid_state         
+             & f ms mid_state post_state  })
+end;;
+
 (* reification primitives *)
 
-let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d );;
+let prj_state x = match project x with (a,(b,(c,d))) -> (Nat.to_int a, Nat.to_int b, Nat.to_int c, Nat.to_int d )                                                        
+and prj_moves x = List.to_list (fun (a,b) -> a,b) @@ project x;;
 
 (* do some test next for the above relations *)
 
@@ -119,7 +132,20 @@ print_newline();
 L.iter print_str_nl @@ L.map (show(state)) @@ Stream.take @@
 run q (fun q -> ocanren {fresh v1, v2 in transfer_balsam v1 v2 (11,13,0,0) q }) prj_state ;;
 
+@type moves = (vessel * vessel) GT.list with show;;
 
+let rec print_moves = 
+  function [] -> ()
+         | ms :: mss' ->
+           print_str_nl (show(moves) ms);
+           Printf.printf "Or\n";
+           print_moves mss';;
+                                    
+
+let _  =
+print_moves @@ Stream.take ~n:10000 @@ 
+run q (fun q -> ocanren {Steps.f q (24,0,0,0) (8,8,8,0)}) prj_moves ;;
+  
 
 (*
 
