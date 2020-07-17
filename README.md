@@ -6,9 +6,9 @@ subsequently when I was learning [OCanren](https://github.com/JetBrains-Research
 ## OCanren Examples
 
 The [OCanren_exercises](OCanren_exercises) directory contains several interesting (recreational)
-mathematical problems solved using OCanren, such as planning for a jeep the strategy to
-cross a desert, or for a aircraft fleet the way to achieve a ccertain range, or even for a group
-robbers the way to evenly share their booty !
+mathematical problems solved using OCanren, such as planning for a jeep to
+cross a desert, or for an aircraft fleet  to achieve a certain range, or even for a group
+robbers to evenly share their booty !
 
 
 ## Other Goodies
