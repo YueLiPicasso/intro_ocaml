@@ -60,7 +60,8 @@ table, `Forward (x)` means that (all aircraft in) the fleet fly
 forward for x units of distance; `Abandon([a1,...,an])` means that
  after abondoning one aircraft, the new state of the fleet is
 `[a1,...,an]` where `a1,...,an` are fuel available for each aircraft
-in the fleet. Without loss of generality, we always abandon the left
+in the fleet and this takes into account of fuel transfer from the
+single abandoned aircraft to the rest of the fleet. Without loss of generality, we always abandon the left
 most aircraft in the list. It took about 10 mins to compute for the
 6-aircraft fleet.
 
