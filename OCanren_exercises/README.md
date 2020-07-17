@@ -1,11 +1,12 @@
 # On Learning OCanren 
 
-OCanren is a unique implementation of miniKanren in OCaml. Its obvious
-prerequisites are miniKanren (Scheme-based) and OCaml. A good knowledge
-of Prolog and SLD-resolution is also very helpful for understanding the
-high-level behavior of OCanren (and miniKanren as well). Here I share
-my experience of learning OCanren using the exercises in this folder.
-A few comments on learning OCaml is also appended. 
+In this article I discuss about several OCanren programming
+exercises in terms of how I, as a beginner, approached them,
+and how I progressed from one to the next. This is
+to share learning experiences, not to engage in the technical details
+of the  exercises. Such details are to be found in the respective sub-directory,
+as a README file or as comments in the source code.
+
 
 
 ## The OCanren exercises
@@ -46,13 +47,19 @@ problem. Also at this point a better understanding of the [LPair](https://github
 be attempted.
 
 
-All the above exercises are based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
+All the above three exercises are based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
 is my original contribution to the collection of OCanren samples. It also serves as a test of my skills with OCanren after several months of learning. I found the reference paper
 when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
 technicalities such as types to represent the state and the actions of the fleet, and I finished with the work in the following day.
 
 
 ## Learning OCaml
+
+OCanren is a unique implementation of miniKanren in OCaml. Its obvious
+prerequisites are miniKanren (Scheme-based) and OCaml. A good knowledge
+of Prolog and SLD-resolution is also very helpful for understanding the
+high-level behavior of OCanren (and miniKanren as well). Below are
+a few comments on learning OCaml.
 
 The OCaml tutorial (Part I of the [reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/)) covers the features of the core language, such as types,
 let-bindings, pattern matching, exception handling, modules and classes etc. I
