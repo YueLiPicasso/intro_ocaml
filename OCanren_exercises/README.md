@@ -5,7 +5,7 @@ exercises in terms of how I, as a beginner, approached them,
 and how I progressed from one to the next. This is
 to share learning experiences, not to engage in the technical details
 of the  exercises. Such details are to be found in the respective sub-directory,
-as a README file or as comments in the source code.
+as README files or as comments in the source code.
 
 
 
