@@ -63,12 +63,17 @@ let divo x y z =
 
 let ( / ) = divo
 
-(*
 let addo x y z =
-  Fresh.
+  Fresh.(succ five) (fun nx ny nz dx dy dz ->
+      ( x === LPair.pair nx dx) &&&
+      ((y === LPair.pair ny dy) &&&
+      Fresh.two (fun nxdy dxny ->
+           (LNat.mulo dx dy dz) &&&
+           ((LNat.mulo nx dy nxdy) &&&
+           ((LNat.mulo dx ny dxny) &&&
+           (LNat.addo nxdy dxny nz))))))
 
-val ( + ) : groundi -> groundi -> groundi -> goal
-*)
+let ( + ) = addo
 
 (* For the mining puzzle , these are nor needed
 
