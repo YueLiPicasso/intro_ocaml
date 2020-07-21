@@ -1,14 +1,13 @@
 open Logic
 open Core
 
-@type 'a rat = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt
 
 let logic' = logic
 
 module X =
   struct
-    @type 'a t = 'a rat with show, gmap, html, eq, compare, foldl, foldr, fmt
+    @type 'a t = 'a * 'a with show, gmap, html, eq, compare, foldl, foldr, fmt
     let fmap f x = GT.gmap (t) f x
   end
 
@@ -44,7 +43,7 @@ let inj = fun x -> LPair.inj LNat.inj LNat.inj x
 let rec reify h n = F.reify reify h n
 let rec prjc onvar env n = F.prjc (prjc onvar) onvar env n
 
-let rec rat n = Logic.inj @@ F.distrib @@ X.fmap rat n
+let rat (a,b) = LPair.pair (LNat.nat a) (LNat.nat b)
     
 let  mulo x y z =
   Fresh.(succ five) (fun nx dx ny dy nz dz->  (* n- : numerator; d- : denominator *)

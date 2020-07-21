@@ -1,14 +1,12 @@
 open Logic
 open Core
 
+
 (** Abstract rational type *)
-@type 'a rat = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
+@type 'a t = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
 
 (** Type synonym to prevent toplevel [logic] from being hidden *)
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt
-
-(** Synonym for abstract rational type *)
-@type 'a t = 'a rat with show, html, eq, compare, foldl, foldr, gmap, fmt
 
 (** Ground rational *)
 @type ground = LNat.ground t with show, html, eq, compare, foldl, foldr, gmap, fmt
