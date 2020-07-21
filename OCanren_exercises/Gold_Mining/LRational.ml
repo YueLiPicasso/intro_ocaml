@@ -1,20 +1,14 @@
 open Logic
 open Core
-open LPair
-open LNat
-    
 
-(** the type for ground positive rational numbers *)
-@type 'a t = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
-
-(** Type synonym to prevent toplevel [logic] from being hidden *)
+@type 'a rat = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt
 
 let logic' = logic
 
 module X =
   struct
-    @type 'a t = 'a nat with show, gmap, html, eq, compare, foldl, foldr, fmt
+    @type 'a t = 'a rat with show, gmap, html, eq, compare, foldl, foldr, fmt
     let fmap f x = GT.gmap (t) f x
   end
 
@@ -22,8 +16,10 @@ include X
 
 module F = Fmap (X)
 
-(** Logic rational *)
-@type logic = Nat.logic t logic' with show, html, eq, compare, foldl, foldr, gmap, fmt
+@type ground = LNat.ground t        with show, html, eq, compare, foldl, foldr, gmap, fmt
+@type logic = LNat.logic t logic'   with show, html, eq, compare, foldl, foldr, gmap, fmt
+
+type groundi = (ground, logic) injected
 
 let logic = {
   logic with
@@ -40,69 +36,40 @@ let logic = {
     end
 }
 
-(** Ground rationals are ismorphic for regular one *)
-@type ground = Nat.ground t with show, html, eq, compare, foldl, foldr, gmap, fmt
+let of_int_ratio = fun (a,b) -> LNat.(of_int a, of_int b)
+let to_int_ratio = fun (a,b) -> LNat.(to_int a, to_int b)
 
-
-(** [of_int n] converts integer pair [(m,n)] into [ground]; negative integers become [O] *)
-let  of_int : int * int -> ground =
-  fun (a,b) -> (of_int a, of_int b)
-
-(** [to_int g] converts ground [g] into integer pair *)
-let to_int : ground -> int * int =
-  fun (a,b) -> (to_int a, to_int b)
-
-(** Logic injection (for reification) *)
-let inj : ground -> logic =  
-   LPair.inj LNat.inj LNat.inj 
-
-(** A type synonym for injected rational *)
-type groundi = (ground, logic) injected
+let inj = fun x -> LPair.inj LNat.inj LNat.inj x
 
 let rec reify h n = F.reify reify h n
-
 let rec prjc onvar env n = F.prjc (prjc onvar) onvar env n
 
-(** Make injected [rational] from ground one *)
 let rec rat n = Logic.inj @@ F.distrib @@ X.fmap rat n
     
-
-(* After the reification stage: free variables make these impossible 
-
-(** the greatest common divisor *)
-
-(** the least common multiple *)
-
-*)
-    
-(** Relational addition *)
-val addo  : groundi -> groundi -> groundi -> goal
-
-(** Infix syninym for [addo] *)
-val ( + ) : groundi -> groundi -> groundi -> goal
-
-(** Relational multiplication *)
 let  mulo x y z =
   Fresh.(succ five) (fun nx dx ny dy nz dz->  (* n- : numerator; d- : denominator *)
-      (x === pair nx dx)     &&& 
-      ((y === pair ny dy)    &&&
+      (x === LPair.pair nx dx)     &&& 
+      ((y === LPair.pair ny dy)    &&&
       ((LNat.mulo nx ny nz)  &&&
       ((LNat.mulo dx dy dz)  &&&  
-      (z === pair nz dz)))))
+      (z === LPair.pair nz dz))))) (* &&& is left associative. 
+                                      We force right association for speed  *)
 
-(* left associative &&&; but we want right association, which is faster  *)
-
-(** Infix syninym for [mulo] *)
 let ( * ) = mulo
 
-(** Relational division *)
 let divo x y z =
   Fresh.two (fun ny dy ->
-      (y === pair ny dy) &&&
-      mulo x (pair dy ny) z)
+      (y === LPair.pair ny dy) &&&
+      mulo x (LPair.pair dy ny) z)
 
-(** Infix syninym for [divo] *)
 let ( / ) = divo
+
+(*
+let addo x y z =
+  Fresh.
+
+val ( + ) : groundi -> groundi -> groundi -> goal
+*)
 
 (* For the mining puzzle , these are nor needed
 
