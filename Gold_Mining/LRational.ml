@@ -4,7 +4,7 @@ open LPair
 open LNat
     
 
-(** the type for ground rational numbers *)
+(** the type for ground positive rational numbers *)
 @type 'a t = 'a * 'a with show, html, eq, compare, foldl, foldr, gmap, fmt
 
 (** Type synonym to prevent toplevel [logic] from being hidden *)
