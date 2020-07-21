@@ -19,7 +19,7 @@ We possess two gold mines: Anaconda and Bonanza,
 1.   Given a mining plan in terms of a sequence of mining sites, 
    e.g., [A;A;B;B;A;B], to compute the expectation of this plan.
 
-1. Given an expectation, compute a mining plan that satisfies it.
+1. Given an expectation, to compute a mining plan that satisfies it.
 
 ## Reference
 
