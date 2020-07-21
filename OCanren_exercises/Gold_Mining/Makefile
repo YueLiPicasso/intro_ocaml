@@ -1,5 +1,5 @@
 TOPFILE = mining
-SOURCES = mining.ml
+SOURCES = LRational.ml mining.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
