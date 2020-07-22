@@ -88,7 +88,7 @@ let addo x y z =
 
 let ( + ) = addo;;
 
-(* For the mining puzzle , these are nor needed
+(* For the mining puzzle , these are not needed
 
 (** Comparisons *)
 val leo : groundi -> groundi -> LBool.groundi -> goal
