@@ -79,9 +79,24 @@ let _ =
   run q (fun q-> ocanren {Rat.( + ) (1,3) (1,1) q} )  Rat.prj_rat;
   print_newline () ;;
 
+(* problematic cases *)
+
+@type iprprl = ((int * int) * (int * int)) GT.list with show;;
+
+(* this divergea *)
+
+let _ =
+  print_string @@ (show(iprprl)) @@ Stream.take ~n:5 @@
+  run qr (fun q r-> ocanren { Rat.mulo q r (10,21)}) (fun q r -> Rat.(prj_rat q, prj_rat r));
+  print_newline () ;;
+
+(* This diverges as well. Furthermore, 
+   if (3,3) is changed to (1,1) then no answer *)
+
 let _ =
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {Rat.( + ) (1,3) q (3,3)} )  Rat.prj_rat;
-  print_newline () ;; (* if (3,3) -> (1,1) then no answer, else divergence *)
+  print_newline () ;; 
+
 
 (* Unfinished *)
