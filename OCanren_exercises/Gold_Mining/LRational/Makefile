@@ -11,7 +11,7 @@ PXFLAGS = $(CAMLP5)
 # add flag -i to BFLAGS to show types only
 BFLAGS = -rectypes -g 
 OFLAGS = $(BFLAGS)
-BFLAGS2 = -rectypes -g -a
+BFLAGS2 = -rectypes -g -a 
 OFLAGS2 = $(BFLAGS)
 CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend *.cma *.cmxa)
 

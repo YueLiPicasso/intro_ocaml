@@ -48,12 +48,16 @@ let to_int_ratio = fun (a,b) -> LNat.(to_int a, to_int b);;
 
 let inj = fun x -> LPair.inj LNat.inj LNat.inj x;;
 
+let to_rat (a,b) = LPair.pair (LNat.nat a) (LNat.nat b);;
+
+let inj_int_ratio (x,y) =  match of_int_ratio (x,y) with a,b -> to_rat (a,b);; 
+
 let reify h n = F.reify LNat.reify h n;;
 
 let prjc nat rat env n = F.prjc (LNat.prjc nat) rat env n;;
 
-let to_rat (a,b) = LPair.pair (LNat.nat a) (LNat.nat b);;
-    
+let prj_rat x = to_int_ratio @@ project x;;
+
 let  mulo x y z =
   Fresh.(succ five) (fun nx dx ny dy nz dz->  (* n- : numerator; d- : denominator *)
       (x === LPair.pair nx dx)     &&& 
@@ -79,11 +83,12 @@ let addo x y z =
   Fresh.(succ five) (fun nx ny nz dx dy dz ->
       ( x === LPair.pair nx dx) &&&
       ((y === LPair.pair ny dy) &&&
+      (( z === LPair.pair nz dz) &&&
       Fresh.two (fun nxdy dxny ->
            (LNat.mulo dx dy dz) &&&
            ((LNat.mulo nx dy nxdy) &&&
            ((LNat.mulo dx ny dxny) &&&
-           (LNat.addo nxdy dxny nz))))))
+           (LNat.addo nxdy dxny nz)))))))
 ;;
 
 let ( + ) = addo;;

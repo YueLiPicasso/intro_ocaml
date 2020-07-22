@@ -11,7 +11,7 @@ CAMLP5 = -syntax camlp5o -package ocanren.syntax,GT.syntax.all
 PXFLAGS = $(CAMLP5)
 INCLUDES = -I LRational
 # add flag -i to BFLAGS to show types only
-BFLAGS = -rectypes -g $(INCLUDES)
+BFLAGS = -rectypes -g $(INCLUDES) 
 OFLAGS = $(BFLAGS)
 CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend)
 

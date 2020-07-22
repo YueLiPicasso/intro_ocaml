@@ -17,9 +17,6 @@ open Core
 (** Logic rational *)
 @type logic = LNat.logic t logic' with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-(** Logic injection (for reification) *)
-val inj : ground -> logic;;
-
 (** A type synonym for injected rat *)
 type groundi = (ground, logic) injected;;
 
@@ -30,6 +27,9 @@ val reify : VarEnv.t -> groundi -> logic;;
 val prjc : (int -> LNat.ground GT.list -> LNat.ground) ->
   (int -> ground GT.list -> ground) -> VarEnv.t -> groundi -> ground;;
 
+(** Logic injection (for reification) *)
+val inj : ground -> logic;;
+
 (** [of_int_ratio n] converts integer pair [(m,n)] into [ground]; negative integers become [O] *)
 val of_int_ratio : int * int -> ground;;
 
@@ -38,6 +38,12 @@ val to_int_ratio : ground -> int * int;;
 
 (** Make injected [rat] from ground one *)
 val to_rat : ground -> groundi;;
+
+(** injection primitive *)
+val inj_int_ratio : int * int -> groundi;;
+
+(** projection primitive *)
+val prj_rat : (ground,'b) reified -> int * int
 
 (** Relational multiplication *)
 val mulo  : groundi -> groundi -> groundi -> goal;;
@@ -70,6 +76,5 @@ val (<=) : groundi -> groundi -> goal
 val (>=) : groundi -> groundi -> goal
 val (>)  : groundi -> groundi -> goal
 val (<)  : groundi -> groundi -> goal
-
 
 *)
