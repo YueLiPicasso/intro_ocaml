@@ -2,12 +2,10 @@ open GT;;
 open OCanren;;
 open OCanren.Std;;
 
-(* positive rational numbers *)
-(* a/b  is representedby a pair (a, b) *)
 module Rat = LRational;;
 
 (* injection primitive *)
-let inj_int_ratio (x,y) =  match Rat.of_int_ratio (x,y) with a,b -> Rat.rat (a,b);; 
+let inj_int_ratio (x,y) =  match Rat.of_int_ratio (x,y) with a,b -> Rat.to_rat (a,b);; 
 
 @type mine = A | B with show;;
 

@@ -1,18 +1,18 @@
-TOPFILE = mining
-SOURCES = mining.ml
-MODS = LRational.ml
+TOPFILE = LRational
+SOURCES = LRational.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
-OUTB = $(TOPFILE).byte
-OUTO = $(TOPFILE).opt
+OUTB = $(TOPFILE).cma
+OUTO = $(TOPFILE).cmxa
 # -dsource --- dump a text *after* camlp5 extension
 CAMLP5 = -syntax camlp5o -package ocanren.syntax,GT.syntax.all 
 PXFLAGS = $(CAMLP5)
-INCLUDES = -I LRational
 # add flag -i to BFLAGS to show types only
-BFLAGS = -rectypes -g $(INCLUDES)
+BFLAGS = -rectypes -g 
 OFLAGS = $(BFLAGS)
+BFLAGS2 = -rectypes -g -a
+OFLAGS2 = $(BFLAGS)
 CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend)
 
 .PHONY : all clean
@@ -20,13 +20,13 @@ CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend)
 all:.depend $(OUTO)
 
 .depend: $(SOURCES)
-	$(OCAMLDEP) $(INCLUDES) $(PXFLAGS) *.ml > .depend
+	$(OCAMLDEP) $(PXFLAGS) *.ml > .depend
 
 $(OUTO): $(SOURCES:.ml=.cmx)
-	$(OCAMLOPT) -o $(OUTO) $(OFLAGS)  $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(MODS:.ml=.cmx) $(SOURCES:.ml=.cmx) 
+	$(OCAMLOPT) -o $(OUTO) $(OFLAGS2) $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmx) 
 
 $(OUTB): $(SOURCES:.ml=.cmo)
-	$(OCAMLC) -o $(OUTB) $(BFLAGS) $(LIBS) -linkpkg -package GT,ocanren $(MODS:.ml=.cmo $(SOURCES:.ml=.cmo) 
+	$(OCAMLC) -o $(OUTB) $(BFLAGS2) $(LIBS) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmo) 
 
 clean:
 	rm -Rf $(CLEAN)
