@@ -24,3 +24,8 @@ We possess two gold mines: Anaconda and Bonanza,
 ## Reference
 
 Bellman, Richard Ernest, _The Theory of Dynamic Programming_, Santa Monica, Calif.: RAND Corporation, P-550, 1954. As of July 20, 2020: https://www.rand.org/pubs/papers/P550.html
+
+## Compilation
+
+First run `make` in the [LRational](LRational) directory. This creates the compiled interface and implementation of the
+`LRational` library. Then run `make` in the top level directory of the Gold Mining project.   

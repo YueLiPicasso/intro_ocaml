@@ -19,7 +19,7 @@ The library provides means for
 ## Usage
 
 The library itself can be compiled into OCaml library files (`.cma` and`.cmxa`) using the Makefile.
-This also creates `.cmi` and `.cmx` (or `.cmo`) files that can be referenced by user programs, assuming
-that the correct search path has been added using the `-I` compiler option. See also the
+This also creates `.cmi` and `.cmx` (or `.cmo`) files that can be referenced by user programs.
+See the
 [OCaml reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/index.html) chapters
 on `ocamlc` and `ocamlopt` and `ocamldep`.
