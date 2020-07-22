@@ -26,7 +26,7 @@ $(OUTO): $(SOURCES:.ml=.cmx)
 	$(OCAMLOPT) -o $(OUTO) $(OFLAGS)  $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(MODS:.ml=.cmx) $(SOURCES:.ml=.cmx) 
 
 $(OUTB): $(SOURCES:.ml=.cmo)
-	$(OCAMLC) -o $(OUTB) $(BFLAGS) $(LIBS) -linkpkg -package GT,ocanren $(MODS:.ml=.cmo $(SOURCES:.ml=.cmo) 
+	$(OCAMLC) -o $(OUTB) $(BFLAGS) $(LIBS) -linkpkg -package GT,ocanren $(MODS:.ml=.cmo) $(SOURCES:.ml=.cmo) 
 
 clean:
 	rm -Rf $(CLEAN)

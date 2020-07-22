@@ -13,7 +13,7 @@ BFLAGS = -rectypes -g
 OFLAGS = $(BFLAGS)
 BFLAGS2 = -rectypes -g -a
 OFLAGS2 = $(BFLAGS)
-CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend)
+CLEAN = $(wildcard *.cmi *.cmo *.cmx *.annot *.o *.opt *.byte *~ *depend *.cma *.cmxa)
 
 .PHONY : all clean
 
