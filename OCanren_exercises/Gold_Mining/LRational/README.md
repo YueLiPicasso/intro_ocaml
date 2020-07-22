@@ -13,7 +13,7 @@ The library provides means for
 
 ## Limitation
 
-* No-zero denominator is _not_ enforced.
+* Non-zero denominator is _not_ enforced.
 * Simplification based on greatest common divisor is _not_ supported.
 
 ## Usage
