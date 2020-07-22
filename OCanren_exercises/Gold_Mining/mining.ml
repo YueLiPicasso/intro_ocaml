@@ -82,6 +82,6 @@ let _ =
 let _ =
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {Rat.( + ) (1,3) q (3,3)} )  Rat.prj_rat;
-  print_newline () ;;
+  print_newline () ;; (* if (3,3) -> (1,1) then no answer, else divergence *)
 
 (* Unfinished *)
