@@ -77,7 +77,7 @@ however, resulted in long waiting time without interesting results being returne
 
 ### Test 2
 
-THis time I tried to use smaller numbers.
+This time I tried to use smaller numbers.
 
 ```ocaml
 module Machine = struct
