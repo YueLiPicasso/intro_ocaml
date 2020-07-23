@@ -210,23 +210,27 @@ let _ = let open Mine in
   run q (fun q-> ocanren {expectation3 x y [b;a] q} )  Rat.prj_rat;
   print_newline () ;; 
 
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation3 x y [a;b] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+
 *)
 
-(* only gives [] *)
-let _ = let open Mine in
-  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
+
+let _ = let open Mine in                   (* Hopeless for ~n>3 *)
+  L.iter print_string @@ L.map (show(plan)) @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectation1 x y q ex} )  prj_plan;
   print_newline () ;; 
 
-(* only gives [] *)
-let _ = let open Mine in
-  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
+let _ = let open Mine in                   (* Hopeless for ~n>3 *)
+  L.iter print_string @@ L.map (show(plan)) @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectation2 x y q ex} )  prj_plan;
   print_newline () ;; 
 
-(* only gives [] *)
-let _ = let open Mine in
-  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
+let _ = let open Mine in                   (* Hopeless for ~n>3 *)
+  L.iter print_string @@ L.map (show(plan)) @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectation3 x y q ex} )  prj_plan;
   print_newline () ;; 
 
@@ -240,6 +244,12 @@ let _ = let open Mine in
 let _ = let open Mine in
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {expectation3 x y [b;b] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+(* Hopeless *)
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation3 x y [a;a] q} )  Rat.prj_rat;
   print_newline () ;; 
 
 
