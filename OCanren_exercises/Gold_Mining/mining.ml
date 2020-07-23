@@ -56,6 +56,9 @@ let rec expectation amt_A amt_B plan (expc : Rat.groundi)=
                                                 of inefficiency *)
 };;
 
+
+(* Expectation for (hd_plan :: tl_plan) *)
+
 let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
   ocanren {
     fresh amt_mined in
@@ -75,6 +78,32 @@ let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
            & expectation' m  amt_A amt_left ms expc_tl
            & Rat.( + ) amt_mined expc_tl summ
            & Rat.( * ) Machine.q summ expc } } };;
+
+
+(* Expectation for (hd_plan :: tl_plan) *)
+
+let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
+  ocanren {
+    fresh amt_mined in
+      hd_plan == Mine.a &
+      Rat.( * ) Machine.r amt_A amt_mined &
+      { tl_plan == [] & Rat.( * ) Machine.p amt_mined expc |
+        fresh m, ms in tl_plan == m :: ms &
+          fresh amt_left, expc_tl, summ in
+            Rat.( - ) amt_A amt_mined amt_left
+          & expectation'' m amt_left amt_B ms expc_tl
+          & Rat.( + ) amt_mined expc_tl summ
+          & Rat.( * ) Machine.p summ expc }
+    | hd_plan == Mine.b &
+      Rat.( * ) Machine.s amt_B amt_mined &
+      { tl_plan == [] & Rat.( * ) Machine.q amt_mined expc |
+        fresh m, ms in tl_plan == m :: ms &
+          fresh amt_left, expc_tl, summ in
+            Rat.( - ) amt_B amt_mined amt_left
+          & expectation' m  amt_A amt_left ms expc_tl
+          & Rat.( + ) amt_mined expc_tl summ
+          & Rat.( * ) Machine.q summ expc } };;
+
 
 
 (* some tests *)
