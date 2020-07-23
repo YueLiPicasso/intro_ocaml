@@ -63,7 +63,7 @@ larger a query like "what is the expectation for plan [A;B] ?", it looks as if t
 diverges. The reason for this, I suppose, is with the primitive rational number arithmetic.
 It does not perform simplification so that the numerators and denominators quickly get huge.
 For instance, the expectation for mining at B for once, as computed by the program,
-is (11880 , 1000), i.e, 11880 divided by 1000. It might be helpful is somehow this
+is (11880 , 1000), i.e, 11880 divided by 1000. It might be helpful if somehow this
 number is simplified to (297, 25).
 
 Given the expectation (11880, 1000), the program can correctly point out that the plan that has
