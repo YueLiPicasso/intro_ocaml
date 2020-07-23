@@ -28,4 +28,28 @@ Bellman, Richard Ernest, _The Theory of Dynamic Programming_, Santa Monica, Cali
 ## Compilation
 
 First run `make` in the [LRational](LRational) directory. This creates the compiled interface and implementation of the
-`LRational` library. Then run `make` in the top level directory of the Gold Mining project.   
+`LRational` library. Then run `make` in the top level directory of the Gold Mining project.
+
+## Review
+
+Here are some observations about the program.
+
+Only for trivial queries, like "what is the
+expectation for plan [A] (or [B]) ?", can it give an answer in a short moment. For even slightly
+larger a query like "what is the expectation for plan [A;B] ?", it looks as if the program
+diverges. The reason for this, I suppose, is with the primitive rational number arithmetic.
+It does not perform simplification so that the numerators and denominators quickly get huge.
+For instance, the expectation for mining at B for once, as computed by the program,
+is (11880 , 1000), i.e, 11880 divided by 1000. It might be helpful is somehow this
+number is simplified to (297, 25).
+
+Given the expectation (11880, 1000), the program can correctly point out that the plan that has
+this value is just [B]. But since It cannot compute expectations for more complex plans in a short
+time, there are no other input to test the reverse behaviour further. The idea, however.
+is to specify  an interval, and ask the program to find
+all mining plans that yield an (rational number) expectation that is located in this interval. 
+
+
+I also hoped that the program should be able to compute a list of plan-expectation pairs, i.e.,
+enumerate all possible plans and show the corresponding expectation. Asking the program to do so,
+however, resulted in long waiting time without and result being returned.    

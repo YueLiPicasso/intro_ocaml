@@ -62,9 +62,9 @@ let  mulo x y z =
   Fresh.(succ five) (fun nx dx ny dy nz dz->  (* n- : numerator; d- : denominator *)
       (x === LPair.pair nx dx)     &&& 
       ((y === LPair.pair ny dy)    &&&
-      ((LNat.mulo nx ny nz)  &&&
+      ((z === LPair.pair nz dz)  &&&
       ((LNat.mulo dx dy dz)  &&&  
-      (z === LPair.pair nz dz))))) (* &&& is left associative. 
+      (LNat.mulo nx ny nz))))) (* &&& is left associative. 
                                       We force right association for speed  *)
 ;;
 

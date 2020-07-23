@@ -44,13 +44,13 @@ module Compute = struct
      | fresh m, ms in tl_plan == m :: ms &
          fresh amt_left, expc_tl, summ in
          { hd_plan == Mine.a & Rat.( - ) amt_A amt_mined amt_left
-           & expectation' m amt_left amt_B ms expc_tl
            & Rat.( + ) amt_mined expc_tl summ
-           & Rat.( * ) Machine.p summ expc |
+           & Rat.( * ) Machine.p summ expc
+           & expectation' m amt_left amt_B ms expc_tl |
            hd_plan == Mine.b & Rat.( - ) amt_B amt_mined amt_left
-           & expectation' m  amt_A amt_left ms expc_tl
            & Rat.( + ) amt_mined expc_tl summ
-           & Rat.( * ) Machine.q summ expc } } };;
+           & Rat.( * ) Machine.q summ expc
+           & expectation' m  amt_A amt_left ms expc_tl } } };;
 
   (* Expectation for (hd_plan :: tl_plan), clauses reordered *)
   let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
@@ -62,18 +62,18 @@ module Compute = struct
         fresh m, ms in tl_plan == m :: ms &
           fresh amt_left, expc_tl, summ in
             Rat.( - ) amt_A amt_mined amt_left
-          & expectation'' m amt_left amt_B ms expc_tl
           & Rat.( + ) amt_mined expc_tl summ
-          & Rat.( * ) Machine.p summ expc }
+          & Rat.( * ) Machine.p summ expc
+          & expectation'' m amt_left amt_B ms expc_tl }
     | hd_plan == Mine.b &
       Rat.( * ) Machine.s amt_B amt_mined &
       { tl_plan == [] & Rat.( * ) Machine.q amt_mined expc |
         fresh m, ms in tl_plan == m :: ms &
           fresh amt_left, expc_tl, summ in
             Rat.( - ) amt_B amt_mined amt_left
-          & expectation'' m  amt_A amt_left ms expc_tl
           & Rat.( + ) amt_mined expc_tl summ
-          & Rat.( * ) Machine.q summ expc } };;
+          & Rat.( * ) Machine.q summ expc
+          & expectation'' m  amt_A amt_left ms expc_tl } };;
 end;;
 
 
@@ -116,21 +116,41 @@ let _ =
   run q (fun q-> ocanren {Rat.( - ) (3,3) (1,3) q} )  Rat.prj_rat;
   print_newline () ;; 
 
+@type iprprl = ((int * int) * (int * int)) GT.list with show;;
+
+let _ =                     (* this diverges if ~n>16 *)
+  print_string @@ (show(iprprl)) @@ Stream.take ~n:16 @@
+  run qr (fun q r-> ocanren { Rat.mulo q r (10,21)}) (fun q r -> Rat.(prj_rat q, prj_rat r));
+  print_newline () ;;
+
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation x y [a] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
 let _ = let open Mine in
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {expectation x y [b] q} )  Rat.prj_rat;
   print_newline () ;; 
 
 let _ = let open Mine in
-  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
-  run q (fun q-> ocanren {expectationn x y [b] q} )  Rat.prj_rat;
+  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation x y q (11880, 1000)} )  prj_plan;
   print_newline () ;; 
 
+(* Not sure if this diverges or is just slow: it should not diverge though *)
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectationn x y [b;a] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+(* only gives [] *)
 let _ = let open Mine in
   print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectation x y q ex} )  prj_plan;
   print_newline () ;; 
 
+(* only gives [] *)
 let _ = let open Mine in
   print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectationn x y q ex} )  prj_plan;
@@ -138,22 +158,3 @@ let _ = let open Mine in
 
 
 
-
-(*
-(* problematic cases *)
-
-@type iprprl = ((int * int) * (int * int)) GT.list with show;;
-
-(* this divergea *)
-
-let _ =
-  print_string @@ (show(iprprl)) @@ Stream.take ~n:5 @@
-  run qr (fun q r-> ocanren { Rat.mulo q r (10,21)}) (fun q r -> Rat.(prj_rat q, prj_rat r));
-  print_newline () ;;
-
-(* This diverges as well. Furthermore, 
-   if (3,3) is changed to (1,1) then no answer *)
-*)
-
-
-(* Unfinished *)
