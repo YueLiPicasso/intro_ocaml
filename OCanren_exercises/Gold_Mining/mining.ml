@@ -6,6 +6,7 @@ open OCanren.Std;;
 module Rat = LRational;;
 
 @type mine = A | B with show;;
+@type plan = mine GT.list with show;;
 
 module Machine = struct
   open Rat;;
@@ -23,25 +24,23 @@ module Mine = struct
   open Rat;;
   let x = inj_int_ratio (100,1)     (* init amount in A *)
   and y = inj_int_ratio (120,1);;   (* init amount in B *)
+
+  let prj_plan x = List.to_list id @@ project x
 end;;
 
-let expectation amt_A amt_B plan (expc : Rat.groundi) =
-  ocanren {
-    plan == [] & expc == (0,1) |
-    fresh m, ms in plan == m :: ms &
-      expecctation'' m amt_A amt_B ms expc };;
 
-(* Expectation for (hd_plan :: tl_plan) *)
-
-let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
-  ocanren {
-    fresh amt_mined in
-     {hd_plan == Mine.a & Rat.( * ) Machine.r amt_A amt_mined |
-      hd_plan == Mine.b & Rat.( * ) Machine.s amt_B amt_mined }
-     &
+module Compute = struct
+  
+  (* Expectation for (hd_plan :: tl_plan) *)
+  let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
+    ocanren {
+      fresh amt_mined in
+       {hd_plan == Mine.a & Rat.( * ) Machine.r amt_A amt_mined |
+        hd_plan == Mine.b & Rat.( * ) Machine.s amt_B amt_mined }
+       &
      { tl_plan == [] & 
-         { hd_plan == Mine.a & Rat.( * ) Machine.p amt_mined expc
-           hd_plan == Mine.b & Rat.( * ) Machine.q amt_mined expc }
+     { hd_plan == Mine.a & Rat.( * ) Machine.p amt_mined expc |
+       hd_plan == Mine.b & Rat.( * ) Machine.q amt_mined expc }
      | fresh m, ms in tl_plan == m :: ms &
          fresh amt_left, expc_tl, summ in
          { hd_plan == Mine.a & Rat.( - ) amt_A amt_mined amt_left
@@ -53,9 +52,8 @@ let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
            & Rat.( + ) amt_mined expc_tl summ
            & Rat.( * ) Machine.q summ expc } } };;
 
-(* Expectation for (hd_plan :: tl_plan), clauses reordered *)
-
-let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
+  (* Expectation for (hd_plan :: tl_plan), clauses reordered *)
+  let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
   ocanren {
     fresh amt_mined in
       hd_plan == Mine.a &
@@ -76,6 +74,23 @@ let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
           & expectation'' m  amt_A amt_left ms expc_tl
           & Rat.( + ) amt_mined expc_tl summ
           & Rat.( * ) Machine.q summ expc } };;
+end;;
+
+
+let expectation amt_A amt_B plan (expc : Rat.groundi) =
+  let open Compute in
+  ocanren {
+    plan == [] & expc == (0,1) |
+    fresh m, ms in plan == m :: ms &
+      expectation'' m amt_A amt_B ms expc };;
+
+let expectationn amt_A amt_B plan (expc : Rat.groundi) =
+  let open Compute in
+  ocanren {
+    plan == [] & expc == (0,1) |
+    fresh m, ms in plan == m :: ms &
+      expectation' m amt_A amt_B ms expc };;
+
 
 (* some tests *)
 
@@ -105,6 +120,23 @@ let _ = let open Mine in
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {expectation x y [b] q} )  Rat.prj_rat;
   print_newline () ;; 
+
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectationn x y [b] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+let _ = let open Mine in
+  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
+  run q (fun q-> ocanren {fresh ex in expectation x y q ex} )  prj_plan;
+  print_newline () ;; 
+
+let _ = let open Mine in
+  print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:3 @@
+  run q (fun q-> ocanren {fresh ex in expectationn x y q ex} )  prj_plan;
+  print_newline () ;; 
+
+
 
 
 (*
