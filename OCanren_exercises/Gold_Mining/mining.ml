@@ -29,36 +29,53 @@ module Mine = struct
   and y = inj_int_ratio (120,1);;   (* init amount in B *)
 end;;
 
-(* probability of success *)
-let success m pr =
+let select m a b sel =
   ocanren {
-    m == Mine.a & pr == Machine.p |
-    m == Mine.b & pr == Machine.q
+    m == Mine.a & a == sel |
+    m == Mine.b & b == sel
   };;
 
-let fraction m fr =
-  ocanren {
-    m == Mine.a & fr == Machine.r |
-    m == Mine.b & fr == Machine.s
-  };;
 
-let rec expectation amt_A amt_B plan (expc : Rat.groundi) =
+let rec expectation amt_A amt_B plan (expc : Rat.groundi)=
   ocanren {
     plan == [] & expc == (0,1) |
     fresh m, ms,pr, fr,
           amt_now, amt_mined, amt_left in
       plan == m :: ms                  &
-      { m == Mine.a & amt_A == amt_now |
-        m == Mine.b & amt_B == amt_now }
-      & success m pr  & fraction m fr  &
+      select m Machine.p Machine.q pr  &
+      select m Machine.r Machine.s fr  &
+      select m amt_A amt_B amt_now     &
       Rat.( * ) fr amt_now amt_mined   &
-      Rat.( + ) amt_mined amt_left amt_now &
-    fresh summ, expc_ms in
-     { m == Mine.a & expectation amt_left amt_B ms expc_ms |
-       m == Mine.b & expectation amt_A amt_left ms expc_ms} &
-       Rat.( + ) amt_mined expc_ms summ &
-       Rat.( * ) pr summ expc          
+      Rat.( - ) amt_now amt_mined amt_left & 
+    fresh summ, expc_ms, expc_ms', expc_ms'' in
+     Rat.( + ) amt_mined expc_ms summ &
+     Rat.( * ) pr summ expc           &
+     select m expc_ms' expc_ms'' expc &
+     expectation amt_left amt_B ms expc_ms' 
+     expectation amt_A amt_left ms expc_ms'' (* this double recursion is a source 
+                                                of inefficiency *)
 };;
+
+let rec expectation' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi)=
+  ocanren {
+    fresh amt_mined in
+     {hd_plan == Mine.a & Rat.( * ) Machine.r amt_A amt_mined |
+      hd_plan == Mine.b & Rat.( * ) Machine.s amt_B amt_mined }
+     &
+     { tl_plan == [] & 
+         { hd_plan == Mine.a & Rat.( * ) Machine.p amt_mined expc
+           hd_plan == Mine.b & Rat.( * ) Machine.q amt_mined expc }
+     | fresh m, ms in tl_plan == m :: ms &
+         fresh amt_left, expc_tl, summ in
+         { hd_plan == Mine.a & Rat.( - ) amt_A amt_mined amt_left
+           & expectation' m amt_left amt_B ms expc_tl
+           & Rat.( + ) amt_mined expc_tl summ
+           & Rat.( * ) Machine.p summ expc |
+           hd_plan == Mine.b & Rat.( - ) amt_B amt_mined amt_left
+           & expectation' m  amt_A amt_left ms expc_tl
+           & Rat.( + ) amt_mined expc_tl summ
+           & Rat.( * ) Machine.q summ expc } } };;
+
 
 (* some tests *)
 
@@ -79,6 +96,18 @@ let _ =
   run q (fun q-> ocanren {Rat.( + ) (1,3) (1,1) q} )  Rat.prj_rat;
   print_newline () ;;
 
+let _ =
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {Rat.( - ) (3,3) (1,3) q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation x y [b] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+
+(*
 (* problematic cases *)
 
 @type iprprl = ((int * int) * (int * int)) GT.list with show;;
@@ -92,11 +121,7 @@ let _ =
 
 (* This diverges as well. Furthermore, 
    if (3,3) is changed to (1,1) then no answer *)
-
-let _ =
-  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
-  run q (fun q-> ocanren {Rat.( + ) (1,3) q (3,3)} )  Rat.prj_rat;
-  print_newline () ;; 
+*)
 
 
 (* Unfinished *)

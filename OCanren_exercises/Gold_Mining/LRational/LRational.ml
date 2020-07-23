@@ -93,6 +93,21 @@ let addo x y z =
 
 let ( + ) = addo;;
 
+let subo x y z =
+    Fresh.(succ five) (fun nx ny nz dx dy dz ->
+        ( x === LPair.pair nx dx) &&&
+        ((y === LPair.pair ny dy) &&&
+        ((z === LPair.pair nz dz) &&&
+          Fresh.two (fun nxdy dxny ->
+               (LNat.mulo dx dy dz)     &&&
+              ((LNat.mulo nx dy nxdy) &&&
+              ((LNat.mulo dx ny dxny)   &&&
+               (LNat.addo dxny nz nxdy)))))));;
+  
+let ( - ) = subo;;
+
+
+
 (* For the mining puzzle , these are not needed
 
 (** Comparisons *)

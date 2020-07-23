@@ -45,6 +45,10 @@ val inj_int_ratio : int * int -> groundi;;
 (** projection primitive *)
 val prj_rat : (ground,'b) reified -> int * int
 
+
+(** Relational Arithmetics: not all directions are equally
+    optimized: usually the default direction is the most reliable  *)
+
 (** Relational multiplication *)
 val mulo  : groundi -> groundi -> groundi -> goal;;
 
@@ -62,6 +66,12 @@ val addo  : groundi -> groundi -> groundi -> goal;;
 
 (** Infix syninym for [addo] *)
 val ( + ) : groundi -> groundi -> groundi -> goal;;
+
+(** Relational subtraction *)
+val subo  : groundi -> groundi -> groundi -> goal;;
+
+(** Infix syninym for [subo] *)
+val ( - ) : groundi -> groundi -> groundi -> goal;;
 
 (*
 
