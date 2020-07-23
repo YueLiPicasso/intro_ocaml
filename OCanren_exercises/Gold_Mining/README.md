@@ -59,7 +59,6 @@ end;;
 
 ```
 
-
 Only for trivial queries, like "what is the
 expectation for plan [A] (or [B]) ?", can it give an answer in a short moment. For even slightly
 larger a query like "what is the expectation for plan [A;B] ?", it looks as if the program
