@@ -103,7 +103,7 @@ any answer before I waited for too long and killed the process.
 
 ### Summary
 
-In general, the programm is not efficient at all. All expected tasks cannot be done in a
+In general, the program is not efficient at all. All expected tasks cannot be done in a
 non-trivial manner. A lot is there to be improved. A better rational number arithmetic
 package is perhaps the key, which in turn requires a well understood and well-behaved
 natural number arithmetic package.
