@@ -218,7 +218,6 @@ let _ = let open Mine in
 
 *)
 
-
 let _ = let open Mine in                   (* Hopeless for ~n>3 *)
   L.iter print_string @@ L.map (show(plan)) @@ Stream.take ~n:3 @@
   run q (fun q-> ocanren {fresh ex in expectation1 x y q ex} )  prj_plan;

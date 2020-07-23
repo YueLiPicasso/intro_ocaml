@@ -16,10 +16,11 @@ We possess two gold mines: Anaconda and Bonanza,
 
 ## What we want OCanren to do
 
-1.   Given a mining plan in terms of a sequence of mining sites, 
+1. Given a mining plan in terms of a sequence of mining sites, 
    e.g., [A;A;B;B;A;B], to compute the expectation of this plan.
 
-1. Given an expectation, to compute a mining plan that satisfies it.
+1. Given  an interval, we ask the program to find
+all mining plans that yield an (rational number) expectation that is located in this interval.
 
 ## Reference
 
@@ -36,6 +37,8 @@ Here are some observations about the program.
 
 ### Test 1
 
+For this test I used the following specifications. 
+
 ```ocaml
 module Machine' = struct
   open Rat;;
@@ -48,13 +51,8 @@ module Machine' = struct
 end;;
 
 module Mine' = struct
-  let a = !!A         (* injected *)
-  and b = !!B;;
-  open Rat;;
   let x = inj_int_ratio (100,1)     (* init amount in A *)
   and y = inj_int_ratio (120,1);;   (* init amount in B *)
-
-  let prj_plan x = List.to_list id @@ project x
 end;;
 
 ```
@@ -69,12 +67,43 @@ is (11880 , 1000), i.e, 11880 divided by 1000. It might be helpful is somehow th
 number is simplified to (297, 25).
 
 Given the expectation (11880, 1000), the program can correctly point out that the plan that has
-this value is just [B]. But since It cannot compute expectations for more complex plans in a short
-time, there are no other input to test the reverse behaviour further. The idea, however.
-is to specify  an interval, and ask the program to find
-all mining plans that yield an (rational number) expectation that is located in this interval. 
+this value is just [B]. I did not test the reverse behaviour further.  
 
 
 I also hoped that the program should be able to compute a list of plan-expectation pairs, i.e.,
 enumerate all possible plans and show the corresponding expectation. Asking the program to do so,
 however, resulted in long waiting time without interesting results being returned.    
+
+
+### Test 2
+
+THis time I tried to use smaller numbers.
+
+```ocaml
+module Machine = struct
+  open Rat;;
+  (* machine performance on A *)
+  let p = inj_int_ratio (1,3)
+  and r = inj_int_ratio (1,2);;
+  (* machine performance on B *)
+  let q = inj_int_ratio (1,2)
+  and s = inj_int_ratio (1,3);;
+end;;
+
+module Mine = struct
+  open Rat;;
+  let x = inj_int_ratio (1,1)     (* init amount in A *)
+  and y = inj_int_ratio (2,1);;   (* init amount in B *)
+end;;
+```
+
+The program did marginally better, for instance, it can tell the expectation for [A;B] or
+[B;A]. Unfortunately and curiously, for [A;A] and [B;B], and larger plans , it did not return
+any answer before I waited for too long.
+
+### Summary
+
+In general, the programm is not efficient at all. All expected tasks cannot be done in a
+non-trivial manner. A lot is there to be improved. A better rational number arithmetic
+package is perhaps the key, which in turn requires a well understood and well-behaved
+natural number arithmetic package.
