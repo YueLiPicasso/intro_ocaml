@@ -78,4 +78,4 @@ all mining plans that yield an (rational number) expectation that is located in 
 
 I also hoped that the program should be able to compute a list of plan-expectation pairs, i.e.,
 enumerate all possible plans and show the corresponding expectation. Asking the program to do so,
-however, resulted in long waiting time without and result being returned.    
+however, resulted in long waiting time without interesting results being returned.    
