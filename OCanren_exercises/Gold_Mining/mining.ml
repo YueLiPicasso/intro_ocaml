@@ -11,6 +11,16 @@ module Rat = LRational;;
 module Machine = struct
   open Rat;;
   (* machine performance on A *)
+  let p = inj_int_ratio (1,3)
+  and r = inj_int_ratio (1,2);;
+  (* machine performance on B *)
+  let q = inj_int_ratio (1,2)
+  and s = inj_int_ratio (1,3);;
+end;;
+
+module Machine' = struct
+  open Rat;;
+  (* machine performance on A *)
   let p = inj_int_ratio (1,5)
   and r = inj_int_ratio (1,2);;
   (* machine performance on B *)
@@ -18,7 +28,18 @@ module Machine = struct
   and s = inj_int_ratio (33,100);;
 end;;
 
+
 module Mine = struct
+  let a = !!A         (* injected *)
+  and b = !!B;;
+  open Rat;;
+  let x = inj_int_ratio (1,1)     (* init amount in A *)
+  and y = inj_int_ratio (2,1);;   (* init amount in B *)
+
+  let prj_plan x = List.to_list id @@ project x
+end;;
+
+module Mine' = struct
   let a = !!A         (* injected *)
   and b = !!B;;
   open Rat;;
@@ -133,15 +154,16 @@ let _ = let open Mine in
   run q (fun q-> ocanren {expectation x y [b] q} )  Rat.prj_rat;
   print_newline () ;; 
 
+(*
 let _ = let open Mine in
   print_string @@ show(plan) @@ L.hd @@ Stream.take ~n:1 @@
   run q (fun q-> ocanren {expectation x y q (11880, 1000)} )  prj_plan;
-  print_newline () ;; 
+  print_newline () ;; *)
 
 (* Not sure if this diverges or is just slow: it should not diverge though *)
 let _ = let open Mine in
   print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
-  run q (fun q-> ocanren {expectationn x y [b;a] q} )  Rat.prj_rat;
+  run q (fun q-> ocanren {expectationn x y [b;a;b;a;b;b] q} )  Rat.prj_rat;
   print_newline () ;; 
 
 (* only gives [] *)

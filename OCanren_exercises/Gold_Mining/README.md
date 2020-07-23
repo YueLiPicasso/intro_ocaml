@@ -34,6 +34,32 @@ First run `make` in the [LRational](LRational) directory. This creates the compi
 
 Here are some observations about the program.
 
+### Test 1
+
+```ocaml
+module Machine' = struct
+  open Rat;;
+  (* machine performance on A *)
+  let p = inj_int_ratio (1,5)
+  and r = inj_int_ratio (1,2);;
+  (* machine performance on B *)
+  let q = inj_int_ratio (3,10)
+  and s = inj_int_ratio (33,100);;
+end;;
+
+module Mine' = struct
+  let a = !!A         (* injected *)
+  and b = !!B;;
+  open Rat;;
+  let x = inj_int_ratio (100,1)     (* init amount in A *)
+  and y = inj_int_ratio (120,1);;   (* init amount in B *)
+
+  let prj_plan x = List.to_list id @@ project x
+end;;
+
+```
+
+
 Only for trivial queries, like "what is the
 expectation for plan [A] (or [B]) ?", can it give an answer in a short moment. For even slightly
 larger a query like "what is the expectation for plan [A;B] ?", it looks as if the program
