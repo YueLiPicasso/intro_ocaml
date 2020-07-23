@@ -99,7 +99,7 @@ end;;
 
 The program did marginally better, for instance, it can tell the expectation for [A;B] or
 [B;A]. Unfortunately and curiously, for [A;A] and [B;B], and larger plans , it did not return
-any answer before I waited for too long.
+any answer before I waited for too long and killed the process.
 
 ### Summary
 
