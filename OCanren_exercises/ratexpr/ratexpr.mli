@@ -22,7 +22,10 @@ open Core;;
 type groundi = (ground, logic) injected;;
 
 (** Produce injected value using injected constructor arguments *)
-val num  : LNat.groundi * LNat.groundi -> groundi;;
-val sum  : groundi * groundi -> groundi;;
-val subt : groundi * groundi -> groundi;;
-val prod : groundi * groundi -> groundi;;
+
+module Inj : sig
+  val num  : LNat.groundi * LNat.groundi -> groundi;;
+  val sum  : groundi * groundi -> groundi;;
+  val subt : groundi * groundi -> groundi;;
+  val prod : groundi * groundi -> groundi;;
+end;;

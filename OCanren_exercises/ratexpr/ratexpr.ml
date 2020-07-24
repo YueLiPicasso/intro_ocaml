@@ -44,8 +44,14 @@ let logic = {
 
 type groundi = (ground, logic) injected;;
 
-let num  (x, y) = inj @@ F.distrib (Num  (x, y))
-and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
-and subt (x, y) = inj @@ F.distrib (Subt (x, y))
-and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
-
+module Inj : sig
+  val num  : LNat.groundi * LNat.groundi -> groundi;;
+  val sum  : groundi * groundi -> groundi;;
+  val subt : groundi * groundi -> groundi;;
+  val prod : groundi * groundi -> groundi;;
+end = struct
+  let num  (x, y) = inj @@ F.distrib (Num  (x, y))
+  and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
+  and subt (x, y) = inj @@ F.distrib (Subt (x, y))
+  and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
+end;;
