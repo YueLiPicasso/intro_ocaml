@@ -21,7 +21,7 @@ open Core;;
 
 type groundi = (ground, logic) injected;;
 
-(** Produce Injected value using injected arguments *)
+(** Produce injected value using injected constructor arguments *)
 val num  : LNat.groundi * LNat.groundi -> groundi;;
 val sum  : groundi * groundi -> groundi;;
 val subt : groundi * groundi -> groundi;;
