@@ -42,6 +42,8 @@ let logic = {
     end
 };;
 
+type groundi = (ground, logic) injected;;
+
 let num  (x, y) = inj @@ F.distrib (Num  (x, y))
 and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
 and subt (x, y) = inj @@ F.distrib (Subt (x, y))
