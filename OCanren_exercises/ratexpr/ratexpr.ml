@@ -55,3 +55,14 @@ end = struct
   and subt (x, y) = inj @@ F.distrib (Subt (x, y))
   and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
 end;;
+
+
+(* Why we need to prefix 'int' and 'show' with GT? See below *)
+
+@type intl = GT.int GT.list with show;;
+
+let _ =
+  let open LNat in 
+  print_string @@ GT.show(intl) @@  RStream.take @@
+  run q (fun q -> ocanren { q <= 10 } ) (fun x -> to_int @@ project x);
+  print_newline ();;
