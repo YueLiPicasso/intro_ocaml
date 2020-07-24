@@ -9,4 +9,10 @@ In particlular, it has been observed that the program for the [stochastic gold m
  which could be evaluated independently. We hope to rewrite the gold mining puzzle's program based on this project,
   so that instead of returning a rational number, it now returns an arithmetical expression that supposedly evaluates
   to that rational number.
-  
+
+
+## Reference
+
+Euclidean Algorithm :
+
+https://crypto.stanford.edu/pbc/notes/numbertheory/euclid.html
