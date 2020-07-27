@@ -30,10 +30,36 @@ module Inj : sig
   val prod : groundi * groundi -> groundi;;
 end;;
 
-module Ground_Nat : sig
+(** Operations on LNat.ground and ground rational *)
+module GOOps : sig
+  (* equallity *)
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
+  
+  (* less than *)
   val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
+
+  (* less than or equal *)
   val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
+
+  (* Addition *)
+  val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  
+  (* subtraction *)
   val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;; 
+
+  (* Multiplication *)
+  val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
+
+  (* division with (quotient, remainder) *)
+  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
+
+  (* greatest common divisor *)
+  val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
+
+  (* simplfy the ratio a/b by dividing with gcd *)
+  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
+  
 end;;
+
+(** Evaluate a rat expression to the simplified ratio form *)
+(* val eval : ground -> ground;;*)

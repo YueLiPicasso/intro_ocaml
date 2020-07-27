@@ -16,3 +16,5 @@ In particlular, it has been observed that the program for the [stochastic gold m
 Euclidean Algorithm :
 
 https://crypto.stanford.edu/pbc/notes/numbertheory/euclid.html
+
+https://mathworld.wolfram.com/EuclideanAlgorithm.html

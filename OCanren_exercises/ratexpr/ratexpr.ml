@@ -57,12 +57,16 @@ end = struct
 end;;
 
 
-module Ground_Nat : sig
+module GOOps : sig
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
   val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;; 
+  val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
+  val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
+  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
 end = struct
   
   (* equallity *)
@@ -111,8 +115,57 @@ end = struct
 
   let ( / ) = fun x y -> div_acc x y LNat.O;;
 
+  (* Euclidean Algorithm *)
+  let rec gcd a b =
+    if a = b then b
+    else if a < b then gcd b a 
+    else let (q,r) = a / b in
+      if r = LNat.O then b else gcd b r;;
+
+  let simplify (a, b) =
+    let g = gcd a b in
+    let (a', _) = a / g and (b', _) = b / g in
+    (a',b');;
+
+  let rec add a b =
+    match a with
+    | LNat.O -> b
+    | LNat.S a' -> LNat.S (add a' b);;
+
+  let ( + ) = add;;
+
+  let rec mult a b =
+    match a with
+      LNat.O  -> LNat.O
+    | LNat.S a' -> b + (mult a' b);;
+
+  let ( * ) = mult;;
+  
 end;;
 
+
+(*
+
+  
+  
+  
+
+  let rec eval ra =
+    let analyze e1 e2 =
+      let (Num (n1,d1)) = (eval e1)
+      and (Num (n2,d2)) = (eval e2)
+      in n1, d1, n2, d2
+    in
+    match ra with
+      Num (n, d) -> let n',d' = simplify (n, d) in Num (n', d')
+    | Sum (ex1, ex2) ->
+      let n1', d1', n2', d2' = analyze ex1 ex2 in
+      let d' = Int.mul d1' d2' and n' = Int.add (Int.mul n1' d2') (Int.mul n2' d1') in
+      let n'', d'' = simplify ((LNat.of_int n'), (LNat.of_int d')) in
+      Num (n'', d'')
+    | _ -> assert false;;
+  
+  *)
 
 (* Why we need to prefix 'int' and 'show' with GT? See below. We also need
    GT.bool *)
@@ -126,85 +179,85 @@ let _ =
   print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 5) (LNat.of_int 4);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( = ) (LNat.of_int 5) (LNat.of_int 4);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 5) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( = ) (LNat.of_int 5) (LNat.of_int 5);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 4) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( = ) (LNat.of_int 4) (LNat.of_int 5);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 5) (LNat.of_int 4);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( < ) (LNat.of_int 5) (LNat.of_int 4);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 5) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( < ) (LNat.of_int 5) (LNat.of_int 5);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 4) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( < ) (LNat.of_int 4) (LNat.of_int 5);
   print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 5) (LNat.of_int 4);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( <= ) (LNat.of_int 5) (LNat.of_int 4);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 5) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( <= ) (LNat.of_int 5) (LNat.of_int 5);
    print_newline ();;
 
 let _ =
-  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 4) (LNat.of_int 5);
+  print_string @@ GT.show(GT.bool) @@ GOOps.( <= ) (LNat.of_int 4) (LNat.of_int 5);
    print_newline ();;
 
 let _ =
   print_string @@
   (try
     GT.show(GT.int) @@ LNat.to_int @@
-    Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 5)
+    GOOps.( - ) (LNat.of_int 4) (LNat.of_int 5)
   with Invalid_argument s -> s );
     print_newline ();;
 
 let _ =
   print_string @@ GT.show(GT.int) @@ LNat.to_int @@
-  Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 4);
+  GOOps.( - ) (LNat.of_int 4) (LNat.of_int 4);
   print_newline ();;
 
 let _ =
   print_string @@ GT.show(GT.int) @@ LNat.to_int @@
-  Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 2);
+  GOOps.( - ) (LNat.of_int 4) (LNat.of_int 2);
   print_newline ();;
 
 @type pr = GT.int * GT.int with show;;
 
 let _ =
   print_string @@ GT.show(pr) @@ 
-  (match Ground_Nat.( / ) (LNat.of_int 4) (LNat.of_int 2)
+  (match GOOps.( / ) (LNat.of_int 4) (LNat.of_int 2)
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
 
 
 let _ =
   print_string @@ GT.show(pr) @@ 
-  (match Ground_Nat.( / ) (LNat.of_int 2) (LNat.of_int 4)
+  (match GOOps.( / ) (LNat.of_int 2) (LNat.of_int 4)
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
 
 
 let _ =
   print_string @@ GT.show(pr) @@ 
-  (match Ground_Nat.( / ) (LNat.of_int 10) (LNat.of_int 7)
+  (match GOOps.( / ) (LNat.of_int 10) (LNat.of_int 7)
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
 
 
 let _ =
   print_string @@ GT.show(pr) @@ 
-  (match Ground_Nat.( / ) (LNat.of_int 77) (LNat.of_int 5)
+  (match GOOps.( / ) (LNat.of_int 77) (LNat.of_int 5)
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
 
@@ -212,7 +265,58 @@ let _ =
   print_string @@
   ( try
   GT.show(pr) @@ 
-  match Ground_Nat.( / ) (LNat.of_int 4) (LNat.of_int 0)
+  match GOOps.( / ) (LNat.of_int 4) (LNat.of_int 0)
   with a,b -> LNat.to_int a, LNat.to_int b with Division_by_zero -> "Division_by_zero");
   print_newline ();;
 
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  GOOps.gcd (LNat.of_int 144) (LNat.of_int 55);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  GOOps.gcd (LNat.of_int 144) (LNat.of_int 56);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  GOOps.gcd (LNat.of_int 144) (LNat.of_int 57);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  GOOps.gcd (LNat.of_int 144) (LNat.of_int 58);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  GOOps.gcd (LNat.of_int 144) (LNat.of_int 59);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match GOOps.simplify ((LNat.of_int 2), (LNat.of_int 4))
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match GOOps.simplify ((LNat.of_int 18800), (LNat.of_int 1000))
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+(*
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match GOOps.eval @@ Num ((LNat.of_int 18801), (LNat.of_int 1000))
+   with Num (a,b) -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match GOOps.eval @@ Num ((LNat.of_int 18801), (LNat.of_int 999))
+   with Num (a,b) -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+*)
