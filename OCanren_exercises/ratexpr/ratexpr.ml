@@ -57,7 +57,60 @@ end = struct
 end;;
 
 
-(* Why we need to prefix 'int' and 'show' with GT? See below *)
+module Ground_Nat : sig
+  val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;; 
+end = struct
+  
+  (* equallity *)
+  let rec nat_eq a b =
+    match a, b with
+      LNat.O , LNat.O -> true
+    | LNat.S a', LNat.S b' -> nat_eq a' b'
+    | _ -> false;;
+
+  (* less than *)
+  let rec nat_lt a b =
+    match a,b with
+      LNat.O , LNat.S _ -> true
+    | LNat.S a', LNat.S b' -> nat_lt a' b'
+    | _ -> false;;
+
+  (* less than or equal *)
+  let rec nat_le a b =
+    match a,b with
+      LNat.O , LNat.O -> true
+    | LNat.O , LNat.S _ -> true
+    | LNat.S a', LNat.S b' -> nat_le a' b'
+    | _ -> false;;
+
+  (* subtraction *)
+  let rec minus a b =
+    match a,b with
+      _ , LNat.O -> a
+    | LNat.O, _ -> raise (Invalid_argument "subtracting (S _) from O")
+    | LNat.S a' , LNat.S b' -> minus a' b';;
+  
+(*
+  (* division a/b with accumulator c; returns (quotient, remainder) *)
+  let rec div_acc a b c =
+    if ( = ) b LNat.O then raise Division_by_zero
+    else if ( < ) a b then (c, a)
+    else if ( = ) a b then (LNat.S c, LNat.O)
+                           else let dif = *)
+
+  let ( = ) = nat_eq
+  and ( < ) = nat_lt
+  and ( <= ) = nat_le
+  and ( - ) = minus;;
+
+end;;
+
+
+(* Why we need to prefix 'int' and 'show' with GT? See below. We also need
+   GT.bool *)
 
 @type intl = GT.int GT.list with show;;
 
@@ -65,4 +118,58 @@ let _ =
   let open LNat in 
   print_string @@ GT.show(intl) @@  RStream.take @@
   run q (fun q -> ocanren { q <= 10 } ) (fun x -> to_int @@ project x);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 5) (LNat.of_int 4);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 5) (LNat.of_int 5);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( = ) (LNat.of_int 4) (LNat.of_int 5);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 5) (LNat.of_int 4);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 5) (LNat.of_int 5);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( < ) (LNat.of_int 4) (LNat.of_int 5);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 5) (LNat.of_int 4);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 5) (LNat.of_int 5);
+   print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.bool) @@ Ground_Nat.( <= ) (LNat.of_int 4) (LNat.of_int 5);
+   print_newline ();;
+
+let _ =
+  print_string @@
+  (try
+    GT.show(GT.int) @@ LNat.to_int @@
+    Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 5)
+  with Invalid_argument s -> s );
+    print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 4);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(GT.int) @@ LNat.to_int @@
+  Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 2);
   print_newline ();;
