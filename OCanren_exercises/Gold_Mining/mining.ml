@@ -72,7 +72,7 @@ module Compute = struct
            & Rat.( * ) q summ expc
            & expectation' m  amt_A amt_left ms expc_tl } } };;
 
-  (* Expectation for (hd_plan :: tl_plan), clauses reordered *)
+  (* Expectation for (hd_plan :: tl_plan), factored out hd_plan check *)
   let rec expectation'' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
   ocanren {
     fresh amt_mined in
@@ -95,7 +95,7 @@ module Compute = struct
           & Rat.( * ) q summ expc
           & expectation'' m  amt_A amt_left ms expc_tl } };;
 
-  (* Expectation for (hd_plan :: tl_plan), clauses reordered *)
+  (* Expectation for (hd_plan :: tl_plan), made recursive calls earlier, tucked in "fresh" *)
   let rec expectation''' hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
   ocanren {
    {  hd_plan == a &  fresh amt_mined in
@@ -104,18 +104,18 @@ module Compute = struct
         fresh m, ms in tl_plan == m :: ms &
           fresh amt_left, expc_tl, summ in
             Rat.( - ) amt_A amt_mined amt_left
+          & expectation''' m amt_left amt_B ms expc_tl
           & Rat.( + ) amt_mined expc_tl summ
-          & Rat.( * ) p summ expc
-          & expectation''' m amt_left amt_B ms expc_tl } }
+          & Rat.( * ) p summ expc } }
   | { hd_plan == b & fresh amt_mined in
       Rat.( * ) s amt_B amt_mined &
       { tl_plan == [] & Rat.( * ) q amt_mined expc |
         fresh m, ms in tl_plan == m :: ms &
           fresh amt_left, expc_tl, summ in
             Rat.( - ) amt_B amt_mined amt_left
+          &  expectation''' m  amt_A amt_left ms expc_tl
           & Rat.( + ) amt_mined expc_tl summ
-          & Rat.( * ) q summ expc
-          & expectation''' m  amt_A amt_left ms expc_tl } } };;
+          &  Rat.( * ) q summ expc} } };;
 
 end;;
 
@@ -144,6 +144,27 @@ let expectation3 amt_A amt_B plan (expc : Rat.groundi) =
 (* some tests *)
 
 @type ipr = int * int with show;;
+
+
+(* Hopeless *)
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation3 x y [a;b;b;a] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+
+(* Hopeless *)
+let _ = let open Mine in
+  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+  run q (fun q-> ocanren {expectation2 x y [a;b;b;a] q} )  Rat.prj_rat;
+  print_newline () ;; 
+
+
+(* USe (9,9) its OK. *)
+let _ =
+print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
+run q (fun q-> ocanren {Rat.( + ) (1,3) q (3,3)} ) Rat.prj_rat;
+print_newline () ;; 
 
 (* 
 
@@ -245,11 +266,6 @@ let _ = let open Mine in
   run q (fun q-> ocanren {expectation3 x y [b;b] q} )  Rat.prj_rat;
   print_newline () ;; 
 
-(* Hopeless *)
-let _ = let open Mine in
-  print_string @@ show(ipr) @@ L.hd @@ Stream.take ~n:1 @@
-  run q (fun q-> ocanren {expectation3 x y [a;a] q} )  Rat.prj_rat;
-  print_newline () ;; 
 
 
 

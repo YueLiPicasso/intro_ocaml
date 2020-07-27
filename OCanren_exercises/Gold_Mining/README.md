@@ -108,3 +108,33 @@ non-trivial manner. A lot is there to be improved. A better rational number arit
 package is perhaps the key, which in turn requires a well understood and well-behaved
 natural number arithmetic package. It is also possible that the design of
 the program has some problem, but now I did not see any.
+
+
+# message
+
+Enumerate all pairs a, b up to some bound and create table to look up for a normalized representation of a/b immediately. For example, to normalize 100/2 it would be enough to look up in the table for numerator 100 and denominator 2 and immediately get 50/1 as a result.
+
+A init = 1 p = 1/2 
+B init = 1/2 q = 1/3 
+r = 1/2 s = 1/3 
+plan = [A;A;B;B] 
+A : p 
+r * A_init = 1/2 
+A : p 
+r * A_init' = 1/2 * 1/2 = 1/4 
+B: q 
+s * B_init = 1/3 * 1/2 = 1/6 
+B; q 
+s * B_init = 1/3 * (1/2 - 1/6) = 1/9 
+expacetation for AABB: 
+p[rx + p [r(1-r)x + q[sy + q[s(1-s)y]]]] 
+what plan gives expectation between [1/100, 1/3] 
+Break down :what plan gives expectation between [1/100, 1/3] 
+into: 
+(1) given a / b ==> all arithmetics expressions that evaluates to a/b 
+(2) given arithmetics expression ===> mining plan 
+( 2) most challanging
+
+p[rx + p [r(1-r)x + q[sy + q[s(1-s)y]]]]
+
+restrict the expression this the above form 
