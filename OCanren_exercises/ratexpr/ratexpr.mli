@@ -34,5 +34,6 @@ module Ground_Nat : sig
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
-  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;; 
+  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;; 
 end;;

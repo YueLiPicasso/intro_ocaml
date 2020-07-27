@@ -61,7 +61,8 @@ module Ground_Nat : sig
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
   val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
-  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;; 
+  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;; 
 end = struct
   
   (* equallity *)
@@ -93,18 +94,22 @@ end = struct
     | LNat.O, _ -> raise (Invalid_argument "subtracting (S _) from O")
     | LNat.S a' , LNat.S b' -> minus a' b';;
   
-(*
-  (* division a/b with accumulator c; returns (quotient, remainder) *)
-  let rec div_acc a b c =
-    if ( = ) b LNat.O then raise Division_by_zero
-    else if ( < ) a b then (c, a)
-    else if ( = ) a b then (LNat.S c, LNat.O)
-                           else let dif = *)
-
   let ( = ) = nat_eq
   and ( < ) = nat_lt
   and ( <= ) = nat_le
   and ( - ) = minus;;
+  
+  (* division a/b with accumulator c; returns (quotient, remainder) *)
+  let rec div_acc a b c =
+    if  b = LNat.O then raise Division_by_zero
+    else if a < b then (c, a)
+    else if a = b then (LNat.S c, LNat.O)
+    else let dif = a - b in
+      if dif = b then (LNat.S (LNat.S c), LNat.O)
+      else if dif < b then (LNat.S c, dif)
+      else div_acc dif b (LNat.S c);;
+
+  let ( / ) = fun x y -> div_acc x y LNat.O;;
 
 end;;
 
@@ -173,3 +178,41 @@ let _ =
   print_string @@ GT.show(GT.int) @@ LNat.to_int @@
   Ground_Nat.( - ) (LNat.of_int 4) (LNat.of_int 2);
   print_newline ();;
+
+@type pr = GT.int * GT.int with show;;
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match Ground_Nat.( / ) (LNat.of_int 4) (LNat.of_int 2)
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match Ground_Nat.( / ) (LNat.of_int 2) (LNat.of_int 4)
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match Ground_Nat.( / ) (LNat.of_int 10) (LNat.of_int 7)
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(pr) @@ 
+  (match Ground_Nat.( / ) (LNat.of_int 77) (LNat.of_int 5)
+   with a,b -> LNat.to_int a, LNat.to_int b);
+  print_newline ();;
+
+let _ =
+  print_string @@
+  ( try
+  GT.show(pr) @@ 
+  match Ground_Nat.( / ) (LNat.of_int 4) (LNat.of_int 0)
+  with a,b -> LNat.to_int a, LNat.to_int b with Division_by_zero -> "Division_by_zero");
+  print_newline ();;
+
