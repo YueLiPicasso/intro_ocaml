@@ -68,6 +68,12 @@ match injected pairs was not found until some surprise and observation. This
 was my second original contribution to the OCanren sample collection.
 
 
+### Stochatic Gold Mining
+
+This uses a typical logic programming technique: generate-and-test. We also
+defined a simple library for positive rational numbers. The location
+of making recursive calls is shown to be important by this example.  
+
 ## Learning OCaml
 
 OCanren is a unique implementation of miniKanren in OCaml. Its obvious
