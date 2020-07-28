@@ -25,8 +25,9 @@ We possess two gold mines: Anaconda and Bonanza,
    p[rx + p[r(1-r)x + q[sy + q[s(1-s)y]]]]
    ```
 
-1. (Backward Run) Given  an interval, we ask the program to find
-all mining plans that yield an (rational number) expectation that is located in this interval.
+1. (Backward Run) Given  an interval [r1, r2], we ask the program to find
+all mining plans that yield an  expectation r that is located in this interval,
+i.e.,  r1 < r < r2.
 
 ## What can the program actually do
 
