@@ -76,7 +76,7 @@ shown acceptable performance. _Most importantly, to choose the proper location t
 timely instantiation of fresh variables and meanwhile avoidance of fruitless ever-lasting  search.
 This alone makes the difference between unacceptablly poor performance and modest performance.
 
-Various forms of logical formulae were also tried, but these were all undecisive.
+Various forms of logical formulae were also tried, but these were all indecisive.
 
 The remaining task is to let the program generate plans that have expectations located in a specified interval. This amounts to defining
 a 3-place relation on rational numbers which decides if one number is in between the other two. Since the underlying logic is still
