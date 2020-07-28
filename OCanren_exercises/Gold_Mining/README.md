@@ -77,9 +77,9 @@ work in the current acceptable manner, which are as follows.
 1. Most importantly, to choose the location to make recursive calls, as from  [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
  [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).
 
-1. To distribute  existential variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
+1. To distribute fresh (or existential) variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
 any fresh variable whose scope covers an entire disjunction. This corresponds to the step from [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
- [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).  Note, however, that percolating existential variables through conjuncts does _not_ imporve the
+ [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).  Note, however, that re-arranging fresh variables for conjuncts does _not_ imporve the
  performance as much (from [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99) to [expectation''''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L121)). 
 
 1. To reconfigure the formulae into a terser block as from [expectation'](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L55) to [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L76) for this makes it easier not only for men to comprehend but also
