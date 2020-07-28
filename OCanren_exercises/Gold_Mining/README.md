@@ -36,8 +36,8 @@ cases that involve  1,2,3 or 4 mining sites.
 
 1. (Backward Run) Picking one expectation value from the generated table, and feed it back to the program,
 it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
- where the program enumerates in a certain order all possible plan and see which plan's expectation happens to
- be the specified one.
+ where the program enumerates in a certain order all possible plans and see which plan's expectation happens to
+ equal the specified value.
 
 ## Compilation
 
