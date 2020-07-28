@@ -71,44 +71,16 @@ First run `make` in the [LRational](LRational) directory. This creates the compi
 
 ## Review and Future Work
 
-The major function named `expectation` went through four versions, for we applied several techniques to make it
-work in the current acceptable manner, which are as follows.
+The major function named `expectation` went through six versions, for we tried several modifications before it
+shown acceptable performance. _Most importantly, to choose the proper location to make recursive calls._ This allows
+timely instantiation of fresh variables and meanwhile avoidance of fruitless ever-lasting  search.
+This alone makes the difference between unacceptablly poor performance and modest performance.
 
-1. Most importantly, to choose the proper location to make recursive calls, as from  [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
- [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99). This allows timely instantiation of fresh variables and meanwhile avoidance of ever-lasting but
- fruitless search.
+Various forms of logical formulae were also tried, but these were all undecisive.
 
-1. To distribute fresh (or existential) variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
-any fresh variable whose scope covers an entire disjunction. This corresponds to the step from [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
- [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).
-
-1. To reconfigure the formulae into a terser block as from [expectation'](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L55) to [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L76) for this makes it easier not only for men to comprehend but also
- for computers to execute the code. This also is a prerequisite for the above "fresh distribution" step. 
-
-Used together, these measures made the difference between unacceptablly poor performance and modest performance. Note, however, that re-arranging fresh variables for conjuncts does _not_ imporve the
- performance as much (from [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99) to [expectation''''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L121)), and mere distribution of fresh variables without
- putting recursive calls at the correct location does _not_ improve the performance.
-
-
-
-### Future
-
-Enumerate all pairs a, b up to some bound and create table to look up for a normalized representation of a/b immediately. For example, to normalize 100/2 it would be enough to look up in the table for numerator 100 and denominator 2 and immediately get 50/1 as a result.
-
-
-
-what plan gives expectation between [1/100, 1/3] 
-Break down :what plan gives expectation between [1/100, 1/3] 
-into: 
-(1) given a / b ==> all arithmetics expressions that evaluates to a/b 
-(2) given arithmetics expression ===> mining plan 
-( 2) most challanging
-
-p[rx + p [r(1-r)x + q[sy + q[s(1-s)y]]]]
-
-restrict the expression this the above form
-
-
+The remaining task is to let the program generate plans that have expectations located in a specified interval. This amounts to defining
+a 3-place relation on rational numbers which decides if one number is in between the other two. Since the underlying logic is still
+ "generate-and-test", same as what the current program does, we leave this as future work.
 
 
 ## Reference

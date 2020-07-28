@@ -139,6 +139,42 @@ module Compute = struct
           & fresh summ in Rat.( + ) amt_mined expc_tl summ
           &  Rat.( * ) q summ expc} } };;
 
+ (* Expectation for (hd_plan :: tl_plan): adjust location of recursive calls only *)
+  let rec expectation_5 hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
+    ocanren {
+      fresh amt_mined in
+       {hd_plan == a & Rat.( * ) r amt_A amt_mined |
+        hd_plan == b & Rat.( * ) s amt_B amt_mined }
+       &
+     { tl_plan == [] & 
+     { hd_plan == a & Rat.( * ) p amt_mined expc |
+       hd_plan == b & Rat.( * ) q amt_mined expc }
+     | fresh m, ms in tl_plan == m :: ms &
+         fresh amt_left, expc_tl, summ in
+         { hd_plan == a & Rat.( - ) amt_A amt_mined amt_left
+           & expectation_5 m amt_left amt_B ms expc_tl
+           & Rat.( + ) amt_mined expc_tl summ
+           & Rat.( * ) p summ expc |
+           hd_plan == b & Rat.( - ) amt_B amt_mined amt_left
+           & expectation_5 m  amt_A amt_left ms expc_tl
+           & Rat.( + ) amt_mined expc_tl summ
+           & Rat.( * ) q summ expc } } };;
+
+(* Expectation for (hd_plan :: tl_plan) disjunctive normal form *)
+  let rec expectation_6 hd_plan amt_A amt_B tl_plan (expc : Rat.groundi) =
+  ocanren { fresh amt_mined, m, ms, amt_left, expc_tl, summ in
+    {  hd_plan == a & tl_plan == [] & Rat.( * ) r amt_A amt_mined & Rat.( * ) p amt_mined expc  
+    |  hd_plan == b & tl_plan == [] & Rat.( * ) s amt_B amt_mined & Rat.( * ) q amt_mined expc  
+    |  hd_plan == a & tl_plan == m :: ms & Rat.( * ) r amt_A amt_mined &
+        Rat.( - ) amt_A amt_mined amt_left       
+      & expectation_6 m amt_left amt_B ms expc_tl 
+      & Rat.( + ) amt_mined expc_tl summ             
+      & Rat.( * ) p summ expc                                                                                    
+    |  hd_plan == b & tl_plan == m :: ms & Rat.( * ) s amt_B amt_mined &
+        Rat.( - ) amt_B amt_mined amt_left
+      & expectation_6 m  amt_A amt_left ms expc_tl
+      & Rat.( + ) amt_mined expc_tl summ
+      & Rat.( * ) q summ expc }};;
 
 end;;
 
@@ -170,6 +206,21 @@ let expectation4 amt_A amt_B plan (expc : Rat.groundi) =
     fresh m, ms in plan == m :: ms &
       expectation'''' m amt_A amt_B ms expc };;
 
+let expectation5 amt_A amt_B plan (expc : Rat.groundi) =
+  let open Compute in
+  ocanren {
+    plan == [] & expc == (0,1) |
+    fresh m, ms in plan == m :: ms &
+      expectation_5 m amt_A amt_B ms expc };;
+
+let expectation6 amt_A amt_B plan (expc : Rat.groundi) =
+  let open Compute in
+  ocanren {
+    plan == [] & expc == (0,1) |
+    fresh m, ms in plan == m :: ms &
+      expectation_6 m amt_A amt_B ms expc };;
+
+
 (* some tests *)
 
 @type ipr = int * int with show;;
@@ -186,6 +237,16 @@ let _ = let open Mine in
   L.iter (fun s -> print_string s;print_newline ()) @@
   L.map (show(plan_exp)) @@ Stream.take ~n:25 @@ (* Not too slow for ~n<26 *)
   run qr (fun q r -> ocanren { expectation4 x y q r} ) (fun q r -> prj_plan q, Rat.prj_rat r);;
+
+let _ = let open Mine in                   
+  L.iter (fun s -> print_string s;print_newline ()) @@
+  L.map (show(plan_exp)) @@ Stream.take ~n:25 @@ (* Not too slow for ~n<26 *)
+  run qr (fun q r -> ocanren { expectation5 x y q r} ) (fun q r -> prj_plan q, Rat.prj_rat r);;
+
+let _ = let open Mine in                   
+  L.iter (fun s -> print_string s;print_newline ()) @@
+  L.map (show(plan_exp)) @@ Stream.take ~n:25 @@ (* Not too slow for ~n<26 *)
+  run qr (fun q r -> ocanren { expectation6 x y q r} ) (fun q r -> prj_plan q, Rat.prj_rat r);;
 
 (* Given an expectation, generate the plan that satisfies it --- backward run *)
 
