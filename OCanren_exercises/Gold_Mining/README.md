@@ -16,8 +16,14 @@ We possess two gold mines: Anaconda and Bonanza,
 
 ## What we want the program to do
 
-1. (Forward Run) Given a mining plan in terms of a sequence of mining sites, 
-   e.g., [A;A;B;B;A;B], to compute the expectation of this plan. 
+1. (Forward Run) Given a mining plan in terms of a sequence of mining sites,
+   to compute the expectation of this plan. This amounts to building and then
+   evaluating an arithmetic expression on (positive) rational numbers. For instance,
+   the expectation for [A;A;B;B] is computed from
+   
+   ```
+   p[rx + p[r(1-r)x + q[sy + q[s(1-s)y]]]]
+   ```
 
 1. (Backward Run) Given  an interval, we ask the program to find
 all mining plans that yield an (rational number) expectation that is located in this interval.
@@ -131,20 +137,8 @@ the program has some problem, but now I did not see any.
 
 Enumerate all pairs a, b up to some bound and create table to look up for a normalized representation of a/b immediately. For example, to normalize 100/2 it would be enough to look up in the table for numerator 100 and denominator 2 and immediately get 50/1 as a result.
 
-A init = 1 p = 1/2 
-B init = 1/2 q = 1/3 
-r = 1/2 s = 1/3 
-plan = [A;A;B;B] 
-A : p 
-r * A_init = 1/2 
-A : p 
-r * A_init' = 1/2 * 1/2 = 1/4 
-B: q 
-s * B_init = 1/3 * 1/2 = 1/6 
-B; q 
-s * B_init = 1/3 * (1/2 - 1/6) = 1/9 
-expacetation for AABB: 
-p[rx + p [r(1-r)x + q[sy + q[s(1-s)y]]]] 
+
+
 what plan gives expectation between [1/100, 1/3] 
 Break down :what plan gives expectation between [1/100, 1/3] 
 into: 
