@@ -35,7 +35,12 @@ i.e.,  _r1 < r < r2_.
 plan _that contains no more than 4 mining sites_, like [A;B;B:A]. For larger plans the
  computation becomes very slow.
 
-1. (Generator) The program can also be used to generate a table of possible plans and
+1. (Backward Run) Picking one expectation value and feed it to the program,
+it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
+ where the program enumerates in a certain order all possible plans and see which plan's expectation happens to
+ equal the specified. 
+
+1. (Generator) The program can  be used to generate a table of possible plans and
 their corresponding expectation. The performance of this, unfortunately,
 is also subject to limitation. Within a not very long time the current
 implementation can enumerate the first 25 possible plans, covering the
@@ -58,12 +63,6 @@ cases that involve  0,1,2,3 or 4 mining sites, and an excerpt of which is like t
 ([B; B; A; A], (3834, 7776))
 ```
 
-
-
-1. (Backward Run) Picking one expectation value and feed it to the program,
-it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
- where the program enumerates in a certain order all possible plans and see which plan's expectation happens to
- equal the specified.
 
 ## Compilation
 
