@@ -34,11 +34,28 @@ all mining plans that yield an (rational number) expectation that is located in 
 plan _that contains no more than 4 mining sites_, like [A;B;B:A]. For larger plans the
  computation becomes very slow.
 
-1. (Generator) The program can also be used to generate a long table of possible plans and
+1. (Generator) The program can also be used to generate table of possible plans and
 their corresponding expectation. The performance of this, unfortunately,
 is also subject to limitation. Within a not very long time the current
 implementation can enumerate the first 25 possible plans, covering the
-cases that involve  1,2,3 or 4 mining sites.
+cases that involve  1,2,3 or 4 mining sites, and an excerpt of which is like this:
+
+```ocaml
+([], (0, 1))
+([A], (1, 6))
+([B], (2, 6))
+([A; B], (10, 36))
+([B; A], (15, 36))
+([A; A], (14, 72))
+([B; B], (48, 108))
+([A; A; B], (100, 432))
+([B; A; A], (186, 432))
+([A; B; A], (126, 432))
+([B; A; B], (294, 648))
+([A; B; B], (204, 648))
+([B; B; A], (315, 648))
+([A; A; A], (688, 3456))
+```
 
 1. (Backward Run) Picking one expectation value from the generated table, and feed it back to the program,
 it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
