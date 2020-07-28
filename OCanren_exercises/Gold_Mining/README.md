@@ -80,14 +80,15 @@ work in the current acceptable manner, which are as follows.
 
 1. To distribute fresh (or existential) variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
 any fresh variable whose scope covers an entire disjunction. This corresponds to the step from [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
- [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).  Note, however, that re-arranging fresh variables for conjuncts does _not_ imporve the
- performance as much (from [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99) to [expectation''''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L121)), and mere distribution of fresh variables without
- putting recursive calls at the correct location does _not_ improve the performance.
+ [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).
 
 1. To reconfigure the formulae into a terser block as from [expectation'](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L55) to [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7562aedc74d51e446627c6e95988e1ff875f01c4/OCanren_exercises/Gold_Mining/mining.ml#L76) for this makes it easier not only for men to comprehend but also
  for computers to execute the code. This also is a prerequisite for the above "fresh distribution" step. 
 
-Used together, these measures made the difference between unacceptablly poor performance and modest performance.
+Used together, these measures made the difference between unacceptablly poor performance and modest performance. Note, however, that re-arranging fresh variables for conjuncts does _not_ imporve the
+ performance as much (from [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99) to [expectation''''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L121)), and mere distribution of fresh variables without
+ putting recursive calls at the correct location does _not_ improve the performance.
+
 
 
 ### Future
