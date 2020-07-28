@@ -60,21 +60,39 @@ cases that involve  0,1,2,3 or 4 mining sites, and an excerpt of which is like t
 
 
 
-1. (Backward Run) Picking one expectation value from the generated table, and feed it back to the program,
+1. (Backward Run) Picking one expectation value and feed it to the program,
 it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
  where the program enumerates in a certain order all possible plans and see which plan's expectation happens to
- equal the specified value.
+ equal the specified.
 
 ## Compilation
 
 First run `make` in the [LRational](LRational) directory. This creates the compiled interface and implementation of the
 `LRational` library. Then run `make` in the top level directory of the Gold Mining project.
 
+## Review and Future Work
+
+The major function named `expectation` went through four versions, for we applied several techniques to make it
+work in the current acceptable manner, which are as follows.
+
+1. To distibute  existential variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
+any fresh variable whose scope covers an entire disjunction. This corresponds to the step from [expectation``](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
+ [expectation```](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).  Note, however, that percolating existential variables through conjuncts does _not_ imporve the
+ performance as much (from [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99) to [expectation''''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L121)). 
+
+1. To reconfigure the formulae into a terser block, for this makes it easier not only for men to comprehend but also
+ for computers to execute the code. This also is a prerequisite for the above "fresh distribution" step.
+
+does not cross a whole disjunction, and choosing between tail-recursion and non-tail-recursion (neither is unconditionally better
+than the other)    
+
 ## Reference
 
 Bellman, Richard Ernest, _The Theory of Dynamic Programming_, Santa Monica, Calif.: RAND Corporation, P-550, 1954. As of July 20, 2020: https://www.rand.org/pubs/papers/P550.html
 
-## Appendix: Review
+
+
+
 
 Here are some observations about the program.
 
