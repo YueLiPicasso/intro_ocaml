@@ -74,8 +74,9 @@ First run `make` in the [LRational](LRational) directory. This creates the compi
 The major function named `expectation` went through four versions, for we applied several techniques to make it
 work in the current acceptable manner, which are as follows.
 
-1. Most importantly, to choose the location to make recursive calls, as from  [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
- [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99).
+1. Most importantly, to choose the proper location to make recursive calls, as from  [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
+ [expectation'''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L99). This allows timely instantiation of fresh variables and meanwhile avoidance of ever-lasting but
+ fruitless search.
 
 1. To distribute fresh (or existential) variables (introduced by the `fresh` keyword) among disjuncts so that there isn't
 any fresh variable whose scope covers an entire disjunction. This corresponds to the step from [expectation''](https://github.com/YueLiPicasso/intro_ocaml/blob/7496a7cd6968b56eba11c84affc04a20906acfdf/OCanren_exercises/Gold_Mining/mining.ml#L76) to
