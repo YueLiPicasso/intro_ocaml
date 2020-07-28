@@ -14,24 +14,41 @@ We possess two gold mines: Anaconda and Bonanza,
    as the machine is undamaged, we have our choice 
    of using the machine in Anaconda or Bonanza. 
 
-## What we want OCanren to do
+## What we want the program to do
 
-1. Given a mining plan in terms of a sequence of mining sites, 
-   e.g., [A;A;B;B;A;B], to compute the expectation of this plan.
+1. (Forward Run) Given a mining plan in terms of a sequence of mining sites, 
+   e.g., [A;A;B;B;A;B], to compute the expectation of this plan. 
 
-1. Given  an interval, we ask the program to find
+1. (Backward Run) Given  an interval, we ask the program to find
 all mining plans that yield an (rational number) expectation that is located in this interval.
 
-## Reference
+## What can the program actually do
 
-Bellman, Richard Ernest, _The Theory of Dynamic Programming_, Santa Monica, Calif.: RAND Corporation, P-550, 1954. As of July 20, 2020: https://www.rand.org/pubs/papers/P550.html
+1. (Forward Run) The current implementation can quickly compute the expectation of any given
+plan _that contains no more than 4 mining sites_, like [A;B;B:A]. For larger plans the
+ computation becomes very slow.
+
+1. (Generator) The program can also be used to generate a long table of possible plans and
+their corresponding expectation. The performance of this, unfortunately,
+is also subject to limitation. Within a not very long time the current
+implementation can enumerate the first 25 possible plans, covering the
+cases that involve  1,2,3 or 4 mining sites.
+
+1. (Backward Run) Picking one expectation value from the generated table, and feed it back to the program,
+it can be found out which plan has this particular expectation. The is essentially a generate-and-test process,
+ where the program enumerates in a certain order all possible plan and see which plan's expectation happens to
+ be the specified one.
 
 ## Compilation
 
 First run `make` in the [LRational](LRational) directory. This creates the compiled interface and implementation of the
 `LRational` library. Then run `make` in the top level directory of the Gold Mining project.
 
-## Review
+## Reference
+
+Bellman, Richard Ernest, _The Theory of Dynamic Programming_, Santa Monica, Calif.: RAND Corporation, P-550, 1954. As of July 20, 2020: https://www.rand.org/pubs/papers/P550.html
+
+## Appendix: Review
 
 Here are some observations about the program.
 
@@ -137,4 +154,5 @@ into:
 
 p[rx + p [r(1-r)x + q[sy + q[s(1-s)y]]]]
 
-restrict the expression this the above form 
+restrict the expression this the above form
+
