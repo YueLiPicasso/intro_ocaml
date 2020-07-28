@@ -26,7 +26,7 @@ We possess two gold mines: Anaconda and Bonanza,
    ```
 
 1. (Backward Run) Given  an interval _[r1, r2]_, we ask the program to find
-all mining plans that yield an  expectation _r_ that is located in this interval,
+all (or as much as possible) mining plans that yield an  expectation _r_ that is located in this interval,
 i.e.,  _r1 < r < r2_.
 
 ## What can the program actually do
