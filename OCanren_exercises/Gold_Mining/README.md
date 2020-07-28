@@ -43,7 +43,7 @@ it can be found out which plan has this particular expectation. This is essentia
 1. (Generator) The program can  be used to generate a table of possible plans and
 their corresponding expectation. The performance of this, unfortunately,
 is also subject to limitation. Within a not very long time the current
-implementation can enumerate the first 25 possible plans, covering the
+implementation can enumerate the first 25 possible plans, covering some of the
 cases that involve  0,1,2,3 or 4 mining sites, and an excerpt of which is like this:
 
 ```ocaml
