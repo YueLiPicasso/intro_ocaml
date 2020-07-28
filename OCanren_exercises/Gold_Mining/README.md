@@ -37,7 +37,7 @@ plan _that contains no more than 4 mining sites_, like [A;B;B:A]. For larger pla
 
 1. (Backward Run) Picking one expectation value and feed it to the program,
 it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
- where the program enumerates in a certain order all possible plans and see which plan's expectation happens to
+ where the program enumerates in a certain order all possible plans and sees which plan's expectation happens to
  equal the specified. 
 
 1. (Generator) The program can  be used to generate a table of possible plans and
