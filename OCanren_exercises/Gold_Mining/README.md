@@ -35,7 +35,7 @@ implementation can enumerate the first 25 possible plans, covering the
 cases that involve  1,2,3 or 4 mining sites.
 
 1. (Backward Run) Picking one expectation value from the generated table, and feed it back to the program,
-it can be found out which plan has this particular expectation. The is essentially a generate-and-test process,
+it can be found out which plan has this particular expectation. This is essentially a generate-and-test process,
  where the program enumerates in a certain order all possible plan and see which plan's expectation happens to
  be the specified one.
 
