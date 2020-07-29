@@ -1,18 +1,15 @@
 open Logic;;
 open Core;;
 
-(* Provide an alias for the name from the module Logic *)
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (******************************************************************************************)
 
-(* Type for arithmetical expressions 
-   of positive rational numbers *)
 @type ('nat, 'self) rat_expr =
-     Num of 'nat * 'nat              (* A positive rational number *)
-   | Sum of 'self * 'self            (* Sum of two rat expr *)
-   | Subt of 'self * 'self           (* subtraction between two rat expr *)
-   | Prod of 'self * 'self           (* Product of two rat expr *)
+     Num of 'nat * 'nat             
+   | Sum of 'self * 'self           
+   | Subt of 'self * 'self          
+   | Prod of 'self * 'self          
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 module X = struct
@@ -75,21 +72,21 @@ module GNat : sig
   val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
 end = struct
   
-  (* equallity *)
+  (** equallity *)
   let rec nat_eq a b =
     match a, b with
       LNat.O , LNat.O -> true
     | LNat.S a', LNat.S b' -> nat_eq a' b'
     | _ -> false;;
 
-  (* less than *)
+  (** less than *)
   let rec nat_lt a b =
     match a,b with
       LNat.O , LNat.S _ -> true
     | LNat.S a', LNat.S b' -> nat_lt a' b'
     | _ -> false;;
 
-  (* less than or equal *)
+  (** less than or equal *)
   let rec nat_le a b =
     match a,b with
       LNat.O , LNat.O -> true
@@ -97,7 +94,7 @@ end = struct
     | LNat.S a', LNat.S b' -> nat_le a' b'
     | _ -> false;;
 
-  (* subtraction *)
+  (** Subtracting a number greater than self is forbidden *)
   let rec minus a b =
     match a,b with
       _ , LNat.O -> a
@@ -109,9 +106,12 @@ end = struct
   and ( <= ) = nat_le
   and ( - ) = minus;;
   
-  (* division a/b with accumulator c; returns (quotient, remainder) *)
+  (** Division helper for [a / b] with quotient register c.
+      The first argument also serves as the remainder register. 
+      It returns the (quotient, remainder) pair.
+      There is protection against division by zero. *)
   let rec div_acc a b c =
-    if  b = LNat.O then raise Division_by_zero
+    if  b = LNat.O then raise Division_by_zero  
     else if a < b then (c, a)
     else if a = b then (LNat.S c, LNat.O)
     else let dif = a - b in
@@ -119,9 +119,10 @@ end = struct
       else if dif < b then (LNat.S c, dif)
       else div_acc dif b (LNat.S c);;
 
+  (** Division *)
   let ( / ) = fun x y -> div_acc x y LNat.O;;
 
-  (* Euclidean Algorithm *)
+  (** Euclidean Algorithm *)
   let rec gcd a b =
     if a = b then b
     else if a < b then gcd b a 
@@ -138,31 +139,38 @@ end = struct
   let rec mult a b =
     match a with
       LNat.O  -> LNat.O
-    | LNat.S a' -> b + (mult a' b);;
+    | LNat.S a' ->
+      begin
+        match b with
+          LNat.O -> LNat.O
+        | LNat.S _ -> b + (mult a' b)
+      end;;
 
   let ( * ) = mult;;
   
 end;;
 
+(******************************************************************************************)
+
 module GRat : sig
   val eval : ground -> ground;;
   val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
-  val to_int : ground -> frat;;
-  val of_int : frat -> ground;;
+  val to_frat : ground -> frat;;
+  val of_frat : frat -> ground;;
 end = struct
   open GNat;;
 
-  let rec to_int = function
+  (** The definition of [to_frat] is as if given as:
+
+  let rec to_frat = function
       Num (a,b) -> Num ((LNat.to_int a),(LNat.to_int b))
-    | Sum  (e1, e2) -> Sum (to_int e1, to_int e2)
-    | Subt (e1, e2) -> Subt (to_int e1, to_int e2)
-    | Prod (e1, e2) -> Prod (to_int e1, to_int e2);;
+    | Sum  (e1, e2) -> Sum (to_frat e1, to_frat e2)
+    | Subt (e1, e2) -> Subt (to_frat e1, to_frat e2)
+    | Prod (e1, e2) -> Prod (to_frat e1, to_frat e2);;
   
-  let rec of_int = function
-      Num (a,b) -> Num ((LNat.of_int a),(LNat.of_int b))
-    | Sum  (e1, e2) -> Sum (of_int e1, of_int e2)
-    | Subt (e1, e2) -> Subt (of_int e1, of_int e2)
-    | Prod (e1, e2) -> Prod (of_int e1, of_int e2);;
+      Similar to [of_frat]. *)
+  let rec to_frat = fun x -> GT.gmap(t) (LNat.to_int) to_frat x;;
+  let rec of_frat = fun x -> GT.gmap(t) (LNat.of_int) of_frat x;;
   
   let simplify = fun (a, b) ->
     let g = gcd a b in
@@ -181,22 +189,38 @@ end = struct
       let d = d1 * d2 and n = (n1 * d2) + (n2 * d1) in
       let n', d' = simplify (n, d) in
       Num (n', d')
-    | _ -> assert false;;
+    | Subt (ex1, ex2) ->
+      let n1, d1, n2, d2 = analyze ex1 ex2 in
+      let d = d1 * d2 and n = (n1 * d2) - (n2 * d1) in
+      let n', d' = simplify (n, d) in
+      Num (n', d')
+    | Prod (ex1, ex2) ->
+      let n1, d1, n2, d2 = analyze ex1 ex2 in
+      let d = d1 * d2 and n = n1 * n2 in
+      let n', d' = simplify (n, d) in
+      Num (n', d');;
 end;;
 
-(* Why we need to prefix 'int' and 'show' with GT? See below. And We also need
-   GT.bool? Because the 'int' as a parameter of 'show', as in 'show(int)', is 
-   not a type expression but an object named 'int' which is defined in GT. *)
+(** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
+    Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
+    not a type expression but an object named [int] which is defined in [GT]. *)
 
 let _ =
-  print_string @@ GT.show(frat) @@ GRat.to_int @@
-  GRat.eval @@ GRat.of_int (Sum (Sum (Num (3,21), Num (12,14)), Num (3,9)));
+  print_string @@ GT.show(frat) @@ GRat.to_frat @@
+  GRat.eval @@ GRat.of_frat @@
+  Subt (Num (100,100), Prod (Num (3,5), Sum (Sum (Num (3,21), Num (12,14)), Num (3,9))));
   print_newline ();;
 
 
 let _ =
-  print_string @@ GT.show(frat) @@ GRat.to_int @@
-  GRat.eval @@ GRat.of_int (Num (3,21));
+  print_string @@ GT.show(frat) @@ GRat.to_frat @@
+  GRat.eval @@ GRat.of_frat (Sum (Sum (Num (3,21), Num (12,14)), Num (3,9)));
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(frat) @@ GRat.to_frat @@
+  GRat.eval @@ GRat.of_frat (Num (3,21));
   print_newline ();;
 
 let _ =

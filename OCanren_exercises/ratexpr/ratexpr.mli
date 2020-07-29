@@ -1,16 +1,15 @@
 open Logic;;
 open Core;;
 
-(** Provide an alias for the name from the module Logic *)
+(** Provide an alias for the name from the module [Logic] *)
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-(** Abstract type for arithmetical expressions 
-   of positive rational numbers *)
+(** Abstract type for arithmetic expressions of rational numbers *)
 @type ('nat, 'self) rat_expr =
-     Num of 'nat * 'nat              (* A positive rational number *)
-   | Sum of 'self * 'self            (* Sum of two rat expr *)
-   | Subt of 'self * 'self           (* subtraction between two rat expr *)
-   | Prod of 'self * 'self           (* Product of two rat expr *)
+     Num of 'nat * 'nat              (** A rational number *)
+   | Sum of 'self * 'self            (** Sum of rat expr *)
+   | Subt of 'self * 'self           (** Subtraction of rat expr *)
+   | Prod of 'self * 'self           (** Product of rat expr *)
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Alias of the main type *)
@@ -25,7 +24,7 @@ open Core;;
 (** Main type on [injected] level *)
 type groundi = (ground, logic) injected;;
 
-(** full signed rational number *)
+(**  signed rational number, {e f} for {e full} *)
 @type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Produce injected value using injected constructor arguments *)
@@ -36,30 +35,32 @@ module Inj : sig
   val prod : groundi * groundi -> groundi;;
 end;;
 
-(** Operations on LNat.ground *)
+(** Operations on [LNat.ground] *)
 module GNat : sig
-  (* equallity *)
+  (** equallity *)
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
   
-  (* less than *)
+  (** less than *)
   val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
 
-  (* less than or equal *)
+  (** less than or equal *)
   val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
 
-  (* Addition *)
+  (** Addition *)
   val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
   
-  (* subtraction *)
+  (** Subtraction. 
+      Subtracting a number greater than self is forbidden. *)
   val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
 
-  (* Multiplication *)
+  (** Multiplication *)
   val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
 
-  (* division with (quotient, remainder) *)
+  (** Division returns the (quotient, remainder) pair 
+      with protection against division by zero *)
   val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
 
-  (* greatest common divisor *)
+  (** greatest common divisor *)
   val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
   
 end;;
@@ -72,7 +73,7 @@ module GRat : sig
   (** Convert to normal form a rational number a/b represented as (a,b) *)
   val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
 
-  (** Convert between,  say, Num (0,1) and Num (O, S O) *)
-  val to_int : ground -> frat;;
-  val of_int : frat -> ground;; (* sign ignored *)
+  (** Convert between, say, [Num (0,1)] and [Num (O, S O)] *)
+  val to_frat : ground -> frat;;
+  val of_frat : frat -> ground;; (** Sign ignored *)
 end;;
