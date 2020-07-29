@@ -83,13 +83,28 @@ printf "\n ] ;; \n" ;;
 ### The `pure-relational/naive math` approach
 
 Finding the greatest common divisor for two numbers m and n (suppose m > n) could
-   be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n. Then we shall a relation that checks if one natural number divides another.  
+   be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n.
+   Then we shall define a relation that checks if one natural number divides another.
+   
+```ocaml
+(** a is dividable by b *)
+let rec divido a b =
+   conde [a === b ;
+          (?% [a > b ; Fresh.one (fun c -> minuso a b c &&& divido c b)])
+	 ];;
+```
 
-### The `pseudo-relational/table` approach
+
+### The `pseudo-relational` approaches
+
+As we can wrap a query within a function, we might also wrap a function within a goal.
+This wrapped function can either compute by itself or refer to some data structure like a hash table.
+I shall also check the OCaml standard libraries to see what might help.  
 
 
+### Miscellaneous
 
-Are there any other way, e.g., defining a special purpose camlp5 preprocessor?  I shall also check the OCaml standard libraries to see what might help. 
+Defining a special purpose camlp5 preprocessor? 
 
 
 
