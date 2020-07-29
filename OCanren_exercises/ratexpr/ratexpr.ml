@@ -189,7 +189,14 @@ end;;
    not a type expression but an object named 'int' which is defined in GT. *)
 
 let _ =
-  print_string @@ GT.show(ground) @@ GRat.eval (Num ((LNat.of_int 3),(LNat.of_int 21)));
+  print_string @@ GT.show(frat) @@ GRat.to_int @@
+  GRat.eval @@ GRat.of_int (Sum (Sum (Num (3,21), Num (12,14)), Num (3,9)));
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(frat) @@ GRat.to_int @@
+  GRat.eval @@ GRat.of_int (Num (3,21));
   print_newline ();;
 
 let _ =
