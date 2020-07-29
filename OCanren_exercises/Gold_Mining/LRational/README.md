@@ -34,14 +34,16 @@ look up for a normalized representation of a/b immediately.
 For example, to normalize 100/2 it would be enough to look up in the
 table for numerator 100 and denominator 2 and immediately get 50/1 as a result.
 
-The above taken into account, there are four possible ways as I could see in which the simplification relation may be implemented.
+The above taken into account, there are several possible ways as I could see in which the simplification relation may be implemented:
 
 1. pure-relational
     1. table
     1. naive math
 1. pseudo-relational
     1. table
-    1. functions in wrapper 
+    1. functions in wrapper
+1. preprocessor
+1. miscellaneous
 
 ### The `pure-relational/table` approach
 
@@ -78,15 +80,21 @@ List.iter print_string @@ make_str_list @@ build_table args ;
 printf "\n ] ;; \n" ;;
 ```
 
-Are there any other way, e.g., defining a special purpose camlp5 preprocessor?  
+### The `pure-relational/naive math` approach
+
+Finding the greatest common divisor for two numbers m and n (suppose m > n) could
+   be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n. Then we shall a relation that checks if one natural number divides another.  
+
+### The `pseudo-relational/table` approach
+
+
+
+Are there any other way, e.g., defining a special purpose camlp5 preprocessor?  I shall also check the OCaml standard libraries to see what might help. 
 
 
 
 
 
-We have discussed about  above. Now let's see the rest. 
 
- * `pure-relational/naive math` Finding the greatest common divisor for two numbers m and n (suppose m > n) could
-   be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n. 
 
 
