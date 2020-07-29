@@ -84,7 +84,7 @@ printf "\n ] ;; \n" ;;
 
 Finding the greatest common divisor for two numbers m and n (suppose m > n) could
    be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n.
-   Then we shall define a relation that checks if one natural number divides another.
+   Then we shall define a relation that checks if one natural number divides another, something like:
    
 ```ocaml
 (** a is dividable by b *)
