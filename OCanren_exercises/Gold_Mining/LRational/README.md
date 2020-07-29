@@ -24,7 +24,7 @@ See the
 [OCaml reference manual](http://caml.inria.fr/pub/docs/manual-ocaml/index.html) chapters
 on `ocamlc` and `ocamlopt` and `ocamldep`.
 
-## Remarks
+## Discussion
 
 
 Regarding quick simplification of rational numbers,
@@ -33,3 +33,60 @@ to create a table to
 look up for a normalized representation of a/b immediately.
 For example, to normalize 100/2 it would be enough to look up in the
 table for numerator 100 and denominator 2 and immediately get 50/1 as a result.
+
+The above taken into account, there are four possible ways as I could see in which the simplification relation may be implemented.
+
+1. pure-relational
+    1. table
+    1. naive math
+1. pseudo-relational
+    1. table
+    1. functions in wrapper 
+
+### The `pure-relational/table` approach
+
+It shall be easy to generate a long list like this:
+
+```
+[... ; ((2,2),(1,1)) ; ((2,3),(2,3)) ; ((2,4),(1,2)) ; ... ]
+```
+
+which enumerates all pairs on `N x N'` for some `N = {0, 1, 2,..., n}` and `N' = {1, 2, 3,..., n}`.
+
+However, to convert this table into a relation like
+
+```ocaml
+let simplify a b c d =
+conde [... ; (?& [a === 2 ; b === 2 ; c === 1; d === 1] ) ;
+             (?& [a === 2 ; b === 3 ; c === 2; d === 3] ) ;
+             (?& [a === 2 ; b === 4 ; c === 1; d === 2] ) ; ... ] ;;
+```
+
+is not easy when done by hand, suppose `n = max_int`.  
+
+I may define a pretty-printer to do this?  This means somehow I print the long list
+to a file using something like
+
+```ocaml
+let rec make_str_list = function
+     [] -> []
+  |  ((a,b),(c,d)) :: tl -> (sprintf "(?& [a === %d ; b === %d ; c === %d; d === %d] ) ;  \n" a b c d)  :: make_str_list tl 
+and build_table = (* function body *)
+in
+printf "let simplify a b c d = \n conde [ \n" ;
+List.iter print_string @@ make_str_list my_long_table ;
+printf  \n ] ;; \n" ;;
+```
+
+Are there any other way, e.g., defining a special purpose camlp5 preprocessor?  
+
+
+
+
+
+We have discussed about  above. Now let's see the rest. 
+
+ * `pure-relational/naive math` Finding the greatest common divisor for two numbers m and n (suppose m > n) could
+   be as simple as enumerating all k from {1,2,.., n} and find the largest that divides both m and n. 
+
+
