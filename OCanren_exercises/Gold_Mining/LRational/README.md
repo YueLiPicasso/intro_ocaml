@@ -64,13 +64,13 @@ conde [... ; (?& [a === 2 ; b === 2 ; c === 1; d === 1] ) ;
 
 is not easy when done by hand, suppose `n = max_int`.  
 
-I may define a pretty-printer to do this?  This means somehow I print the long list
-to a file using something like
+I may define a pretty-printer to do this:
 
 ```ocaml
 let rec make_str_list = function
      [] -> []
-  |  ((a,b),(c,d)) :: tl -> (sprintf "(?& [a === %d ; b === %d ; c === %d; d === %d] ) ;  \n" a b c d)  :: make_str_list tl 
+  |  ((a,b),(c,d)) :: tl ->
+     (sprintf "(?& [a === %d ; b === %d ; c === %d; d === %d] ) ;  \n" a b c d)  :: make_str_list tl 
 and build_table = (* function body *)
 in
 printf "let simplify a b c d = \n conde [ \n" ;
