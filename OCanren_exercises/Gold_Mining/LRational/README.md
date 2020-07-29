@@ -64,7 +64,7 @@ conde [... ; (?& [a === 2 ; b === 2 ; c === 1; d === 1] ) ;
 
 is not easy when done by hand, suppose `n = max_int`.  
 
-I may define a pretty-printer to do this:
+I may define a printer to do this:
 
 ```ocaml
 let rec make_str_list = function
