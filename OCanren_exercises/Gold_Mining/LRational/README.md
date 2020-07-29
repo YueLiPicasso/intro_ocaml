@@ -75,7 +75,7 @@ and build_table = (* function body *)
 in
 printf "let simplify a b c d = \n conde [ \n" ;
 List.iter print_string @@ make_str_list @@ build_table args ;
-printf  \n ] ;; \n" ;;
+printf "\n ] ;; \n" ;;
 ```
 
 Are there any other way, e.g., defining a special purpose camlp5 preprocessor?  
