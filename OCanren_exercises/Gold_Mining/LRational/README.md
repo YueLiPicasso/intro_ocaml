@@ -89,8 +89,10 @@ Finding the greatest common divisor for two numbers m and n (suppose m > n) coul
 ```ocaml
 (** a is dividable by b *)
 let rec divido a b =
-   conde [a === b ;
-          (?& [a > b ; Fresh.one (fun c -> minuso a b c &&& divido c b)])
+   let open LNat in
+   conde [(?& [a === zero ; b =/= zero]); 
+          (?& [a =/= zero ; a === b   ]);
+          (?& [b =/= zero ; a > b ; Fresh.one (fun c -> minuso a b c &&& divido c b)]);
 	 ];;
 ```
 
