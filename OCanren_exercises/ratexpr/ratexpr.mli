@@ -21,6 +21,9 @@ open Core;;
 
 type groundi = (ground, logic) injected;;
 
+(** full rational number *)
+@type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+
 (** Produce injected value using injected constructor arguments *)
 
 module Inj : sig
@@ -30,8 +33,8 @@ module Inj : sig
   val prod : groundi * groundi -> groundi;;
 end;;
 
-(** Operations on LNat.ground and ground rational *)
-module GOOps : sig
+(** Operations on LNat.ground *)
+module GNat : sig
   (* equallity *)
   val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
   
@@ -55,11 +58,18 @@ module GOOps : sig
 
   (* greatest common divisor *)
   val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
-
-  (* simplfy the ratio a/b by dividing with gcd *)
-  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
   
 end;;
 
-(** Evaluate a rat expression to the simplified ratio form *)
-(* val eval : ground -> ground;;*)
+(** Operations on ground rational numbers *)
+module GRat : sig
+  (** Evaluate an expression to normal form *)
+  val eval : ground -> ground;;
+
+  (** Convert to normal form a rational number a/b represented as (a,b) *)
+  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
+
+  (** Convert between,  say, Num (0,1) and Num (O, S O) *)
+  val to_int : ground -> frat;;
+  val of_int : frat -> ground;;
+end;;
