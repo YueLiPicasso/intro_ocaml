@@ -77,3 +77,6 @@ module GRat : sig
   val to_frat : ground -> frat;;
   val of_frat : frat -> ground;; (** Sign ignored *)
 end;;
+
+(** [simplify a b a' b'] simplifies a/b to the normal form a'/b' and fails if b is zero. *)
+val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;

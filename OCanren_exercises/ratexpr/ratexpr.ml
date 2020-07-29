@@ -168,7 +168,7 @@ end = struct
     | Subt (e1, e2) -> Subt (to_frat e1, to_frat e2)
     | Prod (e1, e2) -> Prod (to_frat e1, to_frat e2);;
   
-      Similar to [of_frat]. *)
+      Similar for [of_frat]. *)
   let rec to_frat = fun x -> GT.gmap(t) (LNat.to_int) to_frat x;;
   let rec of_frat = fun x -> GT.gmap(t) (LNat.of_int) of_frat x;;
   
@@ -201,9 +201,18 @@ end = struct
       Num (n', d');;
 end;;
 
+
+(******************************************************************************************)
+
+
+let simplify a b a' b'=
+ ?& [b =/= LNat.zero ; a === a' ; b === b'] (** A stub *)
+
 (** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
     Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
     not a type expression but an object named [int] which is defined in [GT]. *)
+
+(** Below are some tests *)
 
 let _ =
   print_string @@ GT.show(frat) @@ GRat.to_frat @@
@@ -386,16 +395,5 @@ let _ =
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
 
-(*
-let _ =
-  print_string @@ GT.show(pr) @@ 
-  (match GNat.eval @@ Num ((LNat.of_int 18801), (LNat.of_int 1000))
-   with Num (a,b) -> LNat.to_int a, LNat.to_int b);
-  print_newline ();;
 
-let _ =
-  print_string @@ GT.show(pr) @@ 
-  (match GNat .eval @@ Num ((LNat.of_int 18801), (LNat.of_int 999))
-   with Num (a,b) -> LNat.to_int a, LNat.to_int b);
-  print_newline ();;
-*)
+
