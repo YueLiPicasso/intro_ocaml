@@ -29,7 +29,6 @@ type groundi = (ground, logic) injected;;
 @type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Produce injected value using injected constructor arguments *)
-
 module Inj : sig
   val num  : LNat.groundi * LNat.groundi -> groundi;;
   val sum  : groundi * groundi -> groundi;;
