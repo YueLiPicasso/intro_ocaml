@@ -4,7 +4,7 @@ open Core;;
 (** Provide an alias for the name from the module Logic *)
 @type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-(** Type for arithmetical expressions 
+(** Abstract type for arithmetical expressions 
    of positive rational numbers *)
 @type ('nat, 'self) rat_expr =
      Num of 'nat * 'nat              (* A positive rational number *)
@@ -13,15 +13,19 @@ open Core;;
    | Prod of 'self * 'self           (* Product of two rat expr *)
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
+(** Alias of the main type *)
 @type ('a,'b) t = ('a,'b) rat_expr with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
+(** Main type on [ground] level, unsigned and Peano *)
 @type ground = (LNat.ground, ground) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
+(** Main type on [logic] level *)
 @type logic = (LNat.logic, logic) t logic' with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
+(** Main type on [injected] level *)
 type groundi = (ground, logic) injected;;
 
-(** full rational number *)
+(** full signed rational number *)
 @type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Produce injected value using injected constructor arguments *)
@@ -71,5 +75,5 @@ module GRat : sig
 
   (** Convert between,  say, Num (0,1) and Num (O, S O) *)
   val to_int : ground -> frat;;
-  val of_int : frat -> ground;;
+  val of_int : frat -> ground;; (* sign ignored *)
 end;;
