@@ -90,7 +90,7 @@ Finding the greatest common divisor for two numbers m and n (suppose m > n) coul
 (** a is dividable by b *)
 let rec divido a b =
    conde [a === b ;
-          (?% [a > b ; Fresh.one (fun c -> minuso a b c &&& divido c b)])
+          (?& [a > b ; Fresh.one (fun c -> minuso a b c &&& divido c b)])
 	 ];;
 ```
 
