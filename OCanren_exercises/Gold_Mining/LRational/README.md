@@ -74,7 +74,7 @@ let rec make_str_list = function
 and build_table = (* function body *)
 in
 printf "let simplify a b c d = \n conde [ \n" ;
-List.iter print_string @@ make_str_list my_long_table ;
+List.iter print_string @@ make_str_list @@ build_table args ;
 printf  \n ] ;; \n" ;;
 ```
 
