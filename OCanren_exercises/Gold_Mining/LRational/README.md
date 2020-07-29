@@ -106,7 +106,20 @@ I shall also check the OCaml standard libraries to see what might help.
 
 ### Miscellaneous
 
-Defining a special purpose camlp5 preprocessor? 
+Defining a special purpose camlp5 preprocessor? It shall convert
+
+```
+[... ; ((2,2),(1,1)) ; ((2,3),(2,3)) ; ((2,4),(1,2)) ; ... ]
+```
+ directly into
+
+```ocaml
+let simplify a b c d =
+conde [... ; (?& [a === 2 ; b === 2 ; c === 1; d === 1] ) ;
+             (?& [a === 2 ; b === 3 ; c === 2; d === 3] ) ;
+             (?& [a === 2 ; b === 4 ; c === 1; d === 2] ) ; ... ] ;;
+```
+
 
 
 
