@@ -90,11 +90,14 @@ end;;
      {- enumerate all pairs [(a,b)] where a is divisible by b}} *)
 val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
 
-(** [common_divisor a b c] holds if [c] is a common divisor of [a] and [b]. 
-    {ol {- Given }}*)
-val common_divisor :  LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+(** [remainder a b r] if [r] is the remainder when [a] is divided by [b] *)
+val remainder :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
-  
-(** [simplify a b a' b'] simplifies a/b to the normal form a'/b' and fails if b is zero. *)
+(** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
+    where [b <= a] *)
+val gcd :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+
+(** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
+    It can also be used to find all a/b that simplifies to a'/b'  *)
 val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
