@@ -217,12 +217,12 @@ module LoNat : sig
   val gcd          : groundi -> groundi -> groundi -> goal;;
 end = struct
   open LNat;;
-  
+
+  (** From the second clause we can infer that a =/= zero and that a >= b *)
   let rec divisible_by a b =
     conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
-           (?& [b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
-	  ];; 
-
+           (?& [b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)])];; 
+  
   let remainder a b r =
     conde [
       (?& [divisible_by a b ; r === zero]);
