@@ -208,48 +208,53 @@ end = struct
       Num (n', d');;
 end;;
 
-
 (******************************************************************************************)
 
-
 module LoNat : sig
-  val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
-  val remainder :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val gcd :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  open LNat;;
+  val divisible_by : groundi -> groundi -> goal;;
+  val remainder    : groundi -> groundi -> groundi -> goal;;
+  val gcd          : groundi -> groundi -> groundi -> goal;;
 end = struct
+  open LNat;;
+  
   let rec divisible_by a b =
-    let open LNat in
     conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
            (?& [a >= b ; b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
 	  ];; 
 
   let remainder a b r =
-    let open LNat in
     conde [
       (?& [divisible_by a b ; r === zero]);
       (?& [r =/= zero ; r < b ; Fresh.one (fun m -> addo m r a &&& divisible_by m b) ])];;
   
   let rec gcd a b c =
-    let open LNat in
     conde [(?& [b <= a ; divisible_by a b ; c === b]);
            (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;   
 end;;
 
-let simplify a b a' b'=
-  let open LNat in let open LoNat in conde [
-  (?& [a === b ; a' === one ; b' === one]);
-  (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
-  (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
+(******************************************************************************************)
+
+module LoRat : sig
+ val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+end = struct
+  open LoNat;;
+  open LNat;;
+  
+  let simplify a b a' b'=
+    conde [
+      (?& [a === b ; a' === one ; b' === one]);
+      (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
+      (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
+end;;
 
 (******************************************************************************************)
 
 (** Below are some tests *)
 module Tests = struct
   open LoNat;;
-  (** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
-      Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
-      not a type expression but an object named [int] which is defined in [GT]. *)
-
+  open LoRat;;
+  
 @type pr = GT.int * GT.int with show;;
 @type intl = GT.int GT.list with show;;
 @type ipl = (GT.int * GT.int) GT.list with show;; 
@@ -534,6 +539,10 @@ let _ =
   (match GRat.simplify ((LNat.of_int 18800), (LNat.of_int 1000))
    with a,b -> LNat.to_int a, LNat.to_int b);
   print_newline ();;
+
+(** Why we need to prefix [int] , [bool] and [show] with [GT] ? 
+      Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
+      not a type expression but an object named [int] which is defined in [GT]. *)
 
 
 end;;

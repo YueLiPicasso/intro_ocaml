@@ -85,24 +85,26 @@ end;;
 
 (** Some relations on LNat.groundi *)
 module LoNat : sig
-
+  open LNat;;
+  
   (**  [divisible_by a b] holds if [a] is divisible by [b].
      This relation can: 
      {ol {- find all divisors of [a], or} 
      {- enumerate all multiples of [b], or} 
      {- enumerate all pairs [(a,b)] where a is divisible by b}} *)
-val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
+  val divisible_by : groundi -> groundi -> goal;;
 
-(** [remainder a b r] if [r] is the remainder when [a] is divided by [b] *)
-val remainder :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  (** [remainder a b r] if [r] is the remainder when [a] is divided by [b] *)
+  val remainder    : groundi -> groundi -> groundi -> goal;;
 
-(** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
-    where [b <= a] *)
-val gcd :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-
+  (** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
+      where [b <= a] *)
+  val gcd          : groundi -> groundi -> groundi -> goal;;
 end;;
 
-(** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
+(** Some relations on injected rational numbers *)
+module LoRat : sig
+  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
     It can also be used to find all a/b that simplifies to a'/b'  *)
-val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-
+ val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+end 
