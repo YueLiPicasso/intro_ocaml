@@ -220,7 +220,7 @@ end = struct
   
   let rec divisible_by a b =
     conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
-           (?& [a >= b ; b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
+           (?& [b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
 	  ];; 
 
   let remainder a b r =
