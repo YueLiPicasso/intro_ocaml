@@ -1,7 +1,8 @@
 open Logic;;
 open Core;;
 
-@type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type 'a logic' = 'a logic
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (******************************************************************************************)
 
@@ -13,7 +14,8 @@ open Core;;
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 module X = struct
-  @type ('a,'b) t = ('a,'b) rat_expr with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+  @type ('a,'b) t = ('a,'b) rat_expr
+   with show, html, eq, compare, foldl, foldr, gmap, fmt;;
   let fmap = fun x y z -> GT.gmap(t) x y z;;
 end;;
 
@@ -21,9 +23,11 @@ include X;;
 
 module F = Fmap2(X);;
  
-@type ground = (LNat.ground, ground) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type ground = (LNat.ground, ground) t
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-@type logic = (LNat.logic, logic) t logic' with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type logic = (LNat.logic, logic) t logic'
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 let logic = {
   logic with
@@ -43,7 +47,8 @@ let logic = {
 
 type groundi = (ground, logic) injected;;
 
-@type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type frat = (GT.int, frat) t
+ with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (******************************************************************************************)
 
@@ -177,6 +182,8 @@ end = struct
     let (a', _) = a / g and (b', _) = b / g in
     (a',b');;
 
+  (** The GT plugin [eval] could also have been used to define the evaluator, if
+  only [eval] had been added to LNat. *)
   let rec analyze = fun e1 e2 ->
     let Num (n1,d1) = eval e1
     and Num (n2,d2) = eval e2

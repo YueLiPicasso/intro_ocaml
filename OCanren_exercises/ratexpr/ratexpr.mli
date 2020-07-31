@@ -2,7 +2,8 @@ open Logic;;
 open Core;;
 
 (** Provide an alias for the name from the module [Logic] *)
-@type 'a logic' = 'a logic with show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type 'a logic' = 'a logic
+ with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Abstract type for arithmetic expressions of rational numbers *)
 @type ('nat, 'self) rat_expr =
@@ -13,19 +14,23 @@ open Core;;
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Alias of the main type *)
-@type ('a,'b) t = ('a,'b) rat_expr with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type ('a,'b) t = ('a,'b) rat_expr
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [ground] level, unsigned and Peano *)
-@type ground = (LNat.ground, ground) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type ground = (LNat.ground, ground) t
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [logic] level *)
-@type logic = (LNat.logic, logic) t logic' with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type logic = (LNat.logic, logic) t logic'
+ with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [injected] level *)
 type groundi = (ground, logic) injected;;
 
 (**  signed rational number, {e f} for {e full} *)
-@type frat = (GT.int, frat) t with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
+@type frat = (GT.int, frat) t
+ with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Produce injected value using injected constructor arguments *)
 module Inj : sig
