@@ -211,25 +211,32 @@ end;;
 
 (******************************************************************************************)
 
-let rec divisible_by a b =
-   let open LNat in
-   conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
-          (?& [a >= b ; b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
-	 ];; 
 
-let remainder a b r =
-  let open LNat in
-  conde [
-  (?& [divisible_by a b ; r === zero]);
-  (?& [r =/= zero ; r < b ; Fresh.one (fun m -> addo m r a &&& divisible_by m b) ])];;
+module LoNat : sig
+  val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
+  val remainder :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val gcd :   LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+end = struct
+  let rec divisible_by a b =
+    let open LNat in
+    conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
+           (?& [a >= b ; b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
+	  ];; 
+
+  let remainder a b r =
+    let open LNat in
+    conde [
+      (?& [divisible_by a b ; r === zero]);
+      (?& [r =/= zero ; r < b ; Fresh.one (fun m -> addo m r a &&& divisible_by m b) ])];;
   
-let rec gcd a b c =
-  let open LNat in
-  conde [(?& [b <= a ; divisible_by a b ; c === b]);
-         (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];; 
+  let rec gcd a b c =
+    let open LNat in
+    conde [(?& [b <= a ; divisible_by a b ; c === b]);
+           (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;   
+end;;
 
 let simplify a b a' b'=
-  let open LNat in conde [
+  let open LNat in let open LoNat in conde [
   (?& [a === b ; a' === one ; b' === one]);
   (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
   (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
@@ -238,7 +245,7 @@ let simplify a b a' b'=
 
 (** Below are some tests *)
 module Tests = struct
-  
+  open LoNat;;
   (** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
       Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
       not a type expression but an object named [int] which is defined in [GT]. *)
