@@ -211,33 +211,48 @@ end;;
 
 (******************************************************************************************)
 
-
-let rec divisible_by' a b =
-   let open LNat in
-   conde [(?& [a === zero ; b =/= zero]); 
-          (?& [a =/= zero ; a === b   ]);
-          (?& [b =/= zero ; a > b ; Fresh.one (fun c -> addo c b a &&& divisible_by' c b)]);
-	 ];;
-
 let rec divisible_by a b =
    let open LNat in
-   conde [(?& [a === zero ; b =/= zero]); 
-          (?& [b =/= zero ; a >= b ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
-	 ];;
+   conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
+          (?& [a >= b ; b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
+	 ];; 
 
-
+let common_divisor a b c =
+  divisible_by a c &&& divisible_by b c;;
   
 let simplify a b a' b'=
  ?& [b =/= LNat.zero ; a === a' ; b === b'] (** A stub *);;
 
-(** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
-    Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
-    not a type expression but an object named [int] which is defined in [GT]. *)
 
- (** Below are some tests *)
+(** Below are some tests *)
+module Tests = struct
+  
+  (** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
+      Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
+      not a type expression but an object named [int] which is defined in [GT]. *)
 
 @type pr = GT.int * GT.int with show;;
 @type intl = GT.int GT.list with show;;
+(* @type ipl = (GT.int * GT.int) GT.list with show;; *)
+(** Mixed free variables and ground values are captured by type [logic] *)
+@type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren {common_divisor 35 49 q}) (fun q -> LNat.to_int @@ project q);;
+  print_newline ();;
+
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren {common_divisor 30 40 q}) (fun q -> LNat.to_int @@ project q);;
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(lnpl) @@ RStream.take ~n:10 @@
+  run qr  (fun q r -> ocanren { divisible_by q r } )
+    (fun q r -> q#reify(LNat.reify), r#reify(LNat.reify)) ;
+  print_newline ();; 
 
 let _ =
   print_string @@ GT.show(intl) @@ RStream.take @@
@@ -257,6 +272,11 @@ let _ =
 let _ =
   print_string @@ GT.show(intl) @@ RStream.take @@
   run q (fun q -> ocanren { divisible_by 80 q } ) (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take ~n:10 @@
+  run q (fun q -> ocanren { divisible_by q 3 } ) (fun q -> LNat.to_int @@ project q);
   print_newline ();;
 
 
@@ -436,4 +456,4 @@ let _ =
   print_newline ();;
 
 
-
+end;;

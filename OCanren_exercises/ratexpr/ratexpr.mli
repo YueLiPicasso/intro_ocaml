@@ -83,8 +83,18 @@ module GRat : sig
   val of_frat : frat -> ground;; (** Sign ignored *)
 end;;
 
-(**  [divisible_by a b] holds if [a] is divisible by [b] *)
+(**  [divisible_by a b] holds if [a] is divisible by [b].
+     This relation can: 
+     {ol {- find all divisors of [a], or} 
+     {- enumerate all multiples of [b], or} 
+     {- enumerate all pairs [(a,b)] where a is divisible by b}} *)
 val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
 
+(** [common_divisor a b c] holds if [c] is a common divisor of [a] and [b]. 
+    {ol {- Given }}*)
+val common_divisor :  LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+
+  
 (** [simplify a b a' b'] simplifies a/b to the normal form a'/b' and fails if b is zero. *)
 val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+
