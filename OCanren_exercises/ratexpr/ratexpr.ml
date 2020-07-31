@@ -212,14 +212,53 @@ end;;
 (******************************************************************************************)
 
 
+let rec divisible_by' a b =
+   let open LNat in
+   conde [(?& [a === zero ; b =/= zero]); 
+          (?& [a =/= zero ; a === b   ]);
+          (?& [b =/= zero ; a > b ; Fresh.one (fun c -> addo c b a &&& divisible_by' c b)]);
+	 ];;
+
+let rec divisible_by a b =
+   let open LNat in
+   conde [(?& [a === zero ; b =/= zero]); 
+          (?& [b =/= zero ; a >= b ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)]);
+	 ];;
+
+
+  
 let simplify a b a' b'=
- ?& [b =/= LNat.zero ; a === a' ; b === b'] (** A stub *)
+ ?& [b =/= LNat.zero ; a === a' ; b === b'] (** A stub *);;
 
 (** Why we need to prefix [int] , [bool] and [show] with [GT] (See below) ? 
     Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
     not a type expression but an object named [int] which is defined in [GT]. *)
 
-(** Below are some tests *)
+ (** Below are some tests *)
+
+@type pr = GT.int * GT.int with show;;
+@type intl = GT.int GT.list with show;;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren { divisible_by 15 q } ) (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren { divisible_by 97 q } ) (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren { divisible_by 85 q } ) (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
+let _ =
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren { divisible_by 80 q } ) (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
 
 let _ =
   print_string @@ GT.show(frat) @@ GRat.to_frat @@
@@ -262,9 +301,6 @@ let _ =
   GNat.( * ) (LNat.of_int 100) (LNat.of_int 4);
   print_newline ();;
 
-
-
-@type intl = GT.int GT.list with show;;
 
 let _ =
   let open LNat in 
@@ -325,9 +361,6 @@ let _ =
   print_string @@ GT.show(GT.int) @@ LNat.to_int @@
   GNat.( - ) (LNat.of_int 4) (LNat.of_int 2);
   print_newline ();;
-
-
-@type pr = GT.int * GT.int with show;;
 
 let _ =
   print_string @@ GT.show(pr) @@ 

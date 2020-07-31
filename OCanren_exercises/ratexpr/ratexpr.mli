@@ -83,5 +83,8 @@ module GRat : sig
   val of_frat : frat -> ground;; (** Sign ignored *)
 end;;
 
+(**  [divisible_by a b] holds if [a] is divisible by [b] *)
+val divisible_by : LNat.groundi -> LNat.groundi -> goal;;
+
 (** [simplify a b a' b'] simplifies a/b to the normal form a'/b' and fails if b is zero. *)
 val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
