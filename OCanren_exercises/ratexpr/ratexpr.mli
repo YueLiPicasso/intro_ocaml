@@ -110,13 +110,12 @@ end;;
 
 (** Some relations on injected rational numbers *)
 module LoRat : sig
-  open LNat;;
-    
   (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
     It can also be used to find all a/b that simplifies to a'/b'  *)
-  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
   module Prj : sig
+    open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)
     val logic_to_ground : logic * logic -> ground * ground;;
   end;;

@@ -220,7 +220,12 @@ module LoNat : sig
   end;;
 end = struct
   open LNat;;
-  
+
+  (** In a similar way we can write a filter to separate all reified data into
+      two groups : those that contain free variables which cannot be converted
+      to ground values, and those that do not contain free variables and can thus
+      be converted to free variables. Then different printers can be applied to 
+      get the most human readble display of the result. *)
   module Prj = struct
     let rec logic_to_ground = function
       | Var _ -> raise Not_a_value
@@ -250,9 +255,9 @@ end;;
 (******************************************************************************************)
 
 module LoRat : sig
-  open LNat;;
-  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   module Prj : sig
+    open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
   end;;
 end = struct
