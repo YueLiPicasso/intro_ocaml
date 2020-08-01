@@ -50,9 +50,18 @@ individual digits 1 and 3 to injected natural numbers, and in turn converts
 case `num` which is a user-defined injection primitive. In my code the
 injection primitive `num` accepts a normal pair of injected nats but in the
 expected style it shall accept an injected pair of type LPair.groundi, which
-at the top-level does not has the `*` type constructor at all, and which is
-therefore clashes with my definition of the abstract `rat_expr` type. It shall
-be modified to something like:
+at the top-level does not has the `*` type constructor at all:
+
+```ocaml
+(** expected *)
+val num :
+  (LNat.ground, LNat.logic, LNat.ground, LNat.logic) LPair.groundi -> Rat_expr.groundi;;
+(** mine, problematic *)
+val num : LNat.groundi * LNat.groundi -> Rat_expr.groundi
+```
+
+To resolve this clash, I must further modify the definition of the
+abstract `rat_expr` type. It shall now be like:
 
 ```ocaml
 @type ('a,'b) rat_expr =
