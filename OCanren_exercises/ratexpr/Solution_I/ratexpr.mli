@@ -32,12 +32,13 @@ type groundi = (ground, logic) injected;;
 @type frat = (GT.int, frat) t
  with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-(** Produce injected value using injected constructor arguments *)
+(** Produce injected value using injected constructor arguments; reification *)
 module Inj : sig
   val num  : LNat.groundi * LNat.groundi -> groundi;;
   val sum  : groundi * groundi -> groundi;;
   val subt : groundi * groundi -> groundi;;
   val prod : groundi * groundi -> groundi;;
+  val reify : VarEnv.t -> groundi -> logic;;
 end;;
 
 (** Operations on [LNat.ground] *)
@@ -114,6 +115,8 @@ module LoRat : sig
     It can also be used to find all a/b that simplifies to a'/b'  *)
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
+  val eval : groundi -> groundi -> goal;;
+  
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)

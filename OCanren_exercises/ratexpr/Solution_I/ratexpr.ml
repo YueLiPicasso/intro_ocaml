@@ -53,15 +53,25 @@ type groundi = (ground, logic) injected;;
 (******************************************************************************************)
 
 module Inj : sig
-  val num  : LNat.groundi * LNat.groundi -> groundi;;
+  val num  : LNat.groundi * LNat.groundi -> groundi;; 
   val sum  : groundi * groundi -> groundi;;
   val subt : groundi * groundi -> groundi;;
   val prod : groundi * groundi -> groundi;;
+  val reify : VarEnv.t -> groundi -> logic;;
 end = struct
-  let num  (x, y) = inj @@ F.distrib (Num  (x, y))
+  let num  (x, y) = inj @@ F.distrib (Num  (x, y)) 
   and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
   and subt (x, y) = inj @@ F.distrib (Subt (x, y))
   and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
+
+  (**
+     val reify :
+      (VarEnv.t -> ('a, 'b) Logic.injected -> 'b) ->
+      (VarEnv.t -> ('c, 'd) Logic.injected -> 'd) ->
+      VarEnv.t ->
+      (('a, 'c) X.t, ('b, 'd) X.t Logic.logic) Logic.injected ->
+      ('b, 'd) X.t Logic.logic *)
+  let rec reify = fun env n -> F.reify (LNat.reify) reify env n;;
 end;;
 
 (******************************************************************************************)
@@ -256,6 +266,7 @@ end;;
 
 module LoRat : sig
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val eval : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
@@ -273,6 +284,28 @@ end = struct
       (?& [a === b ; a' === one ; b' === one]);
       (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
       (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
+
+  let rec eval ex no =
+    let open Inj in let open LNat in
+    conde [
+      Fresh.four (fun a b a' b' ->
+          ?& [ex === num (a, b) ; no === num (a',b') ; simplify a b a' b']);
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum (ea, eb) ;
+              Fresh.two (fun na nb ->
+                  ?& [eval ea na ; eval eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num (a,b) ; nb === num (a',b') ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;
+                                      Fresh.two (fun nu' bb'' ->
+                                          ?& [simplify nu bb' nu' bb'';
+                                             no === num (nu',bb'')])])])])]);
+      (?& []);
+      (?& [])];;
 end;;
 
 (******************************************************************************************)
@@ -287,6 +320,13 @@ module Tests = struct
 @type ipl = (GT.int * GT.int) GT.list with show;; 
 (** Mixed free variables and ground values are captured by type [logic] *)
 @type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
+
+
+(** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:20 @@ 
+run q (fun q -> eval q (num (ocanren{1}, ocanren{3}))) (fun q -> q#reify(reify))
 
 (** simplify 108 / 72 *)
 let _ = 
