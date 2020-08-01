@@ -79,4 +79,4 @@ as well.
 
 ### p.s.
 
-I love to make mistakes in my research for it helped me to learn things better. 
+I love to make mistakes in my research for it helped me learn things better. 
