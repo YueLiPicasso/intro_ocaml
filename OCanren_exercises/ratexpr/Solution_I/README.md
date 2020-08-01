@@ -69,6 +69,7 @@ abstract `rat_expr` type. It shall now be like:
    | Sum of 'b
    | Prod of 'b
    | Subt of 'b
+ with (* etc. *)
 ```
 
 where `'a` is supposed to be instantiated by _logical pairs_ of nats at
