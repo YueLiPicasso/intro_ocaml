@@ -36,7 +36,7 @@ This made my programming style at a later point diverge from the familiar way.
 For instance, the query is usually written as :
 
 ```ocaml
-run q (fun q -> ocanren { eval q (Num (1,3)) } )) (* etc. *)
+run q (fun q -> ocanren { eval q (Num (1,3)) } ) (* etc. *)
 ```
  but in my setup I had to  write like:
  
@@ -76,4 +76,6 @@ _ground_, _logic_ and _injected_ level, and `'b` is supposed to be
 instantiated by logical pairs of rat_expr (recursively) at those levels
 as well.   
 
+### p.s.
 
+I love to make mistakes in my research for it helped me to learn things better. 
