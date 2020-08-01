@@ -215,8 +215,22 @@ module LoNat : sig
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
   val gcd          : groundi -> groundi -> groundi -> goal;;
+  module Prj : sig
+    val logic_to_ground : logic -> ground;;
+  end;;
 end = struct
   open LNat;;
+  
+  module Prj = struct
+    let rec logic_to_ground = function
+      | Var _ -> raise Not_a_value
+      | Value a ->
+        begin
+          match a with
+          | O -> O
+          | S b -> S (logic_to_ground b)
+        end;;
+  end;;
 
   (** From the second clause we can infer that a =/= zero and that a >= b *)
   let rec divisible_by a b =
@@ -236,12 +250,20 @@ end;;
 (******************************************************************************************)
 
 module LoRat : sig
- val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-end = struct
-  open LoNat;;
   open LNat;;
+  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+  module Prj : sig
+    val logic_to_ground : logic * logic -> ground * ground;;
+  end;;
+end = struct
   
+  module Prj = struct
+    let logic_to_ground = fun (a,b) ->
+      LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;  
+  end;;
+
   let simplify a b a' b'=
+    let open LNat in let open LoNat in
     conde [
       (?& [a === b ; a' === one ; b' === one]);
       (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
@@ -304,12 +326,24 @@ let _ =
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
+
 (** Enumerate pairs [(q,r)] where q is divisible by r *)  
 let _ =
   print_string @@ GT.show(lnpl) @@ RStream.take ~n:10 @@
   run qr  (fun q r -> ocanren { divisible_by q r } )
     (fun q r -> q#reify(LNat.reify), r#reify(LNat.reify)) ;
   print_newline ();; 
+
+(** Enumerate pairs [(q,r)] where q is divisible by r, discarding the
+    cases where [q = 0] and where [q = r]. *)  
+let _ =
+  print_string @@ GT.show(ipl) @@ List.map (fun (a,b) -> LNat.to_int a, LNat.to_int b)
+   @@ List.map LoRat.Prj.logic_to_ground @@ List.tl @@ List.tl @@ RStream.take ~n:100 @@
+  run qr  (fun q r -> ocanren { divisible_by q r } )
+    (fun q r -> q#reify(LNat.reify), r#reify(LNat.reify)) ;
+  print_newline ();; 
+
+
 
 (** Find all divisors of 15 *)
 let _ =

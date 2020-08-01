@@ -86,6 +86,10 @@ end;;
 (** Some relations on LNat.groundi *)
 module LoNat : sig
   open LNat;;
+
+  module Prj : sig
+    val logic_to_ground : logic -> ground;;
+  end;;
   
   (**  [divisible_by a b] holds if [a] is divisible by [b].
      This relation can: 
@@ -104,7 +108,13 @@ end;;
 
 (** Some relations on injected rational numbers *)
 module LoRat : sig
+  open LNat;;
+    
   (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
     It can also be used to find all a/b that simplifies to a'/b'  *)
- val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+
+  module Prj : sig
+    val logic_to_ground : logic * logic -> ground * ground;;
+  end;;
 end 
