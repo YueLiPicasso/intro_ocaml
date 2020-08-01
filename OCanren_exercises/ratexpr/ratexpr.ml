@@ -283,7 +283,6 @@ module Tests = struct
 (** Mixed free variables and ground values are captured by type [logic] *)
 @type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
 
-
 (** simplify 108 / 72 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:10 @@
@@ -342,8 +341,6 @@ let _ =
   run qr  (fun q r -> ocanren { divisible_by q r } )
     (fun q r -> q#reify(LNat.reify), r#reify(LNat.reify)) ;
   print_newline ();; 
-
-
 
 (** Find all divisors of 15 *)
 let _ =

@@ -88,6 +88,8 @@ module LoNat : sig
   open LNat;;
 
   module Prj : sig
+    (** Attempt to covert data from LNat.logic to LNat.ground. Raise 
+        Not_a_value exception if there is a free logic variable. *)
     val logic_to_ground : logic -> ground;;
   end;;
   
@@ -115,6 +117,7 @@ module LoRat : sig
   val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
 
   module Prj : sig
+    (** Similar to LoNat.Prj.logic_to_ground *)
     val logic_to_ground : logic * logic -> ground * ground;;
   end;;
 end 
