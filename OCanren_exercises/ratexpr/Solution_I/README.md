@@ -27,7 +27,7 @@ Sum (_.15, _.16)
 Sum (_.15, _.16)
 Sum (_.15, _.16)
 ```
-when I asked the program to to find expressions that reduces to `1/3`.
+when I asked the program to  find expressions that reduces to `1/3`.
 
 ### Cause
 
@@ -36,12 +36,12 @@ This made my programming style at a later point diverge from the familiar way.
 For instance, the query is usually written as :
 
 ```ocaml
-run q (fun q -> ocanren { eval q (Num (1,3)) } )) (fun q -> q#reify(reify))
+run q (fun q -> ocanren { eval q (Num (1,3)) } )) (* etc. *)
 ```
  but in my setup I had to  write like:
  
 ```ocaml
-run q (fun q -> eval q (num (ocanren{1}, ocanren{3}))) (fun q -> q#reify(reify))
+run q (fun q -> eval q (num (ocanren{1}, ocanren{3})))  (* etc. *)
 ```
 
 The `ocanren {}` structure executes a syntactic transformation that converts
