@@ -6,11 +6,11 @@ open Core;;
 
 (******************************************************************************************)
 
-@type ('nat, 'self) rat_expr =
-     Num of 'nat * 'nat             
-   | Sum of 'self * 'self           
-   | Subt of 'self * 'self          
-   | Prod of 'self * 'self          
+@type ('a, 'b) rat_expr =
+     Num  of 'a             
+   | Sum  of 'b           
+   | Subt of 'b
+   | Prod of 'b
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 module X = struct
@@ -22,13 +22,14 @@ end;;
 include X;;
 
 module F = Fmap2(X);;
- 
-@type ground = (LNat.ground, ground) t
+
+@type ground = ((LNat.ground, LNat.ground) LPair.ground, (ground, ground) LPair.ground) t
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-@type logic = (LNat.logic, logic) t logic'
+@type logic = ((LNat.logic, LNat.logic) LPair.logic,  (logic, logic) LPair.logic) t logic'
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
+(** Take care of the parenthesis discipline when refining [show] *)
 let logic = {
   logic with
   GT.plugins =
@@ -40,12 +41,18 @@ let logic = {
       method foldr   = logic.GT.plugins#foldr
       method html    = logic.GT.plugins#html
       method fmt     = logic.GT.plugins#fmt
-      method show    = GT.show(logic')
-          (fun l -> GT.show(t) (GT.show(LNat.logic)) this#show l)
+      method show    = GT.show(logic') (fun l -> 
+            let show_a = 
+              fun a -> (GT.show(LPair.logic)) (GT.show(LNat.logic)) (GT.show(LNat.logic)) a 
+            and show_b = 
+              fun b -> (GT.show(LPair.logic)) (this#show) (this#show) b
+            in (GT.show(t)) show_a show_b l)
     end
 };;
 
 type groundi = (ground, logic) injected;;
+
+(* 
 
 @type frat = (GT.int, frat) t
  with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
@@ -307,6 +314,8 @@ end = struct
       (?& []);
       (?& [])];;
 end;;
+
+*)
 
 (******************************************************************************************)
 

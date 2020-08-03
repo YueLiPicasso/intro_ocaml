@@ -5,12 +5,17 @@ open Core;;
 @type 'a logic' = 'a logic
  with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
-(** Abstract type for arithmetic expressions of rational numbers *)
-@type ('nat, 'self) rat_expr =
-     Num of 'nat * 'nat              (** A rational number *)
-   | Sum of 'self * 'self            (** Sum of rat expr *)
-   | Subt of 'self * 'self           (** Subtraction of rat expr *)
-   | Prod of 'self * 'self           (** Product of rat expr *)
+(** Abstract type for arithmetic expressions of rational numbers. 
+    This polymorphic variant setup allows specification at various
+    levels. For instance, for the constructor [Num], its argument is: 
+    {ol {- on [ground level]: a ground pair of ground nats;}
+    {- on [logic level]: a logic pair of logic nats;}
+    {- on [injected/groundi level]: an injected pair of injected nats.} } *)
+@type ('a, 'b) rat_expr =
+     Num  of 'a           (** A rational number *)
+   | Sum  of 'b           (** Sum between rat expr *)
+   | Subt of 'b           (** Subtraction between rat expr *)
+   | Prod of 'b           (** Product between rat expr *)
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Alias of the main type *)
@@ -18,15 +23,22 @@ open Core;;
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [ground] level, unsigned and Peano *)
-@type ground = (LNat.ground, ground) t
+@type ground = ((LNat.ground, LNat.ground) LPair.ground, (ground, ground) LPair.ground) t
  with show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [logic] level *)
-@type logic = (LNat.logic, logic) t logic'
+@type logic = ((LNat.logic, LNat.logic) LPair.logic,  (logic, logic) LPair.logic) t logic'
  with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
 
 (** Main type on [injected] level *)
 type groundi = (ground, logic) injected;;
+
+
+(*
+
+
+
+
 
 (**  signed rational number, {e f} for {e full} *)
 @type frat = (GT.int, frat) t
@@ -123,3 +135,4 @@ module LoRat : sig
     val logic_to_ground : logic * logic -> ground * ground;;
   end;;
 end 
+*)
