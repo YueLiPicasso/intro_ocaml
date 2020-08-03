@@ -3,12 +3,19 @@
 open Logic;;
 open Core;;
 open Ratexpr;;
+open LoRat;;
+open Typop;;
 
-(*  
-@type pr = GT.int * GT.int with show;;
-@type intl = GT.int GT.list with show;;
-@type ipl = (GT.int * GT.int) GT.list with show;; 
-(** Mixed free variables and ground values are captured by type [logic] *)
-@type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
 
-*)
+(** Find expr (sum only) that normalizes to 1/3.
+    This is a (systematic) generate-and-test process. *)
+let _ = 
+  List.iter (fun x -> print_string @@ (GT.show(ground)) x; print_newline()) @@
+  RStream.take ~n:1 @@ 
+  run q (fun q ->  ocanren {eval q (Num (LPair.pair 1 3))}) project
+
+
+
+(*(fun q -> q#reify(reify));;*)
+
+

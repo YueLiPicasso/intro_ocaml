@@ -33,67 +33,13 @@ open Core;;
 (** Main type on [injected] level *)
 type groundi = (ground, logic) injected;;
 
-
-(*
-
-
-
-
-
-(**  signed rational number, {e f} for {e full} *)
-@type frat = (GT.int, frat) t
- with  show, html, eq, compare, foldl, foldr, gmap, fmt;;
-
-(** Produce injected value using injected constructor arguments; reification *)
-module Inj : sig
-  val num  : LNat.groundi * LNat.groundi -> groundi;;
-  val sum  : groundi * groundi -> groundi;;
-  val subt : groundi * groundi -> groundi;;
-  val prod : groundi * groundi -> groundi;;
+(** TYPe OPeratons: injection and reification *)
+module Typop : sig
+  val num  : (LNat.ground, LNat.logic, LNat.ground, LNat.logic) LPair.groundi -> groundi;; 
+  val sum  : (ground, logic, ground, logic) LPair.groundi -> groundi;;
+  val subt : (ground, logic, ground, logic) LPair.groundi -> groundi;;
+  val prod : (ground, logic, ground, logic) LPair.groundi -> groundi;;
   val reify : VarEnv.t -> groundi -> logic;;
-end;;
-
-(** Operations on [LNat.ground] *)
-module GNat : sig
-  (** equallity *)
-  val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
-  
-  (** less than *)
-  val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
-
-  (** less than or equal *)
-  val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
-
-  (** Addition *)
-  val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  
-  (** Subtraction. 
-      Subtracting a number greater than self is forbidden. *)
-  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
-
-  (** Multiplication *)
-  val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
-
-  (** Division returns the (quotient, remainder) pair 
-      with protection against division by zero *)
-  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
-
-  (** greatest common divisor *)
-  val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
-  
-end;;
-
-(** Operations on ground rational numbers *)
-module GRat : sig
-  (** Evaluate an expression to normal form *)
-  val eval : ground -> ground;;
-
-  (** Convert to normal form a rational number a/b represented as (a,b) *)
-  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
-
-  (** Convert between, say, [Num (0,1)] and [Num (O, S O)] *)
-  val to_frat : ground -> frat;;
-  val of_frat : frat -> ground;; (** Sign ignored *)
 end;;
 
 (** Some relations on LNat.groundi *)
@@ -132,7 +78,7 @@ module LoRat : sig
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)
-    val logic_to_ground : logic * logic -> ground * ground;;
+    val logic_to_ground : (logic, logic) LPair.logic -> (ground, ground) LPair.ground;;
   end;;
-end 
-*)
+end;; 
+
