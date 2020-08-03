@@ -1,5 +1,5 @@
-TOPFILE = ratexpr
-SOURCES = ratexpr.ml
+TOPFILE = test
+SOURCES = ratexpr.ml test.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
