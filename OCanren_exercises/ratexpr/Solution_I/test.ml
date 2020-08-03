@@ -11,13 +11,36 @@ open LoRat;;
 @type ipl = (GT.int * GT.int) GT.list with show;; 
 (** Mixed free variables and ground values are captured by type [logic] *)
 @type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
+@type tmp = ground GT.list with show;;
 
+(*
+(** find  numbers [q] and [r] such that [gcd q 5 r]. Very Fast ! *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:30 @@
+  run qr (fun q r -> ocanren {LoNat.gcd q 5 r} )
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline();;
+
+(** forward run *)
+let _ = let open Inj in
+  print_string @@ GT.show(frat) @@ GRat.to_frat @@ List.hd @@ RStream.take ~n:1 @@
+  run q (fun q -> ocanren {eval (Sum (Num (1, 3), Num (4, 5))) q})
+    project;
+  print_newline();;
+*)
 
 (** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
   let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:30 @@ 
+run q (fun q -> ocanren { eval q (Num (1,3))}) (fun q -> GRat.to_frat @@ project q)
+
+(*
+(** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
+  let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
-  @@ RStream.take ~n:20 @@ 
-run q (fun q -> eval q (num (ocanren{1}, ocanren{3}))) (fun q -> q#reify(reify))
+  @@ RStream.take ~n:10 @@ 
+run q (fun q -> ocanren { eval q (Num (1,3))}) (fun q -> q#reify(reify))
 
 (** simplify 108 / 72 *)
 let _ = 
@@ -311,5 +334,5 @@ let _ =
       Because, e.g,  the [int] as a parameter of [show], as in [show(int)], is 
       not a type expression but an object named [int] which is defined in [GT]. *)
 
-
+*)
 

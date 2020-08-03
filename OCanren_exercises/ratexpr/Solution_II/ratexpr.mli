@@ -73,9 +73,9 @@ module LoRat : sig
     It can also be used to find all a/b that simplifies to a'/b'  *)
   val simplify :
     LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-(*
-  val eval : groundi -> groundi -> goal;;*)
-  
+
+  val eval' : groundi -> groundi -> goal;;
+  val eval'' : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)

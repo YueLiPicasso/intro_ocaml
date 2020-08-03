@@ -34,10 +34,10 @@ type groundi = (ground, logic) injected;;
 
 (** Produce injected value using injected constructor arguments; reification *)
 module Inj : sig
-  val num  : LNat.groundi * LNat.groundi -> groundi;;
-  val sum  : groundi * groundi -> groundi;;
-  val subt : groundi * groundi -> groundi;;
-  val prod : groundi * groundi -> groundi;;
+  val num  : LNat.groundi -> LNat.groundi -> groundi;; 
+  val sum  : groundi -> groundi -> groundi;;
+  val subt : groundi -> groundi -> groundi;;
+  val prod : groundi -> groundi -> groundi;;
   val reify : VarEnv.t -> groundi -> logic;;
 end;;
 
@@ -116,7 +116,7 @@ module LoRat : sig
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
   val eval : groundi -> groundi -> goal;;
-  
+  val eval' : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)

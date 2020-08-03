@@ -130,7 +130,8 @@ end;;
 
 module LoRat : sig
   val simplify :  LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  (* val eval : groundi -> groundi -> goal;;*)
+  val eval' : groundi -> groundi -> goal;;
+  val eval'' : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : (logic, logic) LPair.logic -> (ground, ground) LPair.ground;;
@@ -157,27 +158,53 @@ end = struct
     Fresh.one (fun k -> is_nat k, k =/= zero, ( * ) a' k a ; ( * ) b' k b );;
 
   
-  let rec eval ex no =
-    let open Typop in let open LNat in let open LPair in
+let rec eval' ex no =
+    let open Typop in let open LNat in let open LPair in 
     conde [
       Fresh.four (fun a b a' b' ->
           ?& [ex === num (pair a b) ; no === num (pair a' b') ; simplify a b a' b']);
-      Fresh.four (fun nu bb' nu' bb'' ->
-          ?& [no === num (pair nu' bb''); 
-              simplify nu bb' nu' bb'';
-              Fresh.(succ five) (fun na nb a b a' b' ->
-                  ?& [na === num (pair a b) ;
-                      nb === num (pair a' b') ;
-                      simplify a b a b ;
-                      simplify a' b' a' b'; 
-                      Fresh.two (fun ab' a'b  ->
-                          ?& [( * ) a b' ab';
-                              ( * ) a' b a'b;
-                              ( * ) b b' bb';
-                              ( + ) ab' a'b nu]);
-                      Fresh.two (fun ea eb ->
-                          ?& [eval ea na ;
-                              eval eb nb ;
-                              ex === sum (pair ea eb)])])])];;
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum (pair ea eb) ;
+              Fresh.two (fun na nb ->
+                  ?& [Fresh.four (fun a b a' b' ->
+                          ?& [na === num (pair a b) ; nb === num (pair a' b') ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;
+                                      Fresh.two (fun nu' bb'' ->
+                                          ?& [simplify nu bb' nu' bb'';
+                                              no === num (pair nu' bb'')])])]);
+                     eval' ea na ; eval' eb nb])])];;
+
+let rec eval'' ex no =
+    let open Typop in let open LNat in let open LPair in 
+    conde [
+      Fresh.four (fun a b a' b' ->
+          ?& [ex === num (pair a b) ; no === num (pair a' b') ; simplify a b a' b']);
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum (pair ea eb) ;
+              Fresh.two (fun na nb ->
+                  ?& [eval'' ea na ; eval'' eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num (pair a b) ; nb === num (pair a' b') ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;   (* (a/b * a'/b' = nu/bb')*)
+                                      Fresh.two (fun nu' bb'' ->
+                                          ?& [simplify nu bb' nu' bb'';
+                                              no === num (pair nu' bb'')])])])])])];;
+
+
+  
 end;;
 
+
+
+(*
+
+
+*)

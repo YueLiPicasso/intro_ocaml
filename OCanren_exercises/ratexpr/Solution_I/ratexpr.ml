@@ -53,16 +53,16 @@ type groundi = (ground, logic) injected;;
 (******************************************************************************************)
 
 module Inj : sig
-  val num  : LNat.groundi * LNat.groundi -> groundi;; 
-  val sum  : groundi * groundi -> groundi;;
-  val subt : groundi * groundi -> groundi;;
-  val prod : groundi * groundi -> groundi;;
+  val num  : LNat.groundi -> LNat.groundi -> groundi;; 
+  val sum  : groundi -> groundi -> groundi;;
+  val subt : groundi -> groundi -> groundi;;
+  val prod : groundi -> groundi -> groundi;;
   val reify : VarEnv.t -> groundi -> logic;;
 end = struct
-  let num  (x, y) = inj @@ F.distrib (Num  (x, y)) 
-  and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
-  and subt (x, y) = inj @@ F.distrib (Subt (x, y))
-  and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
+  let num  x y = inj @@ F.distrib (Num  (x, y)) 
+  and sum  x y = inj @@ F.distrib (Sum  (x, y))
+  and subt x y = inj @@ F.distrib (Subt (x, y))
+  and prod x y = inj @@ F.distrib (Prod (x, y));;
 
   (**
      val reify :
@@ -267,6 +267,7 @@ end;;
 module LoRat : sig
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval : groundi -> groundi -> goal;;
+  val eval' : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
@@ -289,13 +290,13 @@ end = struct
     let open Inj in let open LNat in
     conde [
       Fresh.four (fun a b a' b' ->
-          ?& [ex === num (a, b) ; no === num (a',b') ; simplify a b a' b']);
+          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
       Fresh.two (fun ea eb ->
-          ?& [ex === sum (ea, eb) ;
+          ?& [ex === sum ea eb ;
               Fresh.two (fun na nb ->
                   ?& [eval ea na ; eval eb nb;
                       Fresh.four (fun a b a' b' ->
-                          ?& [na === num (a,b) ; nb === num (a',b') ;
+                          ?& [na === num a b ; nb === num a' b' ;
                               Fresh.four (fun ab' a'b bb' nu ->
                                   ?& [( * ) a b' ab';
                                       ( * ) a' b a'b;
@@ -303,9 +304,30 @@ end = struct
                                       ( + ) ab' a'b nu;
                                       Fresh.two (fun nu' bb'' ->
                                           ?& [simplify nu bb' nu' bb'';
-                                             no === num (nu',bb'')])])])])]);
-      (?& []);
-      (?& [])];;
+                                              no === num nu' bb''])])])])])];;
+
+  let rec eval' ex no =
+    let open Inj in let open LNat in
+    conde [
+      Fresh.four (fun a b a' b' ->
+          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
+      Fresh.two (fun nu' bb'' ->
+          ?& [simplify nu bb' nu' bb''
+
+      
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum ea eb ;
+              Fresh.two (fun na nb ->
+                  ?& [eval' ea na ; eval' eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num a b ; nb === num a' b' ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;
+                                      ;
+                                             no === num nu' bb''])])])])])];;
 end;;
 
 (******************************************************************************************)
