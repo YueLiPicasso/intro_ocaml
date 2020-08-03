@@ -13,13 +13,13 @@ open LoRat;;
 @type lnpl = (LNat.logic * LNat.logic) GT.list with show;;
 @type tmp = ground GT.list with show;;
 
-(*
-(** find  numbers [q] and [r] such that [gcd q 5 r]. Very Fast ! *)
+
+(** find numbers that simplify to 3 / 2 *)
 let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:30 @@
-  run qr (fun q r -> ocanren {LoNat.gcd q 5 r} )
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
+  run qr (fun q r -> ocanren { simplify' q r 3 2 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
-  print_newline();;
+  print_newline ();;
 
 (** forward run *)
 let _ = let open Inj in
@@ -27,15 +27,41 @@ let _ = let open Inj in
   run q (fun q -> ocanren {eval (Sum (Num (1, 3), Num (4, 5))) q})
     project;
   print_newline();;
-*)
 
-(** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
+(** find bounded numbers that simplify to 3 / 2: 
+    stupid generate and test *)
+let _ =
+  let max_int' = OCanren.Std.nat 10 in
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
+  run qr (fun q r -> ocanren { LNat.( < ) q max_int' & LNat.( < ) r max_int' & simplify q r 3 2 })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
+
+let rec not_mem e l =
+  ocanren { l == [] | fresh h, t in l == h :: t & h =/= e & not_mem e t };;
+
+let rec distinct l =
+  ocanren { l == [] | fresh h , t in l == h :: t & not_mem h t & distinct t };;
+
+(** Find expr (sum only) that normalizes to 3/2 *)
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
-  @@ RStream.take ~n:30 @@ 
-run q (fun q -> ocanren { eval q (Num (1,3))}) (fun q -> GRat.to_frat @@ project q)
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q -> ocanren { fresh a1, a2, a3, a4,
+                            b1, b2, b3, b4 in
+                            q == Sum (Sum (Sum (a1,b1),
+                                           Sum (a2,b2)),
+                                      Sum (Sum (a3,b3),
+                                           Sum (a4,b4))) &
+                            eval' q (Num (3,2))}) (fun q -> GRat.to_frat @@ project q)
+
 
 (*
+
+
+
+
 (** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
@@ -49,12 +75,8 @@ let _ =
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
-(** find numbers that simplify to 3 / 2 *)
-let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
-  run qr (fun q r -> ocanren { LNat.( < ) q 30 & LNat.( < ) r 20 & simplify q r 3 2 })
-    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
-  print_newline ();;
+
+
 
 
 (** compute the gcd of 108 and 72 *)

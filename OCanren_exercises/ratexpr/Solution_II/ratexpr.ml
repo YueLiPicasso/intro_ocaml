@@ -151,12 +151,7 @@ end = struct
       (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
       (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
 
-  let rec is_nat n = let open LNat in
-    n === o ||| Fresh.one (fun n' -> n === s n' &&& is_nat n');;
-
-  let scale a b a' b' =let open LNat in 
-    Fresh.one (fun k -> is_nat k, k =/= zero, ( * ) a' k a ; ( * ) b' k b );;
-
+ 
   
 let rec eval' ex no =
     let open Typop in let open LNat in let open LPair in 

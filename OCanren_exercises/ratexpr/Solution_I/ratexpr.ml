@@ -266,6 +266,7 @@ end;;
 
 module LoRat : sig
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval : groundi -> groundi -> goal;;
   val eval' : groundi -> groundi -> goal;;
   module Prj : sig
@@ -279,6 +280,7 @@ end = struct
       LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;  
   end;;
 
+  (** For forward use *)
   let simplify a b a' b'=
     let open LNat in let open LoNat in
     conde [
@@ -286,6 +288,11 @@ end = struct
       (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
       (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
 
+  (** For backward use *)
+  let simplify' a b a' b' = let open LNat in let bnd = LNat.nat @@ LNat.of_int 100 in 
+    Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
+
+  (** for forward use *)
   let rec eval ex no =
     let open Inj in let open LNat in
     conde [
@@ -306,28 +313,25 @@ end = struct
                                           ?& [simplify nu bb' nu' bb'';
                                               no === num nu' bb''])])])])])];;
 
+  (** for backward use *)
   let rec eval' ex no =
-    let open Inj in let open LNat in
+    let open Inj in let open LNat in let open LPair in 
     conde [
-      Fresh.four (fun a b a' b' ->
-          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
-      Fresh.two (fun nu' bb'' ->
-          ?& [simplify nu bb' nu' bb''
-
-      
-      Fresh.two (fun ea eb ->
+      Fresh.two (fun a b ->
+          ?& [ex === num a b ; no === num a b]);
+      Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
           ?& [ex === sum ea eb ;
-              Fresh.two (fun na nb ->
-                  ?& [eval' ea na ; eval' eb nb;
-                      Fresh.four (fun a b a' b' ->
-                          ?& [na === num a b ; nb === num a' b' ;
-                              Fresh.four (fun ab' a'b bb' nu ->
-                                  ?& [( * ) a b' ab';
-                                      ( * ) a' b a'b;
-                                      ( * ) b b' bb';
-                                      ( + ) ab' a'b nu;
-                                      ;
-                                             no === num nu' bb''])])])])])];;
+              no === num  nu1 de1;
+              simplify' nu2 de2 nu1 de1;
+              Fresh.(succ five) (fun a a' sa sa' sde2 sde2' ->
+                  ?& [( + ) a   a'  nu2 ;
+                      simplify a  de2 sa  sde2  ;
+                      simplify a' de2 sa' sde2' ;
+                      Fresh.two (fun na nb ->
+                          ?& [na === num sa  sde2 ;
+                              nb === num sa' sde2';
+                              eval' ea na ;
+                              eval' eb nb ])])])];;
 end;;
 
 (******************************************************************************************)

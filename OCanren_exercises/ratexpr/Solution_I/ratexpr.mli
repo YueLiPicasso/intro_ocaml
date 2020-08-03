@@ -111,10 +111,11 @@ end;;
 
 (** Some relations on injected rational numbers *)
 module LoRat : sig
-  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. 
-    It can also be used to find all a/b that simplifies to a'/b'  *)
+  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'.  *)
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-
+  (** [simplify' a b a' b'] finds a limited number (which depends on implementation) 
+      of multiples a/b of a'/b' *)
+  val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval : groundi -> groundi -> goal;;
   val eval' : groundi -> groundi -> goal;;
   module Prj : sig
