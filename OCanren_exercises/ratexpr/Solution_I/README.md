@@ -132,7 +132,7 @@ let rec gcd a b c =
 
 ```
 where we implicitly require that `a <= b`. THis removes an extra layer of backtraking on
-comparison, which has already been done by `simpify`
+comparison, which has already been done by `simpify` before it calls `gcd`. 
 
 
 In the second clause,
