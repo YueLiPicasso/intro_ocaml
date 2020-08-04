@@ -21,8 +21,8 @@ The motivation of this OCanren project originally was to improve the performance
 programs that maniplate rational numbers. In particlular, it was observed that the
 program for the [stochastic gold mining puzzle](../Gold_Mining) could barely
 compute useful answers. 
- Essentially, that program computes values for arithmetical expressions
- involving (positive) rational numbers. My idea was to, instead, let the program
+ Essentially, that program evaluates arithmetic expressions
+ on involving (positive) rational numbers. My idea was to, instead, let the program
  produce an arithemtical expression which could be evaluated independently.
  
 
