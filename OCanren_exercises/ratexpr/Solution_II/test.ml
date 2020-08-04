@@ -66,26 +66,11 @@ let _ =
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline();;
 
-(** simplify 108 / 72 : OK *)
-let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:10 @@
-  run qr (fun q r -> ocanren { simplify 108 72 q r })
-    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
-  print_newline ();;
 
-(** find bounded numbers that simplify to 1/3: OK *)
-let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
-  run qr (fun q r -> ocanren { LNat.( < ) q 30 & LNat.( < ) r 20 & simplify q r 1 3 })
-    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
-  print_newline ();;
 *)
 
 
 
-
-
-(*(fun q -> q#reify(reify));;*)
 
 
 *)

@@ -225,17 +225,13 @@ module LoNat : sig
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
   val gcd          : groundi -> groundi -> groundi -> goal;;
+  val comdi        : groundi -> groundi -> groundi -> goal;;
   module Prj : sig
     val logic_to_ground : logic -> ground;;
   end;;
 end = struct
   open LNat;;
 
-  (** In a similar way we can write a filter to separate all reified data into
-      two groups : those that contain free variables which cannot be converted
-      to ground values, and those that do not contain free variables and can thus
-      be converted to free variables. Then different printers can be applied to 
-      get the most human readble display of the result. *)
   module Prj = struct
     let rec logic_to_ground = function
       | Var _ -> raise Not_a_value
@@ -259,7 +255,11 @@ end = struct
   
   let rec gcd a b c =
     conde [(?& [b <= a ; divisible_by a b ; c === b]);
-           (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;   
+           (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
+
+  let comdi a b c =
+    ocanren {divisible_by a c & divisible_by b c};;
+
 end;;
 
 (******************************************************************************************)
@@ -267,6 +267,8 @@ end;;
 module LoRat : sig
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval : groundi -> groundi -> goal;;
   val eval' : groundi -> groundi -> goal;;
   module Prj : sig
@@ -289,8 +291,28 @@ end = struct
       (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
 
   (** For backward use *)
-  let simplify' a b a' b' = let open LNat in let bnd = LNat.nat @@ LNat.of_int 100 in 
+  let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 100 in 
     Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
+
+
+  (** Attempt to improve answer quality wrt. [simplify'] when querying about
+      what simplifies to what,  i.e.,  when all four args are left free. Due to
+      the backtracking algorithm, or non-commutativity of conjunction, the answer
+      quality is  not improved by this. *)
+  let simplify_3 a b a' b' = let open LNat in let bnd = nat @@ of_int 100 in 
+    Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] )
+    ||| Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) b' k b ; ( * ) a' k a ] ) ;;
+
+  (** introduce the cost of generate-and-test for the 
+      benefit of forward/backward dual support. Very very inefficient. *)
+  let simplify_4 a b a' b' =
+    let open LNat in let open LoNat in
+    ocanren {
+      fresh k in  k < 100000  & ( + ) a b k &
+                 {a === b & a' === one & b' === one |
+                  b < a & fresh q in gcd a b q & ( * ) q a' a & ( * ) q b' b |
+                  a < b & fresh q in gcd b a q & ( * ) q a' a & ( * ) q b' b }};;
+
 
   (** for forward use *)
   let rec eval ex no =
@@ -311,14 +333,39 @@ end = struct
                                       ( + ) ab' a'b nu;
                                       Fresh.two (fun nu' bb'' ->
                                           ?& [simplify nu bb' nu' bb'';
-                                              no === num nu' bb''])])])])])];;
+                                              no === num nu' bb''])])])])]);
+      Fresh.two (fun ea eb ->
+          ?& [ex === subt ea eb ;
+              Fresh.two (fun na nb ->
+                  ?& [eval ea na ; eval eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num a b ; nb === num a' b' ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) nu a'b ab' ;
+                                      Fresh.two (fun nu' bb'' ->
+                                          ?& [simplify nu bb' nu' bb'';
+                                              no === num nu' bb''])])])])]);
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum ea eb ;
+              Fresh.two (fun na nb ->
+                  ?& [eval ea na ; eval eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num a b ; nb === num a' b' ;
+                              Fresh.four (fun ab a'b' s1 s2 ->
+                                  ?& [( * ) a b ab;
+                                      ( * ) a' b' a'b';
+                                      simplify ab a'b' s1 s2;
+                                      no === num s1 s2])])])])];;
 
   (** for backward use *)
   let rec eval' ex no =
     let open Inj in let open LNat in let open LPair in 
     conde [
-      Fresh.two (fun a b ->
-          ?& [ex === num a b ; no === num a b]);
+      Fresh.two (fun a b -> (*not using  simplify' here *)
+          ?& [ex === num a b ; no === num a b ]);
       Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
           ?& [ex === sum ea eb ;
               no === num  nu1 de1;
@@ -331,7 +378,36 @@ end = struct
                           ?& [na === num sa  sde2 ;
                               nb === num sa' sde2';
                               eval' ea na ;
-                              eval' eb nb ])])])];;
+                              eval' eb nb ])])]);
+    Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
+          ?& [ex === subt ea eb ;
+              no === num  nu1 de1;
+              simplify' nu2 de2 nu1 de1;
+              Fresh.(succ five) (fun a a' sa sa' sde2 sde2' ->
+                  ?& [( + ) a'  nu2  a;
+                      simplify a  de2 sa  sde2  ;
+                      simplify a' de2 sa' sde2' ;
+                      Fresh.two (fun na nb ->
+                          ?& [na === num sa  sde2 ;
+                              nb === num sa' sde2';
+                              eval' ea na ;
+                              eval' eb nb ])])]);
+    Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
+          ?& [ex === prod ea eb ;
+              no === num  nu1 de1;
+              simplify' nu2 de2 nu1 de1;
+              Fresh.(succ @@ succ @@ succ @@ five) (fun a a' b b' sa sa' sb sb' ->
+                  ?& [( * ) a   a'  nu2 ;
+                      ( * ) b   b'  de2 ;
+                      simplify a  b sa  sb  ;
+                      simplify a' b' sa' sb' ;
+                      Fresh.two (fun na nb ->
+                          ?& [na === num sa  sb ;
+                              nb === num sa' sb';
+                              eval' ea na ;
+                              eval' eb nb ])])]);];;
+
+
 end;;
 
 (******************************************************************************************)
