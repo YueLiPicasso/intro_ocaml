@@ -22,7 +22,7 @@ programs that maniplate rational numbers. In particlular, it was observed that t
 program for the [stochastic gold mining puzzle](../Gold_Mining) could barely
 compute useful answers. 
  Essentially, that program evaluates arithmetic expressions
- on involving (positive) rational numbers. My idea was to, instead, let the program
+ on  (positive) rational numbers. My idea was to, instead, let the program
  produce an arithemtical expression which could be evaluated independently.
  
 
