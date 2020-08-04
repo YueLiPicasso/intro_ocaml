@@ -86,7 +86,7 @@ contains a detailed record of an experiment on `simplify`, copied below.
     number of answers, due to the fact that [gcd] does not produce evenly distributed 
     answers, this would prolong the waiting time indefinitely. We could further sort the
     answers to see the relative speed of growth of [q] and [r].  We could see that in 
-    the 1000 answers, when [r] stays at 1, [q] ranged from 2 to 240, and when [r] stayed 
+    the 1000 answers, when [r] stayed at 1, [q] ranged from 2 to 240, and when [r] stayed 
     at 2, [q] ranged from 3 to 240; similar for [r] equals 3. When [r] stayed at 4, [q] grown
     to 188 from 5; when [r] is 5, [q] grown from 6 to 160; [r] 6, [q] 7 to 138; 
     [r] 7, [q] 8 to 112; [r] 8, [q] 9 to 72; the biggest [r] is 14 before the process was 
