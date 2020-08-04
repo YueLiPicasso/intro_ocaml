@@ -1,4 +1,4 @@
-# Arithmetical Expressions of (Positive) Rational Numbers
+# Arithmetic Expressions of (Positive) Rational Numbers
 
 Work in progress.
 
