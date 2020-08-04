@@ -46,15 +46,7 @@ let _ =
 *)
 
 (*
-(** find  numbers [q] and [r] such that [gcd q k r] for some k < q.
-    In the answers returned, q grows much faster than r. *)
-let _ = 
-  print_string @@ GT.show(i3pl) @@ RStream.take ~n:500 @@
-  run qrs (fun q r s -> LNat.( < ) r q &&& LoNat.gcd q r s )
-(fun q r s-> LNat.to_int @@ project q,
-             LNat.to_int @@ project r,
-             LNat.to_int @@ project s);
-  print_newline();;
+
 
 
 

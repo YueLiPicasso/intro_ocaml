@@ -19,6 +19,42 @@ open LoRat;;
 
 
 
+(** find numbers that simplify to 3 / 2 *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:3 @@
+  run qr (fun q r -> ocanren { simplify' q r 3 2 })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
+(** find  numbers [q], [r] and [s] such that [gcd q r s] for some r < q. This mimics
+    the internals of [simplify] when it is used backward. We could see that [q] grows
+    much faster than [r]. We also guess the way [simplify] works backward is that
+    it generates pairs of numbers together with their gcd, and checks if they simplify to
+    the given number. This two combined, we say that when simplify is used backward to 
+    find a small number of answers, it could work fast. But when  it is asked to find a large
+    number of answers, due to the fact that [gcd] does not produce evenly distributed 
+    answers, this would prolong the waiting time indefinitely. We could further sort the
+    answers to see the relative speed of growth of [q] and [r].  We could see that in 
+    the 1000 answers, when [r] stays at 1, [q] ranged from 2 to 240, and when [r] stayed 
+    at 2, [q] ranged from 3 to 240; similar for [r] equals 3. When [r] stayed at 4, [q] grown
+    to 188 from 5; when [r] is 5, [q] grown from 6 to 160; [r] 6, [q] 7 to 138; 
+    [r] 7, [q] 8 to 112; [r] 8, [q] 9 to 72; the biggest [r] is 14 before the process was 
+    killed by the system automatically. *)
+let _ =
+  let compr = fun (a,b,c) (a',b',c') -> match compare b b' with
+    | 0 -> compare a a'
+    | c -> c
+  and  li = RStream.take ~n:1000 @@
+    run qrs (fun q r s -> LNat.( < ) r q &&& LoNat.gcd q r s )
+      (fun q r s-> LNat.to_int @@ project q,
+                   LNat.to_int @@ project r,
+                   LNat.to_int @@ project s)
+  in  List.iter (fun x -> print_string @@ GT.show(pr3) x ;  print_newline())
+  @@ List.fast_sort compr li
+    
+ ;;
+
+
 (** evaluate expr *)
 let _ =
   let open Inj in
