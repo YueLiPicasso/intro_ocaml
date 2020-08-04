@@ -77,6 +77,72 @@ _ground_, _logic_ and _injected_ level, and `'b` is supposed to be
 instantiated by logical pairs of rat_expr (recursively) at those levels
 as well.   
 
-### p.s.
+## Problem and the cause thereof (follow up)
 
-I love to make mistakes in my research for it helped me learn things better. 
+In a discussion with Dmitri Boulytchov, the original abstract type definition
+
+```ocaml
+@type ('nat, 'self) rat_expr =
+     Num of 'nat * 'nat             
+   | Sum of 'self * 'self           
+   | Subt of 'self * 'self          
+   | Prod of 'self * 'self          
+ with show, html, eq, compare, foldl, foldr, gmap, fmt;;
+```
+
+was considered as being more intuitive. He also pointed out that the
+way the injection primitives were defined conld be improved. Preiously:
+
+```ocaml
+module Inj : sig
+  val num  : LNat.groundi * LNat.groundi -> groundi;;
+  val sum  : groundi * groundi -> groundi;;
+  val subt : groundi * groundi -> groundi;;
+  val prod : groundi * groundi -> groundi;;
+end = struct
+  let num  (x, y) = inj @@ F.distrib (Num  (x, y))
+  and sum  (x, y) = inj @@ F.distrib (Sum  (x, y))
+  and subt (x, y) = inj @@ F.distrib (Subt (x, y))
+  and prod (x, y) = inj @@ F.distrib (Prod (x, y));;
+end;;
+```
+
+He advised to change it to :
+
+```ocaml
+module Inj : sig
+  val num  : LNat.groundi -> LNat.groundi -> groundi;; 
+  val sum  : groundi -> groundi -> groundi;;
+  val subt : groundi -> groundi -> groundi;;
+  val prod : groundi -> groundi -> groundi;;
+end = struct
+  let num  x y = inj @@ F.distrib (Num  (x, y)) 
+  and sum  x y = inj @@ F.distrib (Sum  (x, y))
+  and subt x y = inj @@ F.distrib (Subt (x, y))
+  and prod x y = inj @@ F.distrib (Prod (x, y));;
+end;;
+```
+
+I already understood that these primitives are supposed to convert
+__from__ constructor application to injected arguments, __to__ a value of the injected type
+to which the constructor itself belongs.
+
+The new definition resolves the problem with the `ocanren {}` construct. Now queries should be
+made like:
+
+```ocaml
+ run q (fun q -> ocanren {eval (Sum (Num (1, 3), Num (4, 5))) q}) project
+```
+
+The `ocanren {}` construct is designed to allow writing constructor applications in an
+intuitive (or in the conventional way):
+```
+constr (v1, ... , vn) 
+```
+
+and this is transformed to
+```
+constr' v1 ... vn
+```
+where `constr'` is lower-cased `constr` and is applied to a space-separated list of argument,
+corresponding to the shape of the user-defined injection primitive. 
