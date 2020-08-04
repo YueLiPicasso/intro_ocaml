@@ -134,8 +134,8 @@ made like:
  run q (fun q -> ocanren {eval (Sum (Num (1, 3), Num (4, 5))) q}) project
 ```
 
-The `ocanren {}` construct is designed to allow writing constructor applications in an
-intuitive (or in the conventional way):
+The `ocanren {}` construct is designed to allow writing constructor applications
+in the conventional way:
 ```
 constr (v1, ... , vn) 
 ```
@@ -145,4 +145,7 @@ and this is transformed to
 constr' v1 ... vn
 ```
 where `constr'` is lower-cased `constr` and is applied to a space-separated list of argument,
-corresponding to the shape of the user-defined injection primitive. 
+corresponding to the shape of the user-defined injection primitive.
+
+The nest thing to do is to test the relational behaviour of various components and try different
+versions of a relation. 
