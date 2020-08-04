@@ -73,7 +73,17 @@ Fresh.four (fun a b a' b' ->
 ```
 the relation `simplify` is not efficient when being used backward: it is based
 on an implementation of the Euclidean
-algorithm and  is good at simplifying but not complicating rational numbers. The source code
+algorithm and  is good at simplifying but not complicating rational numbers.
+```ocaml
+let simplify a b a' b'=
+    let open LNat in let open LoNat in
+    conde [
+      (?& [a === b ; a' === one ; b' === one]);
+      (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
+      (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
+```
+
+The source code
 contains a detailed record of an experiment on `simplify`, copied below.
 
 ```ocaml
@@ -106,6 +116,23 @@ let _ =
  ;;
 
 ```
+
+It worthes to try a simplfied version of `gcd`, from
+```ocaml
+let rec gcd a b c =
+    conde [(?& [b <= a ; divisible_by a b ; c === b]);
+           (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
+
+```
+to
+```ocaml
+let rec gcd a b c =
+    conde [(?& [divisible_by a b ; c === b]);
+           (?& [Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
+
+```
+where we implicitly require that `a <= b`. THis removes an extra layer of backtraking on
+comparison, which has already been done by `simpify`
 
 
 In the second clause,
