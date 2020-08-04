@@ -73,7 +73,7 @@ Fresh.four (fun a b a' b' ->
 ```
 the relation `simplify` diverges when being used backward: it is an implementation of the Euclidean
 algorithm and  is good at simplifying but not complicating rational numbers. This is a source of
-non-termination. Similar for the third and fourth clause.
+non-termination.
 
 In the second clause,
 ```ocaml
@@ -96,8 +96,9 @@ when the program is used backward, both calls
 ```ocaml
 eval ea na ; eval eb nb;
 ```
-will be made with all arguments being fresh variables. THis is is also a source of non-termination.
-
+will be made with all arguments being fresh variables. This is is also a source of non-termination.
+ Similar for the third and fourth clause.
+ 
 ### The backward evaluator
 
 ```ocaml
