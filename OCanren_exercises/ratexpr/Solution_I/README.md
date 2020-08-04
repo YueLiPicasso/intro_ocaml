@@ -66,6 +66,37 @@ and cannot be used for forward execution.
                                       no === num s1 s2])])])])];;
 ```
 
+In the first clause,
+```ocaml
+Fresh.four (fun a b a' b' ->
+          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
+```
+the relation `simplify` diverges when being used backward: it is an implementation of the Euclidean
+algorithm and  is good at simplifying but not complicating rational numbers. This is a source of
+non-termination. Similar for the third and fourth clause.
+
+In the second clause,
+```ocaml
+Fresh.two (fun ea eb ->
+          ?& [ex === sum ea eb ;
+              Fresh.two (fun na nb ->
+                  ?& [eval ea na ; eval eb nb;
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num a b ; nb === num a' b' ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;
+                                      Fresh.two (fun nu' bb'' ->
+                                          ?& [simplify nu bb' nu' bb'';
+                                              no === num nu' bb''])])])])]);
+```
+when the program is used backward, both calls
+```ocaml
+eval ea na ; eval eb nb;
+```
+will be made with all arguments being fresh variables. THis is is also a source of non-termination.
 
 ### The backward evaluator
 
