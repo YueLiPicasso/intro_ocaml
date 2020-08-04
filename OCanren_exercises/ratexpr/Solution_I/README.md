@@ -131,7 +131,7 @@ let rec gcd a b c =
            (?& [Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
 
 ```
-where we implicitly require that `a <= b`. THis removes an extra layer of backtraking on
+where we implicitly require that `a <= b`. This removes an extra layer of backtraking on
 comparison, which has already been done by `simpify` before it calls `gcd`. 
 
 
