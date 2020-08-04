@@ -1,12 +1,14 @@
 # Solution I
 
-A half-successful solution to the problem. Sections on problems below are in
-anti-chronological order.
+A half-successful solution to the problem. 
 
 ## Highlight
 
 The types have been gotten right. The Eulidean Algorithm was implemented.
 
+
+Discussions below are in
+anti-chronological order: older issues are closer to the bottom of the page.
 
 ## Problem and the cause thereof
 
