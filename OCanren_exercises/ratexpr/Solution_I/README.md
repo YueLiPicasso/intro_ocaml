@@ -13,7 +13,7 @@ anti-chronological order: older issues are closer to the bottom of the page.
 ## Problem and the cause thereof
 
 Now I have two variants of the relation `eval`, one is optimized for forward
-execution amd cannot be used for backward execution, and the other is for backward execution
+execution and cannot be used for backward execution, and the other is for backward execution
 and cannot be used for forward execution.
 
 ### The forward evaluator
