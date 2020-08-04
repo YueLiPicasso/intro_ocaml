@@ -18,7 +18,9 @@ open LoRat;;
 @type tmp = ground GT.list with show;;
 
 
+
 (** evaluate expr *)
+let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
   @@ RStream.take ~n:500 @@ 
@@ -27,17 +29,33 @@ open LoRat;;
                   (Sum (Num (1, 1), Sum (Num (1, 4), Prod (Num (1, 4), Num (1, 1)))))
                   q }) (fun q -> GRat.to_frat @@ project q)
 
+;;
 
-(** Find expr  that normalizes to 3/2 *)
+
+(** Find expr that normalizes to 3/2 *)
+let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
   @@ RStream.take ~n:50 @@ 
   run q (fun q -> ocanren { eval' q (Num (3,2))}) (fun q -> GRat.to_frat @@ project q)
 
-
-
+;;
 
 (*
+
+(** evaluate expr: this does  not work because non-commutativity of conjuncts in 
+    [simplify'] makes it impossible to even guess the correct answer. *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:500 @@ 
+  run q (fun q ->
+      ocanren { eval'
+                  (Sum (Num (1, 1), Sum (Num (1, 4), Prod (Num (1, 4), Num (1, 1)))))
+                  q }) (fun q -> GRat.to_frat @@ project q);;
+;;
+
+
 (** Test [simplify_4]: extremely inefficient *)
 
 (** find numbers that simplify to 3 / 2 *)

@@ -291,7 +291,7 @@ end = struct
       (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
 
   (** For backward use *)
-  let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 100 in 
+  let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 10 in 
     Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
 
 
