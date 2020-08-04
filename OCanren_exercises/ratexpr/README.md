@@ -12,7 +12,7 @@ It shall be able:
 - to generate normal form expressions, i.e., rational numbers whose numerator and denomnator are co-prime.
 
 The program shall be as relational as
-possible, supporting fruitful execution is different directions without optimization
+possible, supporting fruitful execution in different directions without optimization
 for any certain direction. 
 
 ## History
