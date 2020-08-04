@@ -116,6 +116,9 @@ let _ =
  ;;
 
 ```
+Note the execution of the `test.opt` file, when asking for 1000 answers from the query above: sometimes it gave all the answers,
+but some other times it was kiled without any answer. The advisable way to run this file is to close all other applications and don't
+even touch the mouse until it finishes.
 
 It worthes to try a simplfied version of `gcd`, from
 ```ocaml
@@ -132,7 +135,8 @@ let rec gcd a b c =
 
 ```
 where we implicitly require that `a <= b`. This removes an extra layer of backtraking on
-comparison, which has already been done by `simpify` before it calls `gcd`. 
+comparison, which has already been done by `simpify` before it calls `gcd`.
+
 
 
 In the second clause,
