@@ -147,5 +147,5 @@ constr' v1 ... vn
 where `constr'` is lower-cased `constr` and is applied to a space-separated list of argument,
 corresponding to the shape of the user-defined injection primitive.
 
-The nest thing to do is to test the relational behaviour of various components and try different
+The next thing to do is to test the relational behaviour of various components and try different
 versions of a relation. 
