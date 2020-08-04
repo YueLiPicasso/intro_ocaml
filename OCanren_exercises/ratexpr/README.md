@@ -5,9 +5,13 @@ Work in progress.
 ## Goal
 
 Relational interpretation of arithmetic expressions involving positive rational numbers.
-It shall be able to evaluate a given expression to the normal form, to generate expressions
-that evaluate to a given normal form, and generate normal form expressions, i.e., rational
-numbers whose numerator and denomnator are co-prime. The program shall be as relational as
+It shall be able:
+
+- to evaluate a given expression to the normal form,
+- to generate expressions that evaluate to a given normal form, and
+- to generate normal form expressions, i.e., rational numbers whose numerator and denomnator are co-prime.
+
+The program shall be as relational as
 possible, supporting fruitful execution is different directions without optimization
 for any certain direction. 
 
