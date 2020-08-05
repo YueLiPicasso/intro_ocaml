@@ -13,12 +13,43 @@ open LoRat;;
 @type ipl4 = (GT.int * GT.int * GT.int * GT.int) GT.list with show;;
 
 (** Mixed free variables and ground values are captured by type [logic] *)
-@type lnp = (LNat.logic * LNat.logic) with show;;
-@type lnp3 = (LNat.logic * LNat.logic * LNat.logic) with show;;
-@type tmp = ground GT.list with show;;
+@type lnp = LNat.logic * LNat.logic with show;;
+@type lnp3 = LNat.logic * LNat.logic * LNat.logic with show;;
+@type lnp4 = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
+@type lnp4' = LNat.logic * LNat.logic * LNat.logic * GT.int with show;;
 
 
-(** find the number to which 364 / 420  simplifies: fast *)
+
+
+
+
+(*
+
+(** use [simplify''] to generate co-prime numbers *)
+let _ = 
+  List.iter  (fun x -> print_string @@ GT.show(pr) x ;  print_newline())
+  @@ RStream.take ~n:90 @@ let open LNat in
+  run two (fun a b -> ocanren {a < b &  a =/= one & simplify'' a b a b })
+    (fun a b  -> to_int @@ project a ,
+                 to_int @@ project b )
+;;
+
+
+(** local test for [simplify''], for the case all a b a' b' are free *)
+let _ =
+  let cvt = fun a,b,c,d -> a,b,c, LNat.to_int @@ LoNat.Prj.logic_to_ground d in
+  print_string "  a           b    b'    q\n";
+  List.iter  (fun x -> print_string @@ GT.show(lnp4') @@ cvt x ;  print_newline())
+  @@ RStream.take ~n:500 @@ let open LNat in
+  run four (fun a b b' q -> ocanren {b < a & ( * ) q b' b})
+    (fun a b b' q -> a  # reify(reify),
+                     b  # reify(reify),
+                     b' # reify(reify),
+                     q  # reify(reify))
+;;
+
+
+(** test [simplify'']: find the number to which 364 / 420  simplifies: fast *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:1 @@
   run qr (fun q r -> ocanren { simplify'' 364 420  q r })
@@ -26,14 +57,14 @@ let _ =
   print_newline ();;
 
 
-(** find the number to which  420 / 364  simplifies: fast *)
+(** test [simplify'']: find the number to which  420 / 364  simplifies: fast *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:1 @@
   run qr (fun q r -> ocanren { simplify'' 420 364  q r })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
-(** find numbers that simplify to 2 / 3: ok for ~n:50. *)
+(** test [simplify'']:  find numbers that simplify to 2 / 3: ok for ~n:50. *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:20 @@
   run qr (fun q r -> ocanren { simplify'' q r 2 3 })
@@ -41,16 +72,13 @@ let _ =
   print_newline ();;
 
 
-(** find numbers that simplify to 3 / 2: quick for ~n:20, 
+(**  test [simplify'']: find numbers that simplify to 3 / 2: quick for ~n:20, 
     OK for ~n:50, and very slow for ~n:100, ~n:200 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:20 @@
   run qr (fun q r -> ocanren { simplify'' q r 3 2 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
-
-
-(*
 
 
 (** Use [gcd] to generate:  *)

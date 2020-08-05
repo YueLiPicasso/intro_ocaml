@@ -432,8 +432,92 @@ end = struct
                               eval' ea na ;
                               eval' eb nb ])])]);];;
 
-
 end;;
 
 (******************************************************************************************)
 
+(*
+   see permutations of the clauses 
+
+(* original *)
+
+let rec eval ex no =
+    let open Inj in let open LNat in
+    conde [
+      Fresh.four (fun a b a' b' ->
+          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
+      Fresh.two (fun ea eb ->
+          ?& [ex === sum ea eb ;
+              Fresh.two (fun na nb ->
+  (* part I *)                
+                  ?& [eval ea na ; eval eb nb;
+  (* part II *)                    
+                      Fresh.four (fun a b a' b' ->
+                          ?& [na === num a b ; nb === num a' b' ;
+                              Fresh.four (fun ab' a'b bb' nu ->
+                                  ?& [( * ) a b' ab';
+                                      ( * ) a' b a'b;
+                                      ( * ) b b' bb';
+                                      ( + ) ab' a'b nu;
+                                      Fresh.two (fun nu' bb'' ->
+  (* part III *)                                        
+                                          ?& [simplify nu bb' nu' bb'';
+                                              no === num nu' bb''])])])])]);
+
+
+
+
+
+      Check Permutations of I, II, III. Permutation with I (or II or III) is considered 
+   later.
+
+I, II, III
+
+   Forward: efficient computation.
+   
+   Backward: blindly generate [eval ea na] and [eval eb nb], then compute the sum of 
+   [na] and [nb], then simplify it and test if it is just [no].
+
+I, III, II;
+
+   Forward: evaluate [ea] and [eb], and then generate blindly simplification pairs
+   [(nu,bb') --> no], and then test if the generated happens to equal the sum of 
+   the values of [ea] and [eb].
+   
+   Backward: blindly generate [eval ea na] and [eval eb nb], 
+   then generate multiples [(nu, bb')] of [no], and then
+   test if [na, nb] sum to [(nu, bb')]. Very inefficient !
+ 
+II, I, III; 
+
+   Forward: Generate summations [na + nb = nu/bb'], then test if [ea] and [eb] happens to
+   evaluate to [na],[nb], if so then simplify to the result.
+
+   Backward: Generate summations [na + nb = nu/bb'], then generate expressions that 
+   evaluate to [na], [nb], then test if [nu/bb'] happens to simplify to [no]. 
+
+II, III, I; 
+
+   Forward: generate summations [na + nb = nu/bb'], and then simplify to get [no], and then 
+   test if [ea] evals to [na] and for [b] as well.
+
+   Backward:  generate summations [na + nb = nu/bb'], and then test if the sum simplifies to
+   [no], if so then generate [ea] and [eb]. 
+
+III, I, II; 
+
+   Forward: generate simplification pairs, then eval [ea] and [eb], and then test if 
+   [na] [nb] sums to the generated number in the first step.
+
+   Backward: generate multiples of the result, and then generate eval pairs and then test
+   if the generated eval pairs' values sum to that multiple.
+ 
+III, II, I:
+
+   Forward: generate simplification pairs, and then divide the bigger into summand, and then test
+   if the summands  are values of [ea] and [eb].
+
+   Backward: generate multiples of the [no], and divide this into summands, and find expr that
+   evaluate to the summands.
+
+ *)
