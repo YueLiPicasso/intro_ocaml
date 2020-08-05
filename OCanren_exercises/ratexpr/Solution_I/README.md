@@ -61,8 +61,8 @@ given `a'/b'` and to find its multiple `a/b`. The table below summarizes the com
  
  Semantics |      `simplify`      |      `simplify''`
  ---  | ---  | ---
- Forward  | straightforward: to find gcd, then to compute `a'` and `b'` | to factor `b` into `q` and `b'`, then to try to factor `a` using `q`. if succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if fails, to refactor `b` until `q` is a common divisor. Finally to test that `q` is the gcd   
- Backward | | 
+ Forward  | Straightforward: find the gcd, then compute `a'` and `b'` by dividing with `q`.| Factor `b` into `q` and `b'`, then try to factor `a` using `q`. If it succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if it fails,  refactor `b` until `q` is a common divisor. Finally  test that `q` is the gcd, and if not, refactor `b`.   
+ Backward | Generate `a`, `b` and  `q` such that `q` is the gcd of `a` and `b`, then test if divding `a/b` by `q` happens to be `a'/b'`. Very inefficient ! | Generate `q` and `b` such that `q * b' = b`. Then compute `a` by `a' * q = a`. Then test `gcd a b q`  which must be true for  `a'` and `b'` are coprime which is  assumed.
 
 
 # Problem Tracking
