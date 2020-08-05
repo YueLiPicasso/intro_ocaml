@@ -8,15 +8,18 @@ The types have been gotten right. The Eulidean Algorithm was implemented. Based 
 
 ### Relational Simplification of Rational Numbers
 
-We can use a single algorithm named `simplify''` to
-- simplify a rational number to the normal form
-- scale up a normal form rational number 
-- ti find rational numbers whose numerator and denominator are co-prime. 
+We can use a single algorithm named `simplify''` ,  where  `simplify'' a b a' b'` is true
+iff the rational number `a/b` has  normal form `a'/b'`, to
+
+- (_Forward_) simplify a rational number to the normal form
+- (_Backward_) scale up a normal form rational number 
+- (_Quine_) find rational numbers whose numerator and denominator are co-prime. 
+
+Below we see how this is done. 
 
 
-We need a relation `simplify` such that `simplify a b a' b'` is true if 
-the rational number `a/b` has  normal form `a'/b'`. I first came up with two
-versions, named  `simplify` and `simplify'`, which are good at forward and backward
+I first came up with two versions, named  `simplify` and `simplify'`, which are good at
+forward and backward
 execution resp. but not the other way round. Further observation of the internals of these
 definitions helped with the definition of a third version `simplify''`, which is satisfactorily
 relational. We first compare `simplify` with `simplify''`.  
@@ -60,8 +63,7 @@ Now we continue.   _We focus on the second clause of each definition:_
 (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))])
 ``` 
 
-By _forward_  we mean given `a/b` and to find its normal form `a'/b'`; by _backward_ we mean
-given `a'/b'` and to find its multiple `a/b`. The table below summarizes the comparison.
+ The table below summarizes the comparison.
 
  
  Semantics |      `simplify`      |      `simplify''`
