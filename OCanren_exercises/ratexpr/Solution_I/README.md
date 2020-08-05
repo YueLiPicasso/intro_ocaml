@@ -61,7 +61,7 @@ given `a'/b'` and to find its multiple `a/b`. The table below summarizes the com
  
  Semantics |      `simplify`      |      `simplify''`
  ---  | ---  | ---
- Forward  | Straightforward: find the gcd, then compute `a'` and `b'` by dividing with `q`.| Factor `b` into `q` and `b'`, then try to factor `a` using `q`. If it succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if it fails,  refactor `b` until `q` is a common divisor. Finally  test that `q` is the gcd, and if not, refactor `b` until `q` is the gcd, and at this moment `a'/b'` is just the normal form.   
+ Forward  | Straightforward: find the gcd, then compute `a'` and `b'` by dividing with `q`.| Factor `b` into `q` and `b'`, then try to factor `a` using `q`. If it succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if it fails,  refactor `b` until `q` is a common divisor. Finally  test that `q` is the gcd, and if not, refactor `b` until `q` is the gcd, and at this moment `a'/b'` is just the normal form.  The total cost is bounded by the size of `b`. 
  Backward | Generate `a`, `b` and  `q` such that `q` is the gcd of `a` and `b`, then test if divding `a/b` by `q` happens to be `a'/b'`. Very inefficient for it has to traverse the enumerable space of rational numbers and there is always some number that comes late when you fix a traversal strategy. In our case `gcd a b q` traverses the space of `(a,b,q)` by increasing `a` much faster than `b`. The implication is that finding large  multiples of `a'/b'` is inproportionately time consuming. | Straightforward: generate `q` and `b` such that `q * b' = b`. Then compute `a` by `a' * q = a`. Then test `gcd a b q`  which must be true for  `a'` and `b'` are coprime which is  assumed.
 
 
@@ -78,8 +78,11 @@ the normal form: it actually enumerates all scaled-down numbers before reaching 
 
 We conclude that  non-commutativity of conjuncts breaks down to
 the role played by each conjunct in the generate-and-test process. We need to decide which
-conjunct is used to generate and which to test best accomodates different directions of relation
-execution.
+conjunct shall be used to generate and which to test, such that the conjunction as  a whole 
+best accommodates different directions of relation
+execution. In our case using `( * )` to generate and `gcd` to test allows productive  compromise
+between forward and backward efficiency, whilst using `gcd` to generate and `( * )` to test
+maximizes forward efficiency at the cost of substantially losing backward efficiency. 
 
 
 
