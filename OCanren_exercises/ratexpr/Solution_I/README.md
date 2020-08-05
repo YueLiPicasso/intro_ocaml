@@ -54,8 +54,8 @@ S (S O) | S (S \_.1) [\_.1 =/= O]
 S (S (S O)) | S (S (S \_.1)) [\_.1 =/= O]
 etc. | etc.
 
-Now we continue. By _forward_  we mean given `a/b` and find its normal form `a'/b'`; by _backward_ we mean
-given `a'/b'` and find its multiple `a/b`. The table below summarizes the comparison. 
+Now we continue. By _forward_  we mean given `a/b` and to find its normal form `a'/b'`; by _backward_ we mean
+given `a'/b'` and to find its multiple `a/b`. The table below summarizes the comparison. 
 
 
  
