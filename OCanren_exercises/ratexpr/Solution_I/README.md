@@ -33,17 +33,7 @@ let simplify'' a b a' b'=
       (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
 ``` 
 
-The difference is just at the order of conjuncts. We focus on the second clause:
-
-```ocaml
-(* simplify   *)
-(?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))])
-
-(* simplify'' *)
-(?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))])
-``` 
-
-Before we proceed, note that when both `a` and `b` are fresh, `b < a` generates concrete values for `b` only,
+The difference is just at the order of conjuncts. Before we proceed, note that when both `a` and `b` are fresh, `b < a` generates concrete values for `b` only,
 and answers for `a` are not concrete, like:
 
 `b`   | `a`
@@ -54,9 +44,18 @@ S (S O) | S (S \_.1) [\_.1 =/= O]
 S (S (S O)) | S (S (S \_.1)) [\_.1 =/= O]
 etc. | etc.
 
-Now we continue. By _forward_  we mean given `a/b` and to find its normal form `a'/b'`; by _backward_ we mean
-given `a'/b'` and to find its multiple `a/b`. The table below summarizes the comparison. 
+Now we continue.   _We focus on the second clause of each definition:_
 
+```ocaml
+(* simplify   *)
+(?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))])
+
+(* simplify'' *)
+(?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))])
+``` 
+
+By _forward_  we mean given `a/b` and to find its normal form `a'/b'`; by _backward_ we mean
+given `a'/b'` and to find its multiple `a/b`. The table below summarizes the comparison.
 
  
  Semantics |      `simplify`      |      `simplify''`
