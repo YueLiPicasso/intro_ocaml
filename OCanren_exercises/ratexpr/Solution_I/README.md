@@ -6,6 +6,66 @@ A half-successful solution to the problem.
 
 The types have been gotten right. The Eulidean Algorithm was implemented.
 
+### Relational Simplification of Rational Numbers
+
+We need a relation `simplify` such that `simplify a b a' b'` is true if 
+the rational number `a/b` has  normal form `a'/b'`. I first came up with two
+versions, named  `simplify` and `simplify'`, which are good at forward and backward
+execution resp. but not the other way round. Further observation of the internals of these
+definitions helped with the definition of a third version `simplify''`, which is satisfactorily
+relational. Here we compare `simplify` with `simplify''`.  
+
+```ocaml
+
+let simplify a b a' b'=
+    let open LNat in let open LoNat in
+    conde [
+      (?& [a === b ; a' === one ; b' === one]);
+      (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
+      (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
+      
+
+let simplify'' a b a' b'=
+    let open LNat in let open LoNat in
+    conde [
+      (?& [a === b ; a' === one ; b' === one]);
+      (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))]);
+      (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
+``` 
+
+The difference is just at the order of conjuncts. We focus on the second clause:
+
+```ocaml
+(* simplify   *)
+(?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))])
+
+(* simplify'' *)
+(?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))])
+``` 
+
+Before we proceed, note that when both `a` and `b` are fresh, `b < a` generates concrete values for `b`
+and inconcrete value for `a`, like:
+
+`b`   | `a`
+--- | ---
+O   |  _.1 [_.1 =/= O]
+S O |  S _.1 [_.1 =/= O]
+S (S O) | S (S _.1) [_.1 =/= O]
+S (S (S O)) | S (S (S _.1)) [_.1 =/= O]
+etc. | etc.
+
+Now we continue. By _forward_  we mean given `a/b` and find its normal form `a'/b'`; by _backward_ we mean
+given `a'/b'` and find its multiple `a/b`. The table below summarizes the comparison. 
+
+
+ 
+ Semantics |      `simplify`      |      `simplify''`
+ ---  | ---  | ---
+ Forward  | straightforward: to find gcd, then to compute `a'` and `b'` | to factor `b` into `q` and `b'`, then try to factor `a` using `q`. if succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if fails, to refactor `b` until `q` is a common divisor. Finally to test that `q` is the gcd   
+ Backward | | 
+
+
+# Problem Tracking
 
 Discussions below are in
 anti-chronological order: older issues are closer to the bottom of the page.

@@ -306,9 +306,9 @@ end = struct
 
   (** Conjuncts reordered from [simplify]. ( * ) is a more efficient generator than
       [gcd] when used backward. The relative order between Two ( * ) is subtle, 
-      taking into account the generative behavior of ( < ) where is smaller is always 
+      taking into account the generative behavior of ( < ) where the smaller is always 
       concrete. 
-     The performance inhibitor is that [simplify''] has two similar clauses for
+      The performance inhibitor is that [simplify''] has two similar clauses for
       [a > b] and [b > a] resp. When used backward, only one clause will do useful 
       work and the other two will only waste time to do useless computations.
       So a way to improve is to remove the brach for [b < a] and enforce [a <= b]
