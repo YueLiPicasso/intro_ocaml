@@ -44,7 +44,7 @@ The difference is just at the order of conjuncts. We focus on the second clause:
 ``` 
 
 Before we proceed, note that when both `a` and `b` are fresh, `b < a` generates concrete values for `b` only,
-and answerss for `a` are not concrete, like:
+and answers for `a` are not concrete, like:
 
 `b`   | `a`
 --- | ---
