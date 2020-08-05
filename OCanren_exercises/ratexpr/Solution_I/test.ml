@@ -33,30 +33,24 @@ let _ =
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
-
-
-(*
-
-(** find numbers that simplify to 2 / 3: ok for ~n:50. The performance inhibitor
-    is that [simplify''] has two similar clauses for [a > b] and [b > a] resp. When
-    used backward, only one clause will do useful work and the other two will only
-    waste time to do useless computations. So a way to improve is to remove the brach
-    for [b < a] and enforce [a <= b] from the context. *)
+(** find numbers that simplify to 2 / 3: ok for ~n:50. *)
 let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:50 @@
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:20 @@
   run qr (fun q r -> ocanren { simplify'' q r 2 3 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
 
-
 (** find numbers that simplify to 3 / 2: quick for ~n:20, 
     OK for ~n:50, and very slow for ~n:100, ~n:200 *)
 let _ = 
-  print_string @@ GT.show(ipl) @@ RStream.take ~n:50 @@
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:20 @@
   run qr (fun q r -> ocanren { simplify'' q r 3 2 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
+
+
+(*
 
 
 (** Use [gcd] to generate:  *)

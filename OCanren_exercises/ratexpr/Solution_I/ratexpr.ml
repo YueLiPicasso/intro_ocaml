@@ -304,6 +304,15 @@ end = struct
   let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 10 in 
     Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
 
+  (** Conjuncts reordered from [simplify]. ( * ) is a more efficient generator than
+      [gcd] when used backward. The relative order between Two ( * ) is subtle, 
+      taking into account the generative behavior of ( < ) where is smaller is always 
+      concrete. 
+     The performance inhibitor is that [simplify''] has two similar clauses for
+      [a > b] and [b > a] resp. When used backward, only one clause will do useful 
+      work and the other two will only waste time to do useless computations.
+      So a way to improve is to remove the brach for [b < a] and enforce [a <= b]
+      from the context. *)
   let simplify'' a b a' b'=
     let open LNat in let open LoNat in
     conde [

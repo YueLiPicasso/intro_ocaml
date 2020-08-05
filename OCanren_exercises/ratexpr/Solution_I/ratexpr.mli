@@ -118,16 +118,20 @@ end;;
 (** Some relations on injected rational numbers *)
 module LoRat : sig
   
-  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'.  *)
+  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. Inefficient
+      for backward use *)
   val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   
   (** [simplify' a b a' b'] finds a limited number (which depends on implementation) 
-      of multiples a/b of a'/b' *)
+      of multiples a/b of a'/b'. Inefficient for forward use. *)
   val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
+  (** It can simplify or complicate rational numbers. Forwad use is acceptable but
+      less efficient than [simplify], and backward use is also acceptable but less
+      efficient than [simplify']. *)
   val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   
-  (** Experimental but not useful relations. *)
+  (** Experimental *)
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
