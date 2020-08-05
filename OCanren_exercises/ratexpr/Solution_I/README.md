@@ -135,7 +135,11 @@ let rec gcd a b c =
 
 ```
 where we implicitly require that `a <= b`. This removes an extra layer of backtraking on
-comparison, which has already been done by `simpify` before it calls `gcd`.
+comparison, which has already been done by `simpify` before it calls `gcd`. _Follow up
+experiemnts shown that this does not make any difference at all in the above query. A more
+plausible way was found, which is to swap the conjuncts in `simplify` so that when being
+used backward it generates multiples and trivial test the gcd and when being used forward
+it have a bit more overhead of traversing all common divisors._ 
 
 
 

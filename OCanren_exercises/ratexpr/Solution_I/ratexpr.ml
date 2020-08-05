@@ -225,6 +225,7 @@ module LoNat : sig
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
   val gcd          : groundi -> groundi -> groundi -> goal;;
+  val gcd'         : groundi -> groundi -> groundi -> goal;;
   val comdi        : groundi -> groundi -> groundi -> goal;;
   module Prj : sig
     val logic_to_ground : logic -> ground;;
@@ -257,6 +258,14 @@ end = struct
     conde [(?& [b <= a ; divisible_by a b ; c === b]);
            (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
 
+  (** Could be used within [simplify] in the place of [gcd] and have the same behaviour. 
+      BUt when used alone to generate numbers it is not as good as [gcd] for it misses
+      many cases. It of course can still be used to compute gcd. *)
+  let rec gcd' a b c =
+    conde [(?& [divisible_by a b ; c === b]);
+           (?& [Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd' b r c]))])];;
+
+  
   let comdi a b c =
     ocanren {divisible_by a c & divisible_by b c};;
 

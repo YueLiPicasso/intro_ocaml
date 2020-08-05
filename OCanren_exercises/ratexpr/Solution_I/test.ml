@@ -19,6 +19,99 @@ open LoRat;;
 
 
 
+(** Use [gcd] to generate:  *)
+let _ =
+  let rec conv_to_g = function [] -> [] | (a,b,c) :: t ->
+    begin
+      try (LoNat.Prj.logic_to_ground a,
+           LoNat.Prj.logic_to_ground b,
+           LoNat.Prj.logic_to_ground c) ::  conv_to_g t
+      with Not_a_value -> conv_to_g t
+    end
+  in
+  let li = List.map (fun a,b,c -> LNat.to_int a, LNat.to_int b,LNat.to_int c) @@
+    conv_to_g @@ RStream.take ~n:500 @@ let open LNat in
+    run qrs (fun q r s -> gcd q r s)
+      (fun q r s-> q#reify(LNat.reify),
+                   r#reify(LNat.reify),
+                   s#reify(LNat.reify))
+  in let  compr = fun (a,b,c) (a',b',c') -> match compare b b' with
+      | 0 -> compare a a'
+      | c -> c
+  in
+  List.iter (fun x -> print_string @@ GT.show(pr3) x ; print_newline())
+  @@ List.fast_sort compr li
+;;
+
+
+
+(*
+
+(** compute the [gcd'] of 72 and 108 *)
+let _ = 
+  print_string @@ GT.show(intl) @@ RStream.take @@
+  run q (fun q -> ocanren {gcd' 72 108 q})  (fun q -> LNat.to_int @@ project q);
+  print_newline ();;
+
+
+
+(** Use [gcd'] generate again with an extra constraint: same as [gcd] exactly *)
+let _ =
+  let compr = fun (a,b,c) (a',b',c') -> match compare b b' with
+    | 0 -> compare a a'
+    | c -> c
+  and  li = RStream.take ~n:1000 @@
+    run qrs (fun q r s -> LNat.( < ) r q &&& LoNat.gcd' q r s )
+      (fun q r s-> LNat.to_int @@ project q,
+                   LNat.to_int @@ project r,
+                   LNat.to_int @@ project s)
+  in  List.iter (fun x -> print_string @@ GT.show(pr3) x ;  print_newline())
+  @@ List.fast_sort compr li
+    
+ ;;
+
+
+(** Use [gcd'] to generate: mant cases are missing, for example, when [r]
+ was 2, [q] only range on even numbers after 10.   *)
+let _ =
+  let rec conv_to_g = function [] -> [] | (a,b,c) :: t ->
+    begin
+      try (LoNat.Prj.logic_to_ground a,
+           LoNat.Prj.logic_to_ground b,
+           LoNat.Prj.logic_to_ground c) ::  conv_to_g t
+      with Not_a_value -> conv_to_g t
+    end
+  in
+  let li = List.map (fun a,b,c -> LNat.to_int a, LNat.to_int b,LNat.to_int c) @@
+    conv_to_g @@ RStream.take ~n:500 @@ let open LNat in
+    run qrs (fun q r s -> gcd' q r s)
+      (fun q r s-> q#reify(LNat.reify),
+                   r#reify(LNat.reify),
+                   s#reify(LNat.reify))
+  in let  compr = fun (a,b,c) (a',b',c') -> match compare b b' with
+      | 0 -> compare a a'
+      | c -> c
+  in
+  List.iter (fun x -> print_string @@ GT.show(pr3) x ; print_newline())
+  @@ List.fast_sort compr li
+;;
+
+
+(** Use [gcd'] to geneerate: the first two are generic cases: the gcd between zero 
+    and a non-zero number is that non-zero number. Between two identical number the 
+    gcd is any one of them. The rest answers are concrete. *)
+let _ = 
+  let li = RStream.take ~n:500 @@ let open LNat in
+    run qrs (fun q r s -> gcd' q r s)
+      (fun q r s-> q#reify(LNat.reify),
+                   r#reify(LNat.reify),
+                   s#reify(LNat.reify))
+  in  List.iter (fun x -> print_string @@ GT.show(lnp3) x ; print_newline()) li
+;;
+
+
+
+
 (** find numbers that simplify to 3 / 2 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:3 @@
@@ -77,7 +170,6 @@ let _ =
 
 ;;
 
-(*
 
 (** evaluate expr: this does  not work because non-commutativity of conjuncts in 
     [simplify'] makes it impossible to even guess the correct answer. *)
@@ -107,9 +199,7 @@ let _ =
   run qr (fun q r -> ocanren { simplify_4 364 420  q r })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
-*)
 
-(*
 (** test [comdi]. The answer distribution does not look good: too many zeros *)
 let _ =
   let rec conv_to_g = function [] -> [] | (a,b,c) :: t ->
@@ -216,13 +306,7 @@ let rec distinct l =
                                       Sum (Sum (a3,b3),
                                            Sum (a4,b4))) &
                             eval' q (Num (3,2))}) (fun q -> GRat.to_frat @@ project q)
-*)
-
-
-
-(*
-
-
+;;
 
 
 (** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
@@ -237,9 +321,6 @@ let _ =
   run qr (fun q r -> ocanren { simplify 108 72 q r })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
-
-
-
 
 
 (** compute the gcd of 108 and 72 *)

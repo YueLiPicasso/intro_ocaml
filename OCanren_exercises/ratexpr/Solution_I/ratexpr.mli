@@ -108,6 +108,9 @@ module LoNat : sig
       where [b <= a] *)
   val gcd          : groundi -> groundi -> groundi -> goal;;
 
+  (** Experimental version *)
+  val gcd'         : groundi -> groundi -> groundi -> goal;;
+
   (** [comdi a b c] is [c] is a common divisor of [a] and [b] *)
   val comdi        : groundi -> groundi -> groundi -> goal;;
 end;;
