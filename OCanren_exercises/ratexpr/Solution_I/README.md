@@ -8,6 +8,12 @@ The types have been gotten right. The Eulidean Algorithm was implemented. Based 
 
 ### Relational Simplification of Rational Numbers
 
+We can use a single algorithm named `simplify''` to
+- simplify a rational number to the normal form
+- scale up a normal form rational number 
+- ti find rational numbers whose numerator and denominator are co-prime. 
+
+
 We need a relation `simplify` such that `simplify a b a' b'` is true if 
 the rational number `a/b` has  normal form `a'/b'`. I first came up with two
 versions, named  `simplify` and `simplify'`, which are good at forward and backward
