@@ -65,6 +65,24 @@ given `a'/b'` and to find its multiple `a/b`. The table below summarizes the com
  Backward | Generate `a`, `b` and  `q` such that `q` is the gcd of `a` and `b`, then test if divding `a/b` by `q` happens to be `a'/b'`. Very inefficient ! | Generate `q` and `b` such that `q * b' = b`. Then compute `a` by `a' * q = a`. Then test `gcd a b q`  which must be true for  `a'` and `b'` are coprime which is  assumed.
 
 
+For the sake of completeness of discussion, `simplify'` is defined as
+
+```ocaml
+ let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 10 in 
+    Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
+```
+
+It efficiently computes multiples of `a'/b'` but when used forward it does not always generate
+the normal form: it actually enumerates all scaled-down numbers before reaching the normal form.
+
+
+We conclude that  non-commutativity of conjuncts breaks down to
+the role played by each conjunct in the generate-and-test process. We need to decide which
+conjunct is used to generate and which to test best accomodates different directions of relation
+execution.
+
+
+
 # Problem Tracking
 
 Discussions below are in
