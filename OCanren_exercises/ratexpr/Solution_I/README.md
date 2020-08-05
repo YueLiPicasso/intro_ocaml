@@ -13,7 +13,7 @@ the rational number `a/b` has  normal form `a'/b'`. I first came up with two
 versions, named  `simplify` and `simplify'`, which are good at forward and backward
 execution resp. but not the other way round. Further observation of the internals of these
 definitions helped with the definition of a third version `simplify''`, which is satisfactorily
-relational. Here we compare `simplify` with `simplify''`.  
+relational. We first compare `simplify` with `simplify''`.  
 
 ```ocaml
 
