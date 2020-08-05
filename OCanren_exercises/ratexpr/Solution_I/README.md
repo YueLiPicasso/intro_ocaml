@@ -4,7 +4,7 @@ A half-successful solution to the problem.
 
 ## Highlight
 
-The types have been gotten right. The Eulidean Algorithm was implemented.
+The types have been gotten right. The Eulidean Algorithm was implemented. Based on these, we have:
 
 ### Relational Simplification of Rational Numbers
 
