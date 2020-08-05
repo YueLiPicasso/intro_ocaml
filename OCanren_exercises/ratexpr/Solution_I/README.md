@@ -61,7 +61,7 @@ given `a'/b'` and to find its multiple `a/b`. The table below summarizes the com
  
  Semantics |      `simplify`      |      `simplify''`
  ---  | ---  | ---
- Forward  | straightforward: to find gcd, then to compute `a'` and `b'` | to factor `b` into `q` and `b'`, then try to factor `a` using `q`. if succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if fails, to refactor `b` until `q` is a common divisor. Finally to test that `q` is the gcd   
+ Forward  | straightforward: to find gcd, then to compute `a'` and `b'` | to factor `b` into `q` and `b'`, then to try to factor `a` using `q`. if succeeds, then we get `a'` and we know that `q` is a common divisor of `a` and `b`; if fails, to refactor `b` until `q` is a common divisor. Finally to test that `q` is the gcd   
  Backward | | 
 
 
