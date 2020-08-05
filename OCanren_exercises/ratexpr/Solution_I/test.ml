@@ -18,6 +18,46 @@ open LoRat;;
 @type tmp = ground GT.list with show;;
 
 
+(** find the number to which 364 / 420  simplifies: fast *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:1 @@
+  run qr (fun q r -> ocanren { simplify'' 364 420  q r })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
+
+(** find the number to which  420 / 364  simplifies: fast *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:1 @@
+  run qr (fun q r -> ocanren { simplify'' 420 364  q r })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
+
+
+(*
+
+(** find numbers that simplify to 2 / 3: ok for ~n:50. The performance inhibitor
+    is that [simplify''] has two similar clauses for [a > b] and [b > a] resp. When
+    used backward, only one clause will do useful work and the other two will only
+    waste time to do useless computations. So a way to improve is to remove the brach
+    for [b < a] and enforce [a <= b] from the context. *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:50 @@
+  run qr (fun q r -> ocanren { simplify'' q r 2 3 })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
+
+
+(** find numbers that simplify to 3 / 2: quick for ~n:20, 
+    OK for ~n:50, and very slow for ~n:100, ~n:200 *)
+let _ = 
+  print_string @@ GT.show(ipl) @@ RStream.take ~n:50 @@
+  run qr (fun q r -> ocanren { simplify'' q r 3 2 })
+    (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
+  print_newline ();;
+
 
 (** Use [gcd] to generate:  *)
 let _ =
@@ -41,19 +81,16 @@ let _ =
   in
   List.iter (fun x -> print_string @@ GT.show(pr3) x ; print_newline())
   @@ List.fast_sort compr li
+
 ;;
-
-
-
-(*
 
 (** compute the [gcd'] of 72 and 108 *)
 let _ = 
   print_string @@ GT.show(intl) @@ RStream.take @@
   run q (fun q -> ocanren {gcd' 72 108 q})  (fun q -> LNat.to_int @@ project q);
-  print_newline ();;
+  print_newline ()
 
-
+;;
 
 (** Use [gcd'] generate again with an extra constraint: same as [gcd] exactly *)
 let _ =
@@ -108,8 +145,6 @@ let _ =
                    s#reify(LNat.reify))
   in  List.iter (fun x -> print_string @@ GT.show(lnp3) x ; print_newline()) li
 ;;
-
-
 
 
 (** find numbers that simplify to 3 / 2 *)

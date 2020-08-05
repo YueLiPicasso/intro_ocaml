@@ -274,8 +274,9 @@ end;;
 (******************************************************************************************)
 
 module LoRat : sig
-  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify   : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify'  : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval : groundi -> groundi -> goal;;
@@ -303,6 +304,12 @@ end = struct
   let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 10 in 
     Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
 
+  let simplify'' a b a' b'=
+    let open LNat in let open LoNat in
+    conde [
+      (?& [a === b ; a' === one ; b' === one]);
+      (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))]);
+      (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
 
   (** Attempt to improve answer quality wrt. [simplify'] when querying about
       what simplifies to what,  i.e.,  when all four args are left free. Due to

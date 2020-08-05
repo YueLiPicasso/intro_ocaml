@@ -124,6 +124,8 @@ module LoRat : sig
   (** [simplify' a b a' b'] finds a limited number (which depends on implementation) 
       of multiples a/b of a'/b' *)
   val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+
+  val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   
   (** Experimental but not useful relations. *)
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
