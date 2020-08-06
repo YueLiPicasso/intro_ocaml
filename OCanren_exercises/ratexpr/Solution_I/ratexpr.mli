@@ -140,9 +140,6 @@ module LoRat : sig
 
   (** For backward use only. Itself uses both [simplify] and [simplify']. *)
   val eval' : groundi -> groundi -> goal;;
-
-  (** Exactly the same as [eval'], with differet source code style *)
-  val eval'_a  : groundi -> groundi -> goal;;
   
   (** Same structure as [eval] but uses [simplify''] instead of
       [simplify]. 
@@ -151,7 +148,7 @@ module LoRat : sig
       - Quine: OK. *)
   val eval'' : groundi -> groundi -> goal;;
 
-  (** Merged [eval''] and [eval'_a] in the body. 
+  (** Merged [eval''] and [eval'] in the body. 
       This inspired [eval'''] *)
   val eval''_a : groundi -> groundi -> goal;;
 

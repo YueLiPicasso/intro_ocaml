@@ -1,26 +1,5 @@
 # Solution I
 
-Yes we can have a relation (named `eval''`) that achieves
-all three goals of this project.
-
-There are also two variants (resp. `eval` and `eval'`)
-which is optimized resp. for forward run  and backward run.
-
-For `eval''`  the compromise is that it
- can run in both directions, but
- for each direction it is not as efficient as the variant that is optimized for that
- direction.
-
-
-A simple disjunction
-(named `eval'''`) of `eval` and `eval'` also allows execution in all directions:
-when used forward or to find quines, it behaves like `eval` and when used backward it
-behaves like `eval'`. These all are based on  the _interleaved search_ of OCanren: it get the
-best of each disjunct and makes no compromise. 
-
-
-Perhaps a better example  on compromise is  relational simplification of rational numner,
-which is the core of the `eval`s, discussed below.
 
 
 
@@ -122,6 +101,31 @@ for that direction, and if you want excellent performance on one direction then 
 Discussions below are in
 anti-chronological order: older issues are closer to the bottom of the page.
 
+
+## Problem and the cause thereof
+
+Now we can have a relation (named `eval''`) that achieves
+all three goals of this project. But there is still one more thing, which is  bounding
+the numerator and denominator by a small interger (say, 100),  worth be to tried
+for more interesting answers from the queries.  
+
+There are also two variants (resp. `eval` and `eval'`)
+which is optimized resp. for forward run  and backward run.
+
+For `eval''`  the compromise is that it
+ can run in both directions, but
+ for each direction it is not as efficient as the variant that is optimized for that
+ direction.
+
+
+A simple disjunction
+(named `eval'''`) of `eval` and `eval'` also allows execution in all directions:
+when used forward or to find quines, it behaves like `eval` and when used backward it
+behaves like `eval'`. These all are based on  the _interleaved search_ of OCanren: it gets the
+best of each disjunct and makes no compromise. 
+
+
+
 ## Problem and the cause thereof
 
 Based on the relational simplifier `simplify''`, I got a
@@ -182,7 +186,7 @@ let rec eval'' ex no =
 When asking what expression evaluates to a given number, only the first clause in the
 evaluator contributes answers, finding multiples of that number, but all the rest clauses
 involving addition, subtruction and multiplication rarely contribute answers. This is
-due to the inefficient backward seraching algorithm. In those clauses it
+due to the inefficient backward searching algorithm. In those clauses it
 generates two equations and checks if the two right-hand-sides happen to sum / subtruct / product
 to the given number. The search space is too large. 
 

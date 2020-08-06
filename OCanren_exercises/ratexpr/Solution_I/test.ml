@@ -20,16 +20,6 @@ open LoRat;;
 
 
 
-(** test [eval]: quine:  *)
-let _ =
-  let open Inj in 
-  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline()) @@
-  List.tl @@ RStream.take ~n:100 @@ 
-  run q (fun q ->  ocanren { eval q q })
-    (fun q -> q#reify(reify))
-;;
-
-
 (*
 
 (** test [eval''']: quine: the first answer is not good; could be 
@@ -41,39 +31,6 @@ let _ =
   run q (fun q ->  ocanren { eval''' q q })
     (fun q -> q#reify(reify))
 ;;
-
-
-(** test [eval''_a]: forward : OK *)
-let _ =
-  let open Inj in
-  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
-  @@ RStream.take ~n:1 @@ 
-  run q (fun q ->
-      ocanren { eval''_a 
-                  (Sum  (Prod (Num (1, 2), Num (1,3)), Subt (Num (2, 1), Num (1,3))))
-                  q }) (fun q -> GRat.to_frat @@ project q)
-;;
-
-
-(** test [eval''_a]: backward : OK *)
-let _ =
-  let open Inj in
-  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
-  @@ RStream.take ~n:10 @@ 
-  run q (fun q ->
-      ocanren { eval''_a q (Num (1,4))}) (fun q ->q#reify(reify))
-;;
-
-(** test [eval''_a]: quine : OK *)
-let _ =
-  let open Inj in
-  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
-  @@ RStream.take ~n:10 @@ 
-  run q (fun q ->
-      ocanren { eval''_a q q}) (fun q ->q#reify(reify))
-;;
-
-
 
 (** test [eval''']: check : OK *)
 let _ =
@@ -110,8 +67,36 @@ let _ =
 ;;
 
 
+(** test [eval''_a]: forward : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval''_a 
+                  (Sum  (Prod (Num (1, 2), Num (1,3)), Subt (Num (2, 1), Num (1,3))))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
 
-(** test [eval'_a]: the backward optimized branches do not seem to work here *)
+(** test [eval''_a]: backward : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q ->
+      ocanren { eval''_a q (Num (1,4))}) (fun q ->q#reify(reify))
+;;
+
+(** test [eval''_a]: quine : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q ->
+      ocanren { eval''_a q q}) (fun q ->q#reify(reify))
+;;
+
+(** test [eval''_a]: the backward optimized branches do not seem to work here *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
@@ -119,7 +104,6 @@ let _ =
   run q (fun q ->  ocanren { eval''_a q (Num  (4,1)) })
     (fun q -> q#reify(reify))
 ;;
-
 
 (** test [eval''_a]: killed without answers  *)
 let _ =
@@ -136,7 +120,11 @@ let _ =
 ;;
 
 
-(** Find expr that normalizes to 5/3 : OK *)
+
+
+
+
+(** test [eval'']: Find expr that normalizes to 5/3 : OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -145,7 +133,7 @@ let _ =
 
 ;;
 
-(** Find some coprime numbers *)
+(** test [eval'']: Find some coprime numbers *)
 let _ =
   List.iter (fun q ->
       print_string @@ (GT.show(frat)) q;
@@ -155,7 +143,7 @@ let _ =
 
 ;;
 
-(** generate equations  *)
+(** test [eval'']: generate equations  *)
 let _ =
   List.iter (fun q,r ->
       print_string @@ (GT.show(logic)) q;
@@ -169,7 +157,7 @@ let _ =
 
 ;;
 
-(** evaluate expr : OK *)
+(** test [eval'']: evaluate expr : OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -181,7 +169,7 @@ let _ =
 ;;
 
 
-(** evaluate expr OK *)
+(** test [eval'']: evaluate expr OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -192,7 +180,7 @@ let _ =
 ;;
 
 
-(** evaluate expr OK *)
+(** test [eval'']: evaluate expr OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -203,7 +191,7 @@ let _ =
 ;;
 
 
-(** evaluate expr OK *)
+(** test [eval'']: evaluate expr OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -215,7 +203,7 @@ let _ =
 
 
 
-(** evaluate expr OK *)
+(** test [eval'']: evaluate expr OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -228,7 +216,7 @@ let _ =
 ;;
 
 
-(** evaluate expr: OK *)
+(** test [eval'']: evaluate expr: OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -239,7 +227,7 @@ let _ =
 ;;
 
 
-(** evaluate expr: OK *)
+(** test [eval'']: evaluate expr: OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -249,7 +237,7 @@ let _ =
                   q }) (fun q -> GRat.to_frat @@ project q)
 
 
-(** evaluate expr: OK *)
+(**test [eval'']:  evaluate expr: OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -259,7 +247,7 @@ let _ =
                   q }) (fun q -> GRat.to_frat @@ project q)
 
 
-(** evaluate expr: OK *)
+(** test [eval'']: evaluate expr: OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -412,7 +400,7 @@ let _ =
 ;;
 
 
-(** find numbers that simplify to 3 / 2 *)
+(** test [simplify']: find numbers that simplify to 3 / 2 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:3 @@
   run qr (fun q r -> ocanren { simplify' q r 3 2 })
@@ -448,7 +436,7 @@ let _ =
  ;;
 
 
-(** evaluate expr *)
+(** test [eval]: evaluate expr *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -461,7 +449,7 @@ let _ =
 ;;
 
 
-(** Find expr that normalizes to 3/2 *)
+(** test [eval']: Find expr that normalizes to 3/2 *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -471,7 +459,7 @@ let _ =
 ;;
 
 
-(** evaluate expr: this does  not work because non-commutativity of conjuncts in 
+(** test [eval]: evaluate expr: this does  not work because non-commutativity of conjuncts in 
     [simplify'] makes it impossible to even guess the correct answer. *)
 let _ =
   let open Inj in
@@ -483,17 +471,14 @@ let _ =
                   q }) (fun q -> GRat.to_frat @@ project q);;
 ;;
 
-
-(** Test [simplify_4]: extremely inefficient *)
-
-(** find numbers that simplify to 3 / 2 *)
+(** Test [simplify_4]: find numbers that simplify to 3 / 2 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:5 @@
   run qr (fun q r -> ocanren { simplify_4 q r 3 2 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
 
-(** find the number to which 364 / 420  simplifies *)
+(** Test [simplify_4]: find the number to which 364 / 420  simplifies *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:1 @@
   run qr (fun q r -> ocanren { simplify_4 364 420  q r })
@@ -518,8 +503,6 @@ let _ =
                  r#reify(LNat.reify),
                  s#reify(LNat.reify));;
 
-
-
 (** test [<] . THis generates constrained pairs S...S(O) and S...S(_.1) [_.1 =/= O] *)
 let _ = 
   List.iter (fun x -> print_string @@ GT.show(lnp) x ; print_newline())
@@ -541,10 +524,7 @@ let _ =
                     LNat.to_int @@ project t);
   print_newline ();;
 
-
-(** Test [simplify'] *)
-
-(** find what  simplifies  to what. Most of the gernated tuples have form (0, x, 0, x).
+(** Test [simplify']: find what  simplifies  to what. Most of the gernated tuples have form (0, x, 0, x).
 This is cause by backtracking on the last goal *)
 let _ = 
   print_string @@ GT.show(ipl4) @@ RStream.take ~n:400 @@
@@ -556,7 +536,7 @@ let _ =
   print_newline ();;
 
 
-(** find numbers to which 300 / 100  simplifies *)
+(** Test [simplify']: find numbers to which 300 / 100  simplifies *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
   run qr (fun q r -> ocanren { simplify' 300 200  q r })
@@ -564,7 +544,7 @@ let _ =
   print_newline ();;
 
 
-(** find numbers that simplify to 3 / 2 *)
+(** Test [simplify']: find numbers that simplify to 3 / 2 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:11 @@
   run qr (fun q r -> ocanren { simplify' q r 3 2 })
@@ -572,14 +552,14 @@ let _ =
   print_newline ();;
 
 
-(** forward run *)
+(** test [eval]: forward run *)
 let _ = let open Inj in
   print_string @@ GT.show(frat) @@ GRat.to_frat @@ List.hd @@ RStream.take ~n:1 @@
   run q (fun q -> ocanren {eval (Sum (Num (1, 3), Num (4, 5))) q})
     project;
   print_newline();;
 
-(** find bounded numbers that simplify to 3 / 2: 
+(**  Test [simplify]: find bounded numbers that simplify to 3 / 2: 
     stupid generate and test *)
 let _ =
   let max_int' = OCanren.Std.nat 10 in
@@ -589,13 +569,7 @@ let _ =
   print_newline ();;
 
 
-let rec not_mem e l =
-  ocanren { l == [] | fresh h, t in l == h :: t & h =/= e & not_mem e t };;
-
-let rec distinct l =
-  ocanren { l == [] | fresh h , t in l == h :: t & not_mem h t & distinct t };;
-
-(** Find expr (sum only) that normalizes to 3/2 *)
+(** test [eval']: Find expr (sum only) that normalizes to 3/2 *)
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
   @@ RStream.take ~n:10 @@ 
@@ -609,13 +583,23 @@ let rec distinct l =
 ;;
 
 
-(** Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
+(** test [eval]: quine: OK *)
+let _ =
+  let open Inj in 
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline()) @@
+  List.tl @@ RStream.take ~n:100 @@ 
+  run q (fun q ->  ocanren { eval q q })
+    (fun q -> q#reify(reify))
+;;
+
+
+(** test [eval]: Find expr (sum only) that normalizes to 1/3: this is a generate-and-test process *)
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
   @@ RStream.take ~n:10 @@ 
 run q (fun q -> ocanren { eval q (Num (1,3))}) (fun q -> q#reify(reify))
 
-(** simplify 108 / 72 *)
+(** test [simplify]: 108 / 72 *)
 let _ = 
   print_string @@ GT.show(ipl) @@ RStream.take ~n:10 @@
   run qr (fun q r -> ocanren { simplify 108 72 q r })
@@ -623,7 +607,7 @@ let _ =
   print_newline ();;
 
 
-(** compute the gcd of 108 and 72 *)
+(** test [gcd]: compute the gcd of 108 and 72 *)
 let _ = 
   print_string @@ GT.show(intl) @@ RStream.take @@
   run q (fun q -> ocanren {gcd 108 72 q})  (fun q -> LNat.to_int @@ project q);

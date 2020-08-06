@@ -281,7 +281,7 @@ module LoRat : sig
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val eval     : groundi -> groundi -> goal;;
   val eval'    : groundi -> groundi -> goal;;
-  val eval'_a  : groundi -> groundi -> goal;;
+  val eval'  : groundi -> groundi -> goal;;
   val eval''   : groundi -> groundi -> goal;;
   val eval''_a : groundi -> groundi -> goal;;
   val eval'''  : groundi -> groundi -> goal;;
@@ -395,54 +395,6 @@ end = struct
 
   (** for backward use *)
   let rec eval' ex no =
-    let open Inj in let open LNat in let open LPair in 
-    conde [
-      Fresh.two (fun a b -> (*not using  simplify' here *)
-          ?& [ex === num a b ; no === num a b ]);
-      Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
-          ?& [ex === sum ea eb ;
-              no === num  nu1 de1;
-              simplify' nu2 de2 nu1 de1;
-              Fresh.(succ five) (fun a a' sa sa' sde2 sde2' ->
-                  ?& [( + ) a   a'  nu2 ;
-                      simplify a  de2 sa  sde2  ;
-                      simplify a' de2 sa' sde2' ;
-                      Fresh.two (fun na nb ->
-                          ?& [na === num sa  sde2 ;
-                              nb === num sa' sde2';
-                              eval' ea na ;
-                              eval' eb nb ])])]);
-    Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
-          ?& [ex === subt ea eb ;
-              no === num  nu1 de1;
-              simplify' nu2 de2 nu1 de1;
-              Fresh.(succ five) (fun a a' sa sa' sde2 sde2' ->
-                  ?& [( + ) a'  nu2  a;
-                      simplify a  de2 sa  sde2  ;
-                      simplify a' de2 sa' sde2' ;
-                      Fresh.two (fun na nb ->
-                          ?& [na === num sa  sde2 ;
-                              nb === num sa' sde2';
-                              eval' ea na ;
-                              eval' eb nb ])])]);
-    Fresh.(succ five) (fun ea eb nu1 de1 nu2 de2  ->
-          ?& [ex === prod ea eb ;
-              no === num  nu1 de1;
-              simplify' nu2 de2 nu1 de1;
-              Fresh.(succ @@ succ @@ succ @@ five) (fun a a' b b' sa sa' sb sb' ->
-                  ?& [( * ) a   a'  nu2 ;
-                      ( * ) b   b'  de2 ;
-                      simplify a  b sa  sb  ;
-                      simplify a' b' sa' sb' ;
-                      Fresh.two (fun na nb ->
-                          ?& [na === num sa  sb ;
-                              nb === num sa' sb';
-                              eval' ea na ;
-                              eval' eb nb ])])]);];;
-
-
-  (** Exactly the same as [eval'], but using [ocanren] for syntactic transformation  *)
-  let rec eval'_a ex no =
     let open Inj in let open LNat in let open LPair in
     ocanren {
       { fresh a, b in ex === num a b & no === num a b }
@@ -457,8 +409,8 @@ end = struct
         &  simplify a' de2 sa' sde2'
         &  na === num sa  sde2 
         &  nb === num sa' sde2'
-        &  eval'_a ea na 
-        &  eval'_a eb nb }
+        &  eval' ea na 
+        &  eval' eb nb }
      |
       { fresh ea, eb, nu1, de1, nu2, de2,
               a, a', sa, sa', sde2, sde2', na, nb in
@@ -470,8 +422,8 @@ end = struct
         &  simplify a' de2 sa' sde2'
         &  na === num sa  sde2 
         &  nb === num sa' sde2'
-        &  eval'_a ea na 
-        &  eval'_a eb nb }
+        &  eval' ea na 
+        &  eval' eb nb }
      |
       { fresh ea, eb, nu1, de1, nu2, de2,
               a, a', b, b', sa, sa', sb, sb', na, nb in
@@ -484,8 +436,8 @@ end = struct
         &  simplify a' b' sa' sb'   
         &  na === num sa  sb 
         &  nb === num sa' sb'
-        &  eval'_a ea na 
-        &  eval'_a eb nb } };;
+        &  eval' ea na 
+        &  eval' eb nb } };;
    
 
   (** same as [eval] but uses [simplify''] *)
