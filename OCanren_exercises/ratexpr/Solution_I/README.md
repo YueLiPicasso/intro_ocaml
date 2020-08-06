@@ -53,7 +53,7 @@ S (S O) | S (S \_.1) [\_.1 =/= O]
 S (S (S O)) | S (S (S \_.1)) [\_.1 =/= O]
 etc. | etc.
 
-Now we continue.   _We focus on the second clause of each definition:_
+Now we continue. Without loss of generality, _we focus on the second clause of each definition:_
 
 ```ocaml
 (* simplify   *)
@@ -82,6 +82,7 @@ For the sake of completeness of discussion, `simplify'` is defined as
 It efficiently computes multiples of `a'/b'` but when used forward it does not always generate
 the normal form: it actually enumerates all scaled-down numbers before reaching the normal form.
 
+#### The philosophy is about compromise 
 
 We conclude that  non-commutativity of conjuncts breaks down to
 the role played by each conjunct in the generate-and-test process. We need to decide which
@@ -89,7 +90,11 @@ conjunct shall be used to generate and which to test, such that the conjunction 
 best accommodates different directions of relation
 execution. In our case using `( * )` to generate and `gcd` to test allows productive  compromise
 between forward and backward efficiency, whilst using `gcd` to generate and `( * )` to test
-maximizes forward efficiency at the cost of substantially losing backward efficiency. 
+maximizes forward efficiency at the cost of substantially losing backward efficiency. Similarly, `simplify'` omits the `gcd` step thus speeds up the backward
+direction at the cost of losig forward correctness. The philosophy is about
+compromise: if you want bidrectional support, you have to accpet that the
+performance on each direction is not as good as the design that is optimized
+for that direction, and if you want excellent performance on one direction then you have to accept that it does not support bidirectional execution !  
 
 
 
