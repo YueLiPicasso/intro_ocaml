@@ -166,7 +166,7 @@ let rec eval'' ex no =
 
 When asking what expression evaluates to a given number, only the first clause in the
 evaluator contributes answers, finding multiples of that number, but all the rest clauses
-involving addition, substruction and multiplication rarely contribute answers. This is
+involving addition, subtruction and multiplication rarely contribute answers. This is
 due to the inefficient backward seraching algorithm. In those clauses it
 generates two equations and checks if the two right-hand-sides happen to sum / subtruct / product
 to the given number. The search space is too large. 
