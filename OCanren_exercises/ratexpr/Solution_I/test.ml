@@ -20,7 +20,123 @@ open LoRat;;
 
 
 
-(** Find expr that normalizes to 5/3 , mostly scales *)
+(** test [eval]: quine:  *)
+let _ =
+  let open Inj in 
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline()) @@
+  List.tl @@ RStream.take ~n:100 @@ 
+  run q (fun q ->  ocanren { eval q q })
+    (fun q -> q#reify(reify))
+;;
+
+
+(*
+
+(** test [eval''']: quine: the first answer is not good; could be 
+    corrected but does not worth it for now --- simply discrad it *)
+let _ =
+  let open Inj in 
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline()) @@
+  List.tl @@ RStream.take ~n:100 @@ 
+  run q (fun q ->  ocanren { eval''' q q })
+    (fun q -> q#reify(reify))
+;;
+
+
+(** test [eval''_a]: forward : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval''_a 
+                  (Sum  (Prod (Num (1, 2), Num (1,3)), Subt (Num (2, 1), Num (1,3))))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+(** test [eval''_a]: backward : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q ->
+      ocanren { eval''_a q (Num (1,4))}) (fun q ->q#reify(reify))
+;;
+
+(** test [eval''_a]: quine : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q ->
+      ocanren { eval''_a q q}) (fun q ->q#reify(reify))
+;;
+
+
+
+(** test [eval''']: check : OK *)
+let _ =
+  let open Inj in 
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->  ocanren { eval'''
+                               (Sum (Prod (Num (1, 1), Num (1, 1)),
+                                     Sum (Num (1, 1), Num (2, 1))))
+                               (Num (4,1)) })
+    (fun q -> q#reify(reify))
+;;
+
+
+(** test [eval''']: forward: fast *)
+let _ =
+  let open Inj in 
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->  ocanren { eval'''
+                               (Sum (Prod (Num (1, 1), Num (1, 1)),
+                                     Sum (Num (1, 1), Num (2, 1))))
+                               q })
+    (fun q -> GRat.to_frat @@ project q)
+;;
+
+(** test [eval''']: backward, OK, efficient  *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:100 @@ 
+  run q (fun q ->  ocanren { eval''' q (Num  (4,1)) })
+    (fun q -> q#reify(reify))
+;;
+
+
+
+(** test [eval'_a]: the backward optimized branches do not seem to work here *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(logic)) fr; print_newline())
+  @@ RStream.take ~n:50 @@ 
+  run q (fun q ->  ocanren { eval''_a q (Num  (4,1)) })
+    (fun q -> q#reify(reify))
+;;
+
+
+(** test [eval''_a]: killed without answers  *)
+let _ =
+  let open Inj in
+  List.iter (fun q,r ->
+      print_string @@ (GT.show(frat)) q;
+      print_string " = ";
+      print_string @@ (GT.show(frat)) r;
+      print_newline())
+  @@ RStream.take ~n:20 @@ 
+  run qr (fun q r ->  ocanren { eval''_a q (Num  (4,1)) & eval''_a q r })
+    (fun q r -> GRat.to_frat @@ project q,
+              GRat.to_frat @@ project r)
+;;
+
+
+(** Find expr that normalizes to 5/3 : OK *)
 let _ =
   let open Inj in
   List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
@@ -63,10 +179,6 @@ let _ =
                   (Sum  (Prod (Num (1, 2), Num (1,3)), Subt (Num (2, 1), Num (1,3))))
                   q }) (fun q -> GRat.to_frat @@ project q)
 ;;
-
-
-
-(*
 
 
 (** evaluate expr OK *)

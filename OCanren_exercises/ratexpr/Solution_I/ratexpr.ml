@@ -279,9 +279,12 @@ module LoRat : sig
   val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val eval   : groundi -> groundi -> goal;;
-  val eval'  : groundi -> groundi -> goal;;
-  val eval'' : groundi -> groundi -> goal;;
+  val eval     : groundi -> groundi -> goal;;
+  val eval'    : groundi -> groundi -> goal;;
+  val eval'_a  : groundi -> groundi -> goal;;
+  val eval''   : groundi -> groundi -> goal;;
+  val eval''_a : groundi -> groundi -> goal;;
+  val eval'''  : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
@@ -374,7 +377,7 @@ end = struct
        & ( * ) a'  b   a'b         
        & ( * ) b   b'  bb'         
        & ( + ) nu  a'b ab'          
-       & simplify'' nu bb' nu' bb'' 
+       & simplify nu bb' nu' bb'' 
        & no == Num (nu', bb'') }
      |
       {fresh ea, eb, na, nb, a, b, a', b',
@@ -386,7 +389,7 @@ end = struct
        & nb == Num (a', b')
        & ( * ) a  a' aa'
        & ( * ) b  b' bb'
-       & simplify'' aa' bb' s1 s2
+       & simplify aa' bb' s1 s2
        & no == Num (s1, s2) } };;
 
 
@@ -437,16 +440,64 @@ end = struct
                               eval' ea na ;
                               eval' eb nb ])])]);];;
 
-  (** Same as [eval] by uses [simplify''] *)
+
+  (** Exactly the same as [eval'], but using [ocanren] for syntactic transformation  *)
+  let rec eval'_a ex no =
+    let open Inj in let open LNat in let open LPair in
+    ocanren {
+      { fresh a, b in ex === num a b & no === num a b }
+     |
+      { fresh ea, eb, nu1, de1, nu2, de2,
+              a, a', sa, sa', sde2, sde2', na, nb in
+           ex === sum ea eb 
+        &  no === num  nu1 de1
+        &  simplify' nu2 de2 nu1 de1
+        &  ( + ) a   a'  nu2   
+        &  simplify a  de2 sa  sde2  
+        &  simplify a' de2 sa' sde2'
+        &  na === num sa  sde2 
+        &  nb === num sa' sde2'
+        &  eval'_a ea na 
+        &  eval'_a eb nb }
+     |
+      { fresh ea, eb, nu1, de1, nu2, de2,
+              a, a', sa, sa', sde2, sde2', na, nb in
+           ex === sum ea eb 
+        &  no === num  nu1 de1
+        &  simplify' nu2 de2 nu1 de1
+        &  ( + )  a'  nu2  a  
+        &  simplify a  de2 sa  sde2  
+        &  simplify a' de2 sa' sde2'
+        &  na === num sa  sde2 
+        &  nb === num sa' sde2'
+        &  eval'_a ea na 
+        &  eval'_a eb nb }
+     |
+      { fresh ea, eb, nu1, de1, nu2, de2,
+              a, a', b, b', sa, sa', sb, sb', na, nb in
+           ex === prod ea eb 
+        &  no === num  nu1 de1
+        &   simplify' nu2 de2 nu1 de1     
+        &  ( * ) a   a'  nu2 
+        &  ( * ) b   b'  de2 
+        &  simplify a  b sa  sb  
+        &  simplify a' b' sa' sb'   
+        &  na === num sa  sb 
+        &  nb === num sa' sb'
+        &  eval'_a ea na 
+        &  eval'_a eb nb } };;
+   
+
+  (** same as [eval] but uses [simplify''] *)
   let rec eval'' ex no =
     let open Inj in  let open LNat in
     ocanren {
-      {fresh a, b, a', b' in
+      {fresh a, b, a', b' in                              
          ex == Num (a, b)
        & no == Num (a', b')
        & simplify'' a b a' b' }
      | 
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',               
              ab', a'b, nu, bb', nu', bb'' in
          ex == Sum (ea, eb)       
        & eval'' ea na              
@@ -460,7 +511,7 @@ end = struct
        & simplify'' nu bb' nu' bb'' 
        & no == Num (nu', bb'') }
      |
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',                
              ab', a'b, nu, bb', nu', bb'' in
          ex == Subt (ea, eb)       
        & eval'' ea na              
@@ -474,7 +525,7 @@ end = struct
        & simplify'' nu bb' nu' bb'' 
        & no == Num (nu', bb'') }
      |
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',                
              aa', bb', s1, s2 in
          ex == Prod (ea, eb)
        & eval'' ea na
@@ -486,10 +537,94 @@ end = struct
        & simplify'' aa' bb' s1 s2
        & no == Num (s1, s2) } };;
 
+  
+  let rec eval''_a ex no =
+    let open Inj in  let open LNat in
+    ocanren {
+      {fresh a, b, a', b' in
+         ex == Num (a, b)
+       & no == Num (a', b')
+       & simplify'' a b a' b' }
+     | 
+       {fresh ea, eb, na, nb, nu', bb'',
+              a,   b,   a',   b',   ab',   a'b,   bb',   nu, 
+            s_a, s_b, s_a', s_b', s_ab', s_a'b, s_bb', s_nu  in
+         ex == Sum (ea, eb)
+       & no == Num (nu', bb'')
+       &
+     {     simplify' s_nu s_bb' nu' bb''       (* optimized for backward *)
+         & ( + )  s_ab' s_a'b s_nu
+         & simplify s_ab' s_bb' s_a  s_b
+         & simplify s_a'b s_bb' s_a' s_b'
+         & na == Num (s_a, s_b)
+         & nb == Num (s_a', s_b')
+         & eval''_a ea na              
+         & eval''_a eb nb 
+     | 
+           na == Num (a, b)                     (* optimized for forward *)       
+         & nb == Num (a', b')
+         & eval''_a ea na              
+         & eval''_a eb nb                      
+         & ( * ) a   b'  ab'         
+         & ( * ) a'  b   a'b         
+         & ( * ) b   b'  bb'         
+         & ( + ) ab' a'b nu          
+         & simplify'' nu bb' nu' bb'' }  }
+     |
+      {fresh  ea, eb, na, nb, nu', bb'',
+              a,   b,   a',   b',   ab',   a'b,   bb',   nu, 
+            s_a, s_b, s_a', s_b', s_ab', s_a'b, s_bb', s_nu  in
+         ex == Subt (ea, eb)       
+       & no == Num (nu', bb'')
+       &      
+     {     simplify' s_nu s_bb' nu' bb''       (* optimized for backward *)
+         & ( + )  s_nu s_a'b  s_ab'
+         & simplify s_ab' s_bb' s_a  s_b
+         & simplify s_a'b s_bb' s_a' s_b'
+         & na == Num (s_a, s_b)
+         & nb == Num (s_a', s_b')
+         & eval''_a ea na              
+         & eval''_a eb nb 
+     | 
+           na == Num (a, b)                     (* optimized for forward *)            
+         & nb == Num (a', b')
+         & eval''_a ea na              
+         & eval''_a eb nb                      
+         & ( * ) a   b'  ab'         
+         & ( * ) a'  b   a'b         
+         & ( * ) b   b'  bb'         
+         & ( + ) nu  a'b ab'          
+         & simplify'' nu bb' nu' bb'' } }
+     |
+       {fresh ea, eb, na, nb, s1, s2,
+              aa',   bb',   a,   b,   a',   b',
+            s_aa', s_bb', s_a, s_b, s_a', s_b',
+            s_a1,  s_b1 , s_a1', s_b1' in
+          ex == Prod (ea, eb)
+        & no == Num (s1, s2)
+        &
+      {     simplify' s_aa' s_bb' s1 s2         (* optimized for backward *)
+          & ( * ) s_a1 s_a1' s_aa'
+          & ( * ) s_b1 s_b1' s_bb'
+          & simplify s_a1 s_b1 s_a s_b
+          & simplify s_a1' s_b1' s_a' s_b'
+          & na == Num (s_a, s_b)
+          & nb == Num (s_a', s_b')
+          & eval''_a ea na
+          & eval''_a eb nb
+      |
+            na == Num (a, b)                     (* optimized for forward *)            
+          & nb == Num (a', b')
+          & eval''_a ea na
+          & eval''_a eb nb
+          & ( * ) a  a' aa'
+          & ( * ) b  b' bb'
+          & simplify'' aa' bb' s1 s2 } } };;
+
   (** if we want to factor out [eval ea na] and [eval eb nb],
     we must redefine the type as Bin `op * `left * `right *)
 
-
+  let eval''' a b = ocanren { eval a b | eval' a b };;
 
 end;;
 

@@ -1,16 +1,31 @@
 # Solution I
 
-A half-successful solution to the problem. The relational evaluator `eval''` can
-evaluate arithmetic expressions to the normal form, and generating coprime numbers
-is not a problem due to the successful relational simplification algorithm. However,
-it is not good at backward run: for small numbers it mostly scales it up, and rarely
-finds expressions with arithmetic operations and for big numbers even this is  very slow.
+Yes we can have a relation (named `eval''`) that achieves
+all three goals of this project.
 
-## Highlight
+There are also two variants (resp. `eval` and `eval'`)
+which is optimized resp. for (forward + quine) and (backward).
 
-The types have been gotten right. The Eulidean Algorithm was implemented. Based on these, we have:
+For `eval''`  the compromise is that it
+ can run in both directions, but
+ for each direction it is not as efficient as the variant that is optimized for that
+ direction.
 
-### Relational Simplification of Rational Numbers
+
+A simple disjunction
+(named `eval'''`) of `eval` and `eval'` also allows execution in all directions:
+when used forward or to find quines, it behaves like `eval` and when used backward it
+behaves like `eval'`. These all are based on  the _interleaved search_ of OCanren: it get the
+best of each disjunct and makes no compromise. 
+
+
+Perhaps a better example  on compromise is  relational simplification of rational numner,
+which is the core of the `eval`s, discussed below.
+
+
+
+
+## Relational Simplification of Rational Numbers
 
 We can use a single algorithm named `simplify''` ,  where  `simplify'' a b a' b'` is true
 iff the rational number `a/b` has  normal form `a'/b'`, to

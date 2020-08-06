@@ -135,13 +135,29 @@ module LoRat : sig
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
-  (** For forward use only *)
+  (** For forward and quine only. Itself uses [simplify] *)
   val eval : groundi -> groundi -> goal;;
 
-  (** For backward use only *)
+  (** For backward use only. Itself uses both [simplify] and [simplify']. *)
   val eval' : groundi -> groundi -> goal;;
 
+  (** Exactly the same as [eval'], with differet source code style *)
+  val eval'_a  : groundi -> groundi -> goal;;
+  
+  (** Same structure as [eval] but uses [simplify''] instead of
+      [simplify]. 
+      - Forward: OK.
+      - Backward: OK. But the answers are in different style from [eval']. 
+      - Quine: OK. *)
   val eval'' : groundi -> groundi -> goal;;
+
+  (** Merged [eval''] and [eval'_a] in the body. 
+      This inspired [eval'''] *)
+  val eval''_a : groundi -> groundi -> goal;;
+
+  (** [eval'''] is logical disjunction of  [eval] and [eval']. 
+      Works well in all directions. *)
+  val eval'''  : groundi -> groundi -> goal;;
   
   module Prj : sig
     open LNat;;
