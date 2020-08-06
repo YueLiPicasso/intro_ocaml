@@ -279,8 +279,9 @@ module LoRat : sig
   val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val eval : groundi -> groundi -> goal;;
-  val eval' : groundi -> groundi -> goal;;
+  val eval   : groundi -> groundi -> goal;;
+  val eval'  : groundi -> groundi -> goal;;
+  val eval'' : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
@@ -289,7 +290,7 @@ end = struct
   
   module Prj = struct
     let logic_to_ground = fun (a,b) ->
-      LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;  
+      LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;
   end;;
 
   (** For forward use *)
@@ -342,48 +343,52 @@ end = struct
   (** for forward use *)
   let rec eval ex no =
     let open Inj in let open LNat in
-    conde [
-      Fresh.four (fun a b a' b' ->
-          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
-      Fresh.two (fun ea eb ->
-          ?& [ex === sum ea eb ;
-              Fresh.two (fun na nb ->
-                  ?& [eval ea na ; eval eb nb;
-                      Fresh.four (fun a b a' b' ->
-                          ?& [na === num a b ; nb === num a' b' ;
-                              Fresh.four (fun ab' a'b bb' nu ->
-                                  ?& [( * ) a b' ab';
-                                      ( * ) a' b a'b;
-                                      ( * ) b b' bb';
-                                      ( + ) ab' a'b nu;
-                                      Fresh.two (fun nu' bb'' ->
-                                          ?& [simplify nu bb' nu' bb'';
-                                              no === num nu' bb''])])])])]);
-      Fresh.two (fun ea eb ->
-          ?& [ex === subt ea eb ;
-              Fresh.two (fun na nb ->
-                  ?& [eval ea na ; eval eb nb;
-                      Fresh.four (fun a b a' b' ->
-                          ?& [na === num a b ; nb === num a' b' ;
-                              Fresh.four (fun ab' a'b bb' nu ->
-                                  ?& [( * ) a b' ab';
-                                      ( * ) a' b a'b;
-                                      ( * ) b b' bb';
-                                      ( + ) nu a'b ab' ;
-                                      Fresh.two (fun nu' bb'' ->
-                                          ?& [simplify nu bb' nu' bb'';
-                                              no === num nu' bb''])])])])]);
-      Fresh.two (fun ea eb ->
-          ?& [ex === sum ea eb ;
-              Fresh.two (fun na nb ->
-                  ?& [eval ea na ; eval eb nb;
-                      Fresh.four (fun a b a' b' ->
-                          ?& [na === num a b ; nb === num a' b' ;
-                              Fresh.four (fun ab a'b' s1 s2 ->
-                                  ?& [( * ) a b ab;
-                                      ( * ) a' b' a'b';
-                                      simplify ab a'b' s1 s2;
-                                      no === num s1 s2])])])])];;
+     ocanren {
+      {fresh a, b, a', b' in
+         ex == Num (a, b)
+       & no == Num (a', b')
+       & simplify a b a' b' }
+     | 
+      {fresh ea, eb, na, nb, a, b, a', b',
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Sum (ea, eb)       
+       & eval ea na              
+       & eval eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) ab' a'b nu          
+       & simplify nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Subt (ea, eb)       
+       & eval ea na              
+       & eval eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) nu  a'b ab'          
+       & simplify'' nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',
+             aa', bb', s1, s2 in
+         ex == Prod (ea, eb)
+       & eval ea na
+       & eval eb nb
+       & na == Num (a, b)
+       & nb == Num (a', b')
+       & ( * ) a  a' aa'
+       & ( * ) b  b' bb'
+       & simplify'' aa' bb' s1 s2
+       & no == Num (s1, s2) } };;
+
 
   (** for backward use *)
   let rec eval' ex no =
@@ -432,6 +437,60 @@ end = struct
                               eval' ea na ;
                               eval' eb nb ])])]);];;
 
+  (** Same as [eval] by uses [simplify''] *)
+  let rec eval'' ex no =
+    let open Inj in  let open LNat in
+    ocanren {
+      {fresh a, b, a', b' in
+         ex == Num (a, b)
+       & no == Num (a', b')
+       & simplify'' a b a' b' }
+     | 
+      {fresh ea, eb, na, nb, a, b, a', b',
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Sum (ea, eb)       
+       & eval'' ea na              
+       & eval'' eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) ab' a'b nu          
+       & simplify'' nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Subt (ea, eb)       
+       & eval'' ea na              
+       & eval'' eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) nu  a'b ab'          
+       & simplify'' nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',
+             aa', bb', s1, s2 in
+         ex == Prod (ea, eb)
+       & eval'' ea na
+       & eval'' eb nb
+       & na == Num (a, b)
+       & nb == Num (a', b')
+       & ( * ) a  a' aa'
+       & ( * ) b  b' bb'
+       & simplify'' aa' bb' s1 s2
+       & no == Num (s1, s2) } };;
+
+  (** if we want to factor out [eval ea na] and [eval eb nb],
+    we must redefine the type as Bin `op * `left * `right *)
+
+
+
 end;;
 
 (******************************************************************************************)
@@ -468,7 +527,7 @@ let rec eval ex no =
 
 
 
-      Check Permutations of I, II, III. Permutation with I (or II or III) is considered 
+      Check Permutations of I, II, III. Permutation within I (or II or III) is considered 
    later.
 
 I, II, III

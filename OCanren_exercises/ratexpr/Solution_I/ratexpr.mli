@@ -141,6 +141,8 @@ module LoRat : sig
   (** For backward use only *)
   val eval' : groundi -> groundi -> goal;;
 
+  val eval'' : groundi -> groundi -> goal;;
+  
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)

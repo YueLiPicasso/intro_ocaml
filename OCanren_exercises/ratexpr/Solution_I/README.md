@@ -1,6 +1,10 @@
 # Solution I
 
-A half-successful solution to the problem. 
+A half-successful solution to the problem. The relational evaluator `eval''` can
+evaluate arithmetic expressions to the normal form, and generating coprime numbers
+is not a problem due to the successful relational simplification algorithm. However,
+it is not good at backward run: for small numbers it mostly scales it up, and rarely
+finds expressions with arithmetic operations and for big numbers even this is  very slow.
 
 ## Highlight
 

@@ -18,6 +18,145 @@ open LoRat;;
 @type lnp4 = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 @type lnp4' = LNat.logic * LNat.logic * LNat.logic * GT.int with show;;
 
+
+
+(** Find expr that normalizes to 5/3 , mostly scales *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q -> ocanren { eval'' q (Num (5,3))}) (fun q -> GRat.to_frat @@ project q)
+
+;;
+
+(** Find some coprime numbers *)
+let _ =
+  List.iter (fun q ->
+      print_string @@ (GT.show(frat)) q;
+      print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run q (fun q -> ocanren { eval'' q q}) (fun r -> GRat.to_frat @@ project r)
+
+;;
+
+(** generate equations  *)
+let _ =
+  List.iter (fun q,r ->
+      print_string @@ (GT.show(logic)) q;
+      print_string " = ";
+      print_string @@ (GT.show(frat)) r;
+      print_newline())
+  @@ RStream.take ~n:10 @@ 
+  run qr (fun q r-> ocanren { eval'' q r})
+    (fun q r -> q#reify(Inj.reify),
+                GRat.to_frat @@ project r)
+
+;;
+
+(** evaluate expr : OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' 
+                  (Sum  (Prod (Num (1, 2), Num (1,3)), Subt (Num (2, 1), Num (1,3))))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+
+(*
+
+
+(** evaluate expr OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Prod (Num (1, 2), Num (1,3)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+(** evaluate expr OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Prod (Num (1, 2), Num (1,4)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+(** evaluate expr OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Prod (Num (1, 7), Num (1,100)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+
+(** evaluate expr OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval''
+                  (Sum (Num (1, 1), Sum (Num (1, 4), Prod (Num (1, 4), Num (1, 1)))))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+
+;;
+
+
+(** evaluate expr: OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Subt (Num (1, 2), Num (1,3)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+;;
+
+
+(** evaluate expr: OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Num (280, 300))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+
+
+(** evaluate expr: OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Sum (Num (2, 3), Num (1,3)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+
+
+(** evaluate expr: OK *)
+let _ =
+  let open Inj in
+  List.iter (fun fr -> print_string @@ (GT.show(frat)) fr; print_newline())
+  @@ RStream.take ~n:1 @@ 
+  run q (fun q ->
+      ocanren { eval'' (Subt (Num (2, 3), Num (1,3)))
+                  q }) (fun q -> GRat.to_frat @@ project q)
+
+
 (** use [simplify''] to generate some co-prime numbers *)
 let _ = 
   List.iter  (fun x -> print_string @@ GT.show(pr) x ;  print_newline())
@@ -58,9 +197,6 @@ let _ =
   run qr (fun q r -> ocanren { simplify'' q r 2 3 })
     (fun q r -> LNat.to_int @@ project q, LNat.to_int @@ project r);
   print_newline ();;
-
-
-(*
 
 
 (** local test for [simplify''], for the case all a b a' b' are free *)
