@@ -109,6 +109,70 @@ anti-chronological order: older issues are closer to the bottom of the page.
 
 ## Problem and the cause thereof
 
+Based on the relational simplifier `simplify''`, I got a
+half-successful relational evaluator `eval''` for
+rational number arithmetic expressions.
+
+```ocaml
+let rec eval'' ex no =
+    let open Inj in  let open LNat in
+    ocanren {
+      {fresh a, b, a', b' in                              (* first clause *)
+         ex == Num (a, b)
+       & no == Num (a', b')
+       & simplify'' a b a' b' }
+     | 
+      {fresh ea, eb, na, nb, a, b, a', b',                (* second clause *)
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Sum (ea, eb)       
+       & eval'' ea na              
+       & eval'' eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) ab' a'b nu          
+       & simplify'' nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',                (* third clause *)
+             ab', a'b, nu, bb', nu', bb'' in
+         ex == Subt (ea, eb)       
+       & eval'' ea na              
+       & eval'' eb nb              
+       & na == Num (a, b)          
+       & nb == Num (a', b')        
+       & ( * ) a   b'  ab'         
+       & ( * ) a'  b   a'b         
+       & ( * ) b   b'  bb'         
+       & ( + ) nu  a'b ab'          
+       & simplify'' nu bb' nu' bb'' 
+       & no == Num (nu', bb'') }
+     |
+      {fresh ea, eb, na, nb, a, b, a', b',                 (* fourth clause *)
+             aa', bb', s1, s2 in
+         ex == Prod (ea, eb)
+       & eval'' ea na
+       & eval'' eb nb
+       & na == Num (a, b)
+       & nb == Num (a', b')
+       & ( * ) a  a' aa'
+       & ( * ) b  b' bb'
+       & simplify'' aa' bb' s1 s2
+       & no == Num (s1, s2) } };;
+
+```
+
+When asking what expression evaluates to a given number, only the first clause in the
+evaluator contributes answers, finding multiples of that number, but all the rest clauses
+involving addition, substruction and multiplication rarely contribute answers. This is
+due to the inefficient backward seraching algorithm. In those clauses it
+generates two equations and checks if the two right-hand-sides happen to sum / subtruct / product
+to the given number. The search space is too large. 
+
+## Problem and the cause thereof
+
 Now I have two variants of the relation `eval`, one is optimized for forward
 execution and cannot be used for backward execution, and the other is for backward execution
 and cannot be used for forward execution.
