@@ -4,7 +4,7 @@ Yes we can have a relation (named `eval''`) that achieves
 all three goals of this project.
 
 There are also two variants (resp. `eval` and `eval'`)
-which is optimized resp. for (forward + quine) and (backward).
+which is optimized resp. for forward run  and backward run.
 
 For `eval''`  the compromise is that it
  can run in both directions, but
