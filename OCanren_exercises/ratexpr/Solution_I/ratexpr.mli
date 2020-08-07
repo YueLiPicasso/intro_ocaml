@@ -43,45 +43,47 @@ end;;
 
 (** Operations on [LNat.ground] *)
 module GNat : sig
+  open LNat;;
+  
   (** equallity *)
-  val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( = )  : ground -> ground -> GT.bool;;
   
   (** less than *)
-  val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( < )  : ground -> ground -> GT.bool;;
 
   (** less than or equal *)
-  val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
+  val ( <= ) : ground -> ground -> GT.bool;;
 
   (** Addition *)
-  val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( + )  : ground -> ground -> ground;;
   
   (** Subtraction. 
       Subtracting a number greater than self is forbidden. *)
-  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( - )  : ground -> ground -> ground;;
 
   (** Multiplication *)
-  val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
+  val ( * )  : ground -> ground -> ground;;
 
   (** Division returns the (quotient, remainder) pair 
       with protection against division by zero *)
-  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
+  val ( / )  : ground -> ground -> ground * ground;;
 
   (** greatest common divisor *)
-  val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
+  val gcd    : ground -> ground -> ground;;
+
+  (** Convert to normal form a rational number a/b represented as (a,b) *)
+  val simplify : ground * ground -> ground * ground;;
   
 end;;
 
 (** Operations on ground rational numbers *)
 module GRat : sig
-  (** Evaluate an expression to normal form *)
-  val eval : ground -> ground;;
-
-  (** Convert to normal form a rational number a/b represented as (a,b) *)
-  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
-
   (** Convert between, say, [Num (0,1)] and [Num (O, S O)] *)
   val to_frat : ground -> frat;;
   val of_frat : frat -> ground;; (** Sign ignored *)
+
+  (** Evaluate an expression to normal form *)
+  val eval : ground -> ground;;
 end;;
 
 (** Some relations on LNat.groundi *)

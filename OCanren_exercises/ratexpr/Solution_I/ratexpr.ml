@@ -64,27 +64,22 @@ end = struct
   and subt x y = inj @@ F.distrib (Subt (x, y))
   and prod x y = inj @@ F.distrib (Prod (x, y));;
 
-  (**
-     val reify :
-      (VarEnv.t -> ('a, 'b) Logic.injected -> 'b) ->
-      (VarEnv.t -> ('c, 'd) Logic.injected -> 'd) ->
-      VarEnv.t ->
-      (('a, 'c) X.t, ('b, 'd) X.t Logic.logic) Logic.injected ->
-      ('b, 'd) X.t Logic.logic *)
   let rec reify = fun env n -> F.reify (LNat.reify) reify env n;;
 end;;
 
 (******************************************************************************************)
 
 module GNat : sig
-  val ( = )  : LNat.ground -> LNat.ground -> GT.bool;;
-  val ( < )  : LNat.ground -> LNat.ground -> GT.bool;;
-  val ( <= ) : LNat.ground -> LNat.ground -> GT.bool;;
-  val ( - )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  val ( + )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  val ( * )  : LNat.ground -> LNat.ground -> LNat.ground;;
-  val ( / )  : LNat.ground -> LNat.ground -> LNat.ground * LNat.ground;;
-  val gcd    : LNat.ground -> LNat.ground -> LNat.ground;;
+  open LNat;;
+  val ( = )  : ground -> ground -> GT.bool;;
+  val ( < )  : ground -> ground -> GT.bool;;
+  val ( <= ) : ground -> ground -> GT.bool;;
+  val ( - )  : ground -> ground -> ground;;
+  val ( + )  : ground -> ground -> ground;;
+  val ( * )  : ground -> ground -> ground;;
+  val ( / )  : ground -> ground -> ground * ground;;
+  val gcd    : ground -> ground -> ground;;
+  val simplify : ground * ground -> ground * ground;;
 end = struct
   
   (** equallity *)
@@ -162,14 +157,17 @@ end = struct
       end;;
 
   let ( * ) = mult;;
-  
+
+  let simplify = fun (a, b) ->
+    let g = gcd a b in
+    let (a', _) = a / g and (b', _) = b / g in
+    (a',b');;
 end;;
 
 (******************************************************************************************)
 
 module GRat : sig
   val eval : ground -> ground;;
-  val simplify : LNat.ground * LNat.ground -> LNat.ground * LNat.ground;;
   val to_frat : ground -> frat;;
   val of_frat : frat -> ground;;
 end = struct
@@ -187,11 +185,6 @@ end = struct
   let rec to_frat = fun x -> GT.gmap(t) (LNat.to_int) to_frat x;;
   let rec of_frat = fun x -> GT.gmap(t) (LNat.of_int) of_frat x;;
   
-  let simplify = fun (a, b) ->
-    let g = gcd a b in
-    let (a', _) = a / g and (b', _) = b / g in
-    (a',b');;
-
   (** The GT plugin [eval] could also have been used to define the evaluator, if
   only [eval] had been added to LNat. *)
   let rec analyze = fun e1 e2 ->
