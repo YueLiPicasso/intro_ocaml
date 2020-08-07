@@ -34,8 +34,8 @@ expression evaluation part for the gold mining puzzle.
 
 ## Reference
 
-Euclidean Algorithm :
-
-https://crypto.stanford.edu/pbc/notes/numbertheory/euclid.html
+Euclidean Algorithm for GCD and LCM:
 
 https://mathworld.wolfram.com/EuclideanAlgorithm.html
+
+https://mathworld.wolfram.com/LeastCommonMultiple.html
