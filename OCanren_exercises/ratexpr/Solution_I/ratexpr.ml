@@ -225,8 +225,6 @@ module LoNat : sig
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
   val gcd          : groundi -> groundi -> groundi -> goal;;
-  val gcd'         : groundi -> groundi -> groundi -> goal;;
-  val comdi        : groundi -> groundi -> groundi -> goal;;
   module Prj : sig
     val logic_to_ground : logic -> ground;;
   end;;
@@ -258,33 +256,14 @@ end = struct
     conde [(?& [b <= a ; divisible_by a b ; c === b]);
            (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
 
-  (** Could be used within [simplify] in the place of [gcd] and have the same behaviour. 
-      BUt when used alone to generate numbers it is not as good as [gcd] for it misses
-      many cases. It of course can still be used to compute gcd. *)
-  let rec gcd' a b c =
-    conde [(?& [divisible_by a b ; c === b]);
-           (?& [Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd' b r c]))])];;
-
-  
-  let comdi a b c =
-    ocanren {divisible_by a c & divisible_by b c};;
-
 end;;
 
 (******************************************************************************************)
 
 module LoRat : sig
-  val simplify   : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify'  : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val eval     : groundi -> groundi -> goal;;
-  val eval'    : groundi -> groundi -> goal;;
-  val eval'  : groundi -> groundi -> goal;;
-  val eval''   : groundi -> groundi -> goal;;
-  val eval''_a : groundi -> groundi -> goal;;
-  val eval'''  : groundi -> groundi -> goal;;
+  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+  val eval : groundi -> groundi -> goal;;
+  val evalb : groundi -> groundi -> goal;;
   module Prj : sig
     open LNat;;
     val logic_to_ground : logic * logic -> ground * ground;;
@@ -296,63 +275,46 @@ end = struct
       LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;
   end;;
 
-  (** For forward use *)
-  let simplify a b a' b'=
-    let open LNat in let open LoNat in
-    conde [
-      (?& [a === b ; a' === one ; b' === one]);
-      (?& [b < a ; Fresh.one (fun q -> (?& [gcd a b q ; ( * ) q a' a ; ( * ) q b' b]))]);
-      (?& [a < b ; Fresh.one (fun q -> (?& [gcd b a q ; ( * ) q a' a ; ( * ) q b' b]))])];;
-
-  (** For backward use *)
-  let simplify' a b a' b' = let open LNat in let bnd = nat @@ of_int 10 in 
-    Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] );;
 
   (** Conjuncts reordered from [simplify]. ( * ) is a more efficient generator than
       [gcd] when used backward. The relative order between Two ( * ) is subtle, 
       taking into account the generative behavior of ( < ) where the smaller is always 
       concrete. 
-      The performance inhibitor is that [simplify''] has two similar clauses for
+      The performance inhibitor is that [simplify] has two similar clauses for
       [a > b] and [b > a] resp. When used backward, only one clause will do useful 
       work and the other two will only waste time to do useless computations.
       So a way to improve is to remove the brach for [b < a] and enforce [a <= b]
       from the context. *)
-  let simplify'' a b a' b'=
+  let simplify a b a' b'=
     let open LNat in let open LoNat in
     conde [
       (?& [a === b ; a' === one ; b' === one]);
       (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))]);
       (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
 
-  (** Attempt to improve answer quality wrt. [simplify'] when querying about
-      what simplifies to what,  i.e.,  when all four args are left free. Due to
-      the backtracking algorithm, or non-commutativity of conjunction, the answer
-      quality is  not improved by this. *)
-  let simplify_3 a b a' b' = let open LNat in let bnd = nat @@ of_int 100 in 
-    Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) a' k a ; ( * ) b' k b] )
-    ||| Fresh.one (fun k -> ?& [ k <= bnd ; k =/= zero ; ( * ) b' k b ; ( * ) a' k a ] ) ;;
-
-  (** introduce the cost of generate-and-test for the 
-      benefit of forward/backward dual support. Very very inefficient. *)
-  let simplify_4 a b a' b' =
-    let open LNat in let open LoNat in
+  (** a/b + a'/b' = c/d where c/d is in normal form  *)
+  let  radd  a b a' b' c d =
+    let open LNat in
     ocanren {
-      fresh k in  k < 100000  & ( + ) a b k &
-                 {a === b & a' === one & b' === one |
-                  b < a & fresh q in gcd a b q & ( * ) q a' a & ( * ) q b' b |
-                  a < b & fresh q in gcd b a q & ( * ) q a' a & ( * ) q b' b }};;
+      b == b'  & { fresh k in ( + ) a a' k & simplify k b c d }
+  |   b =/= b' & { fresh  ab', a'b, nu, bb' in
+        ( * ) a   b'  ab'         
+        & ( * ) a'  b   a'b         
+        & ( * ) b   b'  bb'         
+        & ( + ) nu  a'b ab'          
+        & simplify nu bb' c d' } };;
 
 
-  (** for forward use *)
+  (** same as [eval] but uses [simplify] *)
   let rec eval ex no =
-    let open Inj in let open LNat in
-     ocanren {
-      {fresh a, b, a', b' in
+    let open Inj in  let open LNat in
+    ocanren {
+      {fresh a, b, a', b' in                              
          ex == Num (a, b)
        & no == Num (a', b')
        & simplify a b a' b' }
      | 
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',               
              ab', a'b, nu, bb', nu', bb'' in
          ex == Sum (ea, eb)       
        & eval ea na              
@@ -366,7 +328,7 @@ end = struct
        & simplify nu bb' nu' bb'' 
        & no == Num (nu', bb'') }
      |
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',                
              ab', a'b, nu, bb', nu', bb'' in
          ex == Subt (ea, eb)       
        & eval ea na              
@@ -380,7 +342,7 @@ end = struct
        & simplify nu bb' nu' bb'' 
        & no == Num (nu', bb'') }
      |
-      {fresh ea, eb, na, nb, a, b, a', b',
+      {fresh ea, eb, na, nb, a, b, a', b',                
              aa', bb', s1, s2 in
          ex == Prod (ea, eb)
        & eval ea na
@@ -393,277 +355,60 @@ end = struct
        & no == Num (s1, s2) } };;
 
 
-  (** for backward use *)
-  let rec eval' ex no =
-    let open Inj in let open LNat in let open LPair in
-    ocanren {
-      { fresh a, b in ex === num a b & no === num a b }
-     |
-      { fresh ea, eb, nu1, de1, nu2, de2,
-              a, a', sa, sa', sde2, sde2', na, nb in
-           ex === sum ea eb 
-        &  no === num  nu1 de1
-        &  simplify' nu2 de2 nu1 de1
-        &  ( + ) a   a'  nu2   
-        &  simplify a  de2 sa  sde2  
-        &  simplify a' de2 sa' sde2'
-        &  na === num sa  sde2 
-        &  nb === num sa' sde2'
-        &  eval' ea na 
-        &  eval' eb nb }
-     |
-      { fresh ea, eb, nu1, de1, nu2, de2,
-              a, a', sa, sa', sde2, sde2', na, nb in
-           ex === sum ea eb 
-        &  no === num  nu1 de1
-        &  simplify' nu2 de2 nu1 de1
-        &  ( + )  a'  nu2  a  
-        &  simplify a  de2 sa  sde2  
-        &  simplify a' de2 sa' sde2'
-        &  na === num sa  sde2 
-        &  nb === num sa' sde2'
-        &  eval' ea na 
-        &  eval' eb nb }
-     |
-      { fresh ea, eb, nu1, de1, nu2, de2,
-              a, a', b, b', sa, sa', sb, sb', na, nb in
-           ex === prod ea eb 
-        &  no === num  nu1 de1
-        &   simplify' nu2 de2 nu1 de1     
-        &  ( * ) a   a'  nu2 
-        &  ( * ) b   b'  de2 
-        &  simplify a  b sa  sb  
-        &  simplify a' b' sa' sb'   
-        &  na === num sa  sb 
-        &  nb === num sa' sb'
-        &  eval' ea na 
-        &  eval' eb nb } };;
-   
-
-  (** same as [eval] but uses [simplify''] *)
-  let rec eval'' ex no =
-    let open Inj in  let open LNat in
+  (** Similar to  [eval] but adds bounds for numerator and denominator.  *)
+  let rec evalb ex no =
+    let open Inj in  let open LNat in let bound = OCanren.Std.nat 20 in
     ocanren {
       {fresh a, b, a', b' in                              
          ex == Num (a, b)
+       & a <= bound & b <= bound   (* forward: check (<=) and compute (simplify) *)
        & no == Num (a', b')
-       & simplify'' a b a' b' }
+       & simplify a b a' b' }    (* backward: generate (<=) and test (simplify) *)
      | 
-      {fresh ea, eb, na, nb, a, b, a', b',               
-             ab', a'b, nu, bb', nu', bb'' in
-         ex == Sum (ea, eb)       
-       & eval'' ea na              
-       & eval'' eb nb              
+      {fresh ea, eb, na, nb, a, b, a', b', c, d in
+         ex == Sum (ea, eb)
        & na == Num (a, b)          
-       & nb == Num (a', b')        
-       & ( * ) a   b'  ab'         
-       & ( * ) a'  b   a'b         
-       & ( * ) b   b'  bb'         
-       & ( + ) ab' a'b nu          
-       & simplify'' nu bb' nu' bb'' 
-       & no == Num (nu', bb'') }
+       & nb == Num (a', b')    
+       & a <= bound & b <= bound   
+       & a' <= bound & b' <= bound
+       & evalb ea na & evalb eb nb
+       & radd a b a' b' c d
+       & no == Num (c, d) }
      |
       {fresh ea, eb, na, nb, a, b, a', b',                
              ab', a'b, nu, bb', nu', bb'' in
          ex == Subt (ea, eb)       
-       & eval'' ea na              
-       & eval'' eb nb              
        & na == Num (a, b)          
-       & nb == Num (a', b')        
+       & nb == Num (a', b')
+       & a <= bound & b <= bound   
+       & a' <= bound & b' <= bound
+       & evalb ea na              
+       & evalb eb nb 
        & ( * ) a   b'  ab'         
        & ( * ) a'  b   a'b         
        & ( * ) b   b'  bb'         
        & ( + ) nu  a'b ab'          
-       & simplify'' nu bb' nu' bb'' 
-       & no == Num (nu', bb'') }
+       & simplify nu bb' nu' bb'' 
+       & no == Num (nu', bb'')  }
      |
       {fresh ea, eb, na, nb, a, b, a', b',                
              aa', bb', s1, s2 in
          ex == Prod (ea, eb)
-       & eval'' ea na
-       & eval'' eb nb
        & na == Num (a, b)
        & nb == Num (a', b')
+       & a <= bound & b <= bound   
+       & a' <= bound & b' <= bound
+       & evalb ea na
+       & evalb eb nb
        & ( * ) a  a' aa'
        & ( * ) b  b' bb'
-       & simplify'' aa' bb' s1 s2
+       & simplify aa' bb' s1 s2
        & no == Num (s1, s2) } };;
 
-  
-  let rec eval''_a ex no =
-    let open Inj in  let open LNat in
-    ocanren {
-      {fresh a, b, a', b' in
-         ex == Num (a, b)
-       & no == Num (a', b')
-       & simplify'' a b a' b' }
-     | 
-       {fresh ea, eb, na, nb, nu', bb'',
-              a,   b,   a',   b',   ab',   a'b,   bb',   nu, 
-            s_a, s_b, s_a', s_b', s_ab', s_a'b, s_bb', s_nu  in
-         ex == Sum (ea, eb)
-       & no == Num (nu', bb'')
-       &
-     {     simplify' s_nu s_bb' nu' bb''       (* optimized for backward *)
-         & ( + )  s_ab' s_a'b s_nu
-         & simplify s_ab' s_bb' s_a  s_b
-         & simplify s_a'b s_bb' s_a' s_b'
-         & na == Num (s_a, s_b)
-         & nb == Num (s_a', s_b')
-         & eval''_a ea na              
-         & eval''_a eb nb 
-     | 
-           na == Num (a, b)                     (* optimized for forward *)       
-         & nb == Num (a', b')
-         & eval''_a ea na              
-         & eval''_a eb nb                      
-         & ( * ) a   b'  ab'         
-         & ( * ) a'  b   a'b         
-         & ( * ) b   b'  bb'         
-         & ( + ) ab' a'b nu          
-         & simplify'' nu bb' nu' bb'' }  }
-     |
-      {fresh  ea, eb, na, nb, nu', bb'',
-              a,   b,   a',   b',   ab',   a'b,   bb',   nu, 
-            s_a, s_b, s_a', s_b', s_ab', s_a'b, s_bb', s_nu  in
-         ex == Subt (ea, eb)       
-       & no == Num (nu', bb'')
-       &      
-     {     simplify' s_nu s_bb' nu' bb''       (* optimized for backward *)
-         & ( + )  s_nu s_a'b  s_ab'
-         & simplify s_ab' s_bb' s_a  s_b
-         & simplify s_a'b s_bb' s_a' s_b'
-         & na == Num (s_a, s_b)
-         & nb == Num (s_a', s_b')
-         & eval''_a ea na              
-         & eval''_a eb nb 
-     | 
-           na == Num (a, b)                     (* optimized for forward *)            
-         & nb == Num (a', b')
-         & eval''_a ea na              
-         & eval''_a eb nb                      
-         & ( * ) a   b'  ab'         
-         & ( * ) a'  b   a'b         
-         & ( * ) b   b'  bb'         
-         & ( + ) nu  a'b ab'          
-         & simplify'' nu bb' nu' bb'' } }
-     |
-       {fresh ea, eb, na, nb, s1, s2,
-              aa',   bb',   a,   b,   a',   b',
-            s_aa', s_bb', s_a, s_b, s_a', s_b',
-            s_a1,  s_b1 , s_a1', s_b1' in
-          ex == Prod (ea, eb)
-        & no == Num (s1, s2)
-        &
-      {     simplify' s_aa' s_bb' s1 s2         (* optimized for backward *)
-          & ( * ) s_a1 s_a1' s_aa'
-          & ( * ) s_b1 s_b1' s_bb'
-          & simplify s_a1 s_b1 s_a s_b
-          & simplify s_a1' s_b1' s_a' s_b'
-          & na == Num (s_a, s_b)
-          & nb == Num (s_a', s_b')
-          & eval''_a ea na
-          & eval''_a eb nb
-      |
-            na == Num (a, b)                     (* optimized for forward *)            
-          & nb == Num (a', b')
-          & eval''_a ea na
-          & eval''_a eb nb
-          & ( * ) a  a' aa'
-          & ( * ) b  b' bb'
-          & simplify'' aa' bb' s1 s2 } } };;
-
-  (** if we want to factor out [eval ea na] and [eval eb nb],
-    we must redefine the type as Bin `op * `left * `right *)
-
-  let eval''' a b = ocanren { eval a b | eval' a b };;
 
 end;;
 
+
+
+
 (******************************************************************************************)
-
-(*
-   see permutations of the clauses 
-
-(* original *)
-
-let rec eval ex no =
-    let open Inj in let open LNat in
-    conde [
-      Fresh.four (fun a b a' b' ->
-          ?& [ex === num a b ; no === num a' b' ; simplify a b a' b']);
-      Fresh.two (fun ea eb ->
-          ?& [ex === sum ea eb ;
-              Fresh.two (fun na nb ->
-  (* part I *)                
-                  ?& [eval ea na ; eval eb nb;
-  (* part II *)                    
-                      Fresh.four (fun a b a' b' ->
-                          ?& [na === num a b ; nb === num a' b' ;
-                              Fresh.four (fun ab' a'b bb' nu ->
-                                  ?& [( * ) a b' ab';
-                                      ( * ) a' b a'b;
-                                      ( * ) b b' bb';
-                                      ( + ) ab' a'b nu;
-                                      Fresh.two (fun nu' bb'' ->
-  (* part III *)                                        
-                                          ?& [simplify nu bb' nu' bb'';
-                                              no === num nu' bb''])])])])]);
-
-
-
-
-
-      Check Permutations of I, II, III. Permutation within I (or II or III) is considered 
-   later.
-
-I, II, III
-
-   Forward: efficient computation.
-   
-   Backward: blindly generate [eval ea na] and [eval eb nb], then compute the sum of 
-   [na] and [nb], then simplify it and test if it is just [no].
-
-I, III, II;
-
-   Forward: evaluate [ea] and [eb], and then generate blindly simplification pairs
-   [(nu,bb') --> no], and then test if the generated happens to equal the sum of 
-   the values of [ea] and [eb].
-   
-   Backward: blindly generate [eval ea na] and [eval eb nb], 
-   then generate multiples [(nu, bb')] of [no], and then
-   test if [na, nb] sum to [(nu, bb')]. Very inefficient !
- 
-II, I, III; 
-
-   Forward: Generate summations [na + nb = nu/bb'], then test if [ea] and [eb] happens to
-   evaluate to [na],[nb], if so then simplify to the result.
-
-   Backward: Generate summations [na + nb = nu/bb'], then generate expressions that 
-   evaluate to [na], [nb], then test if [nu/bb'] happens to simplify to [no]. 
-
-II, III, I; 
-
-   Forward: generate summations [na + nb = nu/bb'], and then simplify to get [no], and then 
-   test if [ea] evals to [na] and for [b] as well.
-
-   Backward:  generate summations [na + nb = nu/bb'], and then test if the sum simplifies to
-   [no], if so then generate [ea] and [eb]. 
-
-III, I, II; 
-
-   Forward: generate simplification pairs, then eval [ea] and [eb], and then test if 
-   [na] [nb] sums to the generated number in the first step.
-
-   Backward: generate multiples of the result, and then generate eval pairs and then test
-   if the generated eval pairs' values sum to that multiple.
- 
-III, II, I:
-
-   Forward: generate simplification pairs, and then divide the bigger into summand, and then test
-   if the summands  are values of [ea] and [eb].
-
-   Backward: generate multiples of the [no], and divide this into summands, and find expr that
-   evaluate to the summands.
-
- *)

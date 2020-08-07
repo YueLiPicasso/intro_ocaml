@@ -107,55 +107,25 @@ module LoNat : sig
   (** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
       where [b <= a] *)
   val gcd          : groundi -> groundi -> groundi -> goal;;
-
-  (** Experimental version *)
-  val gcd'         : groundi -> groundi -> groundi -> goal;;
-
-  (** [comdi a b c] is [c] is a common divisor of [a] and [b] *)
-  val comdi        : groundi -> groundi -> groundi -> goal;;
+  
 end;;
 
 (** Some relations on injected rational numbers *)
 module LoRat : sig
-  
-  (** [simplify a b a' b'] simplifies a/b to the normal form a'/b'. Inefficient
-      for backward use *)
-  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  
-  (** [simplify' a b a' b'] finds a limited number (which depends on implementation) 
-      of multiples a/b of a'/b'. Inefficient for forward use. *)
-  val simplify' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
 
   (** It can simplify or complicate rational numbers. Forwad use is acceptable but
-      less efficient than [simplify], and backward use is also acceptable but less
-      efficient than [simplify']. *)
-  val simplify'' : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
+      less efficient than [simplify], and backward use is also acceptable *)
+  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
   
-  (** Experimental *)
-  val simplify_3 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val simplify_4 : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-
-  (** For forward and quine only. Itself uses [simplify] *)
+  (** relational evaluator
+      - Forward: OK.
+      - Backward: OK.
+      - Quine: OK. *)
   val eval : groundi -> groundi -> goal;;
 
-  (** For backward use only. Itself uses both [simplify] and [simplify']. *)
-  val eval' : groundi -> groundi -> goal;;
-  
-  (** Same structure as [eval] but uses [simplify''] instead of
-      [simplify]. 
-      - Forward: OK.
-      - Backward: OK. But the answers are in different style from [eval']. 
-      - Quine: OK. *)
-  val eval'' : groundi -> groundi -> goal;;
+  (** bounded search space, generate and test for both directions *)
+  val evalb : groundi -> groundi -> goal;;
 
-  (** Merged [eval''] and [eval'] in the body. 
-      This inspired [eval'''] *)
-  val eval''_a : groundi -> groundi -> goal;;
-
-  (** [eval'''] is logical disjunction of  [eval] and [eval']. 
-      Works well in all directions. *)
-  val eval'''  : groundi -> groundi -> goal;;
-  
   module Prj : sig
     open LNat;;
     (** Similar to LoNat.Prj.logic_to_ground *)
