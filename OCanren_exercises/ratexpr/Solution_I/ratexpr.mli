@@ -107,28 +107,23 @@ module LoNat : sig
   (** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
       where [b <= a] *)
   val gcd          : groundi -> groundi -> groundi -> goal;;
+
+  (** It can simplify or complicate rational numbers. 
+      [simplify a b a' b'] is a/b normalizes to a'/b' *)
+  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+
+  (** [radd a b a' b' c d] if  a/b + a'/b' = c/d where c/d is in the normal form  *)
+  val radd      : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
   
 end;;
 
 (** Some relations on injected rational numbers *)
 module LoRat : sig
 
-  (** It can simplify or complicate rational numbers. Forwad use is acceptable but
-      less efficient than [simplify], and backward use is also acceptable *)
-  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  
-  (** relational evaluator
-      - Forward: OK.
-      - Backward: OK.
-      - Quine: OK. *)
+  (** relational evaluator *)
   val eval : groundi -> groundi -> goal;;
 
-  (** bounded search space, generate and test for both directions *)
+  (** relational evaluator with bounded search space *)
   val evalb : groundi -> groundi -> goal;;
 
-  module Prj : sig
-    open LNat;;
-    (** Similar to LoNat.Prj.logic_to_ground *)
-    val logic_to_ground : logic * logic -> ground * ground;;
-  end;;
 end 

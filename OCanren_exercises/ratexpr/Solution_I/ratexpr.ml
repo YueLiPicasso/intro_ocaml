@@ -225,6 +225,8 @@ module LoNat : sig
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
   val gcd          : groundi -> groundi -> groundi -> goal;;
+  val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+  val radd         : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
   module Prj : sig
     val logic_to_ground : logic -> ground;;
   end;;
@@ -256,35 +258,6 @@ end = struct
     conde [(?& [b <= a ; divisible_by a b ; c === b]);
            (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
 
-end;;
-
-(******************************************************************************************)
-
-module LoRat : sig
-  val simplify : LNat.groundi -> LNat.groundi -> LNat.groundi -> LNat.groundi -> goal;;
-  val eval : groundi -> groundi -> goal;;
-  val evalb : groundi -> groundi -> goal;;
-  module Prj : sig
-    open LNat;;
-    val logic_to_ground : logic * logic -> ground * ground;;
-  end;;
-end = struct
-  
-  module Prj = struct
-    let logic_to_ground = fun (a,b) ->
-      LoNat.Prj.logic_to_ground a, LoNat.Prj.logic_to_ground b;;
-  end;;
-
-
-  (** Conjuncts reordered from [simplify]. ( * ) is a more efficient generator than
-      [gcd] when used backward. The relative order between Two ( * ) is subtle, 
-      taking into account the generative behavior of ( < ) where the smaller is always 
-      concrete. 
-      The performance inhibitor is that [simplify] has two similar clauses for
-      [a > b] and [b > a] resp. When used backward, only one clause will do useful 
-      work and the other two will only waste time to do useless computations.
-      So a way to improve is to remove the brach for [b < a] and enforce [a <= b]
-      from the context. *)
   let simplify a b a' b'=
     let open LNat in let open LoNat in
     conde [
@@ -292,20 +265,27 @@ end = struct
       (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))]);
       (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
 
-  (** a/b + a'/b' = c/d where c/d is in normal form  *)
   let  radd  a b a' b' c d =
     let open LNat in
     ocanren {
       b == b'  & { fresh k in ( + ) a a' k & simplify k b c d }
-  |   b =/= b' & { fresh  ab', a'b, nu, bb' in
+    | b =/= b' & { fresh  ab', a'b, nu, bb' in
         ( * ) a   b'  ab'         
         & ( * ) a'  b   a'b         
         & ( * ) b   b'  bb'         
         & ( + ) nu  a'b ab'          
         & simplify nu bb' c d' } };;
 
+end;;
 
-  (** same as [eval] but uses [simplify] *)
+(******************************************************************************************)
+
+module LoRat : sig
+  val eval : groundi -> groundi -> goal;;
+  val evalb : groundi -> groundi -> goal;;
+end = struct
+
+
   let rec eval ex no =
     let open Inj in  let open LNat in
     ocanren {
@@ -409,6 +389,3 @@ end = struct
 end;;
 
 
-
-
-(******************************************************************************************)

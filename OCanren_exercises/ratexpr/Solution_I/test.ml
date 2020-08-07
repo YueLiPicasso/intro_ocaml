@@ -19,6 +19,11 @@ open LoRat;;
 @type lnp4' = LNat.logic * LNat.logic * LNat.logic * GT.int with show;;
 
 
+
+
+
+
+(*
 (** test [eval''_b]: check  *)
 let _ =
   let open Inj in 
@@ -54,7 +59,7 @@ let _ =
                                (Num (4,1)) })
     (fun q -> q#reify(reify))
 ;;
-
+*)
 
 
 
