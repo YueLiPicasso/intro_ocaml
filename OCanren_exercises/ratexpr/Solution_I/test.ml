@@ -4,7 +4,7 @@ open Logic;;
 open Core;;
 open Ratexpr;;
 open LoNat;;
-open LoRat;;
+(* open LoRat;; *)
   
 @type pr  = GT.int * GT.int with show;;
 @type pr3 =  GT.int * GT.int * GT.int with show;;
@@ -20,7 +20,7 @@ open LoRat;;
 @type lnp4  = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 
 
-
+(*
 let _ =  print_string "[simplify_bd] generate : simplify_bd a b c\n";
   List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
   @@ RStream.take ~n:2500 @@
@@ -75,7 +75,7 @@ let _ =  print_string "[radd_core_1] backward r1 r2 missing : radd_core_1 a b c 
     (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
     LNat.to_int @@ project c, LNat.to_int @@ project d) ;;
 
-
+*)
 
 (*
 

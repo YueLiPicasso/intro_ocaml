@@ -217,8 +217,8 @@ module LoNat : sig
   open LNat;;
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
-  val radd         : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-  val radd_core_1  : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+  (*val radd         : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    val radd_core_1  : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;*)
   module Prj : sig
     val logic_to_ground : logic -> ground;;
   end;;
@@ -322,17 +322,19 @@ end = struct
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
   end = struct
+    open NonCommutative;;
+    
     (** commutative: if [gcd a b c] then [gcd b a c] *)
     let gcd a b c =
       ocanren { a == b & c == b & c =/= zero
-              | a < b  & gcd_core b a c 
-              | b < a  & gcd_core a b c };;
+              | a < b  & gcd b a c 
+              | b < a  & gcd a b c };;
 
     (** commutative: if [lcm a b c] then [lcm b a c] *)
     let lcm a b c =
       ocanren { a == b & c == b
-              | a < b  & lcm_core b a c 
-              | b < a  & lcm_core a b c };;
+              | a < b  & lcm b a c 
+              | b < a  & lcm a b c };;
 
     (** commutative: if [simplify a b a' b'] then [simplify b a b' a'] *)
     let simplify a b a' b'=
@@ -347,7 +349,7 @@ end = struct
       | b =/= zero & a =/= b & fresh cm in gcd a b cm & ( * ) cm a' a & ( * ) cm b' b };;
   end;;
 
-
+  (*
   (** must be [b == b'] *)
   let  radd_core_1  a b a' b' c d =
     ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
@@ -367,12 +369,12 @@ end = struct
   let  radd  a b a' b' c d =
     ocanren {
       b >= b' & radd_core a  b  a' b' c d
-    | b < b'  & radd_core a' b' a  b  c d };;
+    | b < b'  & radd_core a' b' a  b  c d };; *)
 
 end;;
 
 (******************************************************************************************)
-
+(*
 module LoRat : sig
   val eval : groundi -> groundi -> goal;;
   val evalb : groundi -> groundi -> goal;;
@@ -481,4 +483,4 @@ end = struct
 
 end;;
 
-
+*)
