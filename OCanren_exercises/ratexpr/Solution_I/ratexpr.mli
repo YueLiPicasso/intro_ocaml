@@ -106,17 +106,31 @@ module LoNat : sig
   (** [remainder a b r] if [r] is the remainder when [a] is divided by [b] *)
   val remainder    : groundi -> groundi -> groundi -> goal;;
 
-  (** [gcd a b c] if the greatest common divisor of [a] and [b] is [c], 
-      where [b <= a] *)
-  val gcd          : groundi -> groundi -> groundi -> goal;;
-
-  (** It can simplify or complicate rational numbers. 
-      [simplify a b a' b'] is a/b normalizes to a'/b' *)
-  val simplify : groundi -> groundi -> groundi -> groundi -> goal;;
+  module NonCommutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    module Bounded : sig
+      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
+      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
+      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+    end;;
+  end;;
+  
+  module Commutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+  end;;
 
   (** [radd a b a' b' c d] if  a/b + a'/b' = c/d where c/d is in the normal form  *)
   val radd      : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-  
+
+  (** [radd_core_1 a b a' b' c d] if  a/b + a'/b' = c/d where [b == b'] and
+      c/d is in the normal form  *)
+  val radd_core_1  : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
 end;;
 
 (** Some relations on injected rational numbers *)

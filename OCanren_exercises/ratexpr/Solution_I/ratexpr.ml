@@ -217,11 +217,27 @@ module LoNat : sig
   open LNat;;
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
-  val gcd          : groundi -> groundi -> groundi -> goal;;
-  val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
   val radd         : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+  val radd_core_1  : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
   module Prj : sig
     val logic_to_ground : logic -> ground;;
+  end;;
+  module NonCommutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    module Bounded : sig
+      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
+      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
+      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+    end;;
+  end;;
+  module Commutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
   end;;
 end = struct
   open LNat;;
@@ -246,25 +262,112 @@ end = struct
     ocanren {
       divisible_by a b & r == zero
     | r =/= zero & r < b & fresh  m in ( + ) m r a & divisible_by m b };;
-  
-  let rec gcd a b c =
-    ocanren { b <= a & divisible_by a b & c == b
-            | b < a & fresh r in remainder a b r & r =/= zero & gcd b r c };;
 
-  let simplify a b a' b'=
-    ocanren {  a == b & a' == one & b' == one
-    | b < a  & { fresh q in ( * ) q b' b & ( * ) q a' a & gcd a b q }
-    | a < b  & { fresh q in ( * ) q a' a & ( * ) q b' b & gcd b a q }};;
+  (** Non-commutative relations *)
+  module NonCommutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    module Bounded : sig
+      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
+      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
+      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+    end;;
+  end = struct
+    (** not commutative: must be [a >= b]*)
+    let rec gcd a b c =
+      ocanren { b <= a & divisible_by a b & c == b
+              | b < a & fresh r in remainder a b r & r =/= zero & gcd b r c };;
+
+    (** not commutative: must be [a >= b] *)
+    let lcm a b c = ocanren { fresh ab, g in ( * ) a b ab & gcd a b g & ( * ) c g ab };;
+
+    (** not commutative: must be [a >= b] *)
+    let simplify a b a' b'=
+      ocanren {
+        b =/= zero & a == b  & a' == one & b' == one
+      | b =/= zero & a > b & fresh cm in ( * ) cm a' a & ( * ) cm b' b & gcd a b cm };;
+
+    (** not commutative: must be [a >= b] and optimized for forward use *)
+    let simplify_f a b a' b'=
+      ocanren {
+        b =/= zero & a == b  & a' == one & b' == one
+      | b =/= zero & a > b & fresh cm in  gcd a b cm & ( * ) cm a' a & ( * ) cm b' b };;
+
+    module Bounded : sig
+      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
+      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
+      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+    end = struct
+
+      (** add bound to [gcd] *)
+      let gcd_bd a b c = let bnd = OCanren.Std.nat 10 in
+        ocanren { a < bnd & b < bnd & gcd a b c };;
+
+      (** add bound to [lcm]. *)
+      let lcm_bd a b c = let bnd = OCanren.Std.nat 30 in
+        ocanren { a < bnd & b < bnd & lcm a b c };;
+
+      (** works in bounded space *)
+      let simplify_bd a b a' b'= let bnd = OCanren.Std.nat 50 in
+        ocanren { a < bnd & b < bnd & simplify_f a b a' b' };;
+    end;;
+
+  end;;
+
+  module Commutative : sig
+    val gcd          : groundi -> groundi -> groundi -> goal;;
+    val lcm          : groundi -> groundi -> groundi -> goal;;
+    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
+    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+  end = struct
+    (** commutative: if [gcd a b c] then [gcd b a c] *)
+    let gcd a b c =
+      ocanren { a == b & c == b & c =/= zero
+              | a < b  & gcd_core b a c 
+              | b < a  & gcd_core a b c };;
+
+    (** commutative: if [lcm a b c] then [lcm b a c] *)
+    let lcm a b c =
+      ocanren { a == b & c == b
+              | a < b  & lcm_core b a c 
+              | b < a  & lcm_core a b c };;
+
+    (** commutative: if [simplify a b a' b'] then [simplify b a b' a'] *)
+    let simplify a b a' b'=
+      ocanren {
+        b =/= zero & a == b  & a' == one & b' == one
+      | b =/= zero & a =/= b & fresh cm in ( * ) cm a' a & ( * ) cm b' b & gcd a b cm };;
+
+    (** commutative and optimized for forward run *)
+    let simplify_f a b a' b'=
+      ocanren {
+        b =/= zero & a == b  & a' == one & b' == one
+      | b =/= zero & a =/= b & fresh cm in gcd a b cm & ( * ) cm a' a & ( * ) cm b' b };;
+  end;;
+
+
+  (** must be [b == b'] *)
+  let  radd_core_1  a b a' b' c d =
+    ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
+
+  (** must be [b >= b'] *)
+  let  radd_core  a b a' b' c d =
+    ocanren {
+      radd_core_1 a b a' b' c d
+    | b >  b'  & { fresh cm, s, s', sa, sa' in
+                 lcm_core b b' cm
+               & ( * ) s   b   cm
+               & ( * ) s'  b'  cm
+               & ( * ) a   s   sa         
+               & ( * ) a'  s'  sa'                  
+               & radd_core_1 sa cm sa' cm c d } };;
 
   let  radd  a b a' b' c d =
     ocanren {
-      b == b'  & { fresh k in ( + ) a a' k & simplify k b c d }
-    | b =/= b' & { fresh  ab', a'b, nu, bb' in
-        ( * ) a   b'  ab'         
-        & ( * ) a'  b   a'b         
-        & ( * ) b   b'  bb'         
-        & ( + ) nu  a'b ab'          
-        & simplify nu bb' c d' } };;
+      b >= b' & radd_core a  b  a' b' c d
+    | b < b'  & radd_core a' b' a  b  c d };;
 
 end;;
 
@@ -274,7 +377,7 @@ module LoRat : sig
   val eval : groundi -> groundi -> goal;;
   val evalb : groundi -> groundi -> goal;;
 end = struct
-
+  open LoNat;;
 
   let rec eval ex no =
     let open Inj in  let open LNat in
