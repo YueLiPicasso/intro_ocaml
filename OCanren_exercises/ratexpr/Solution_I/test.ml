@@ -20,7 +20,7 @@ open LoRat;;
 
 
 
-
+run two ( fun c d -> ocanren {radd } ) 
 
 
 (*

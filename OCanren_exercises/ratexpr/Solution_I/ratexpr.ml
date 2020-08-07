@@ -239,27 +239,24 @@ end = struct
 
   (** From the second clause we can infer that a =/= zero and that a >= b *)
   let rec divisible_by a b =
-    conde [(?& [a === zero ; b =/= zero]); (** This setup for b is a must *)
-           (?& [b =/= zero ; Fresh.one (fun c -> addo c b a &&& divisible_by c b)])];; 
+    ocanren{ a == zero & b =/= zero (** This setup for b is a must *)
+           | b =/= zero &  fresh c in ( + )  c b a & divisible_by c b };; 
   
   let remainder a b r =
-    conde [
-      (?& [divisible_by a b ; r === zero]);
-      (?& [r =/= zero ; r < b ; Fresh.one (fun m -> addo m r a &&& divisible_by m b) ])];;
+    ocanren {
+      divisible_by a b & r == zero
+    | r =/= zero & r < b & fresh  m in ( + ) m r a & divisible_by m b };;
   
   let rec gcd a b c =
-    conde [(?& [b <= a ; divisible_by a b ; c === b]);
-           (?& [b < a ; Fresh.one (fun r -> (?& [remainder a b r; r =/= zero; gcd b r c]))])];;
+    ocanren { b <= a & divisible_by a b & c == b
+            | b < a & fresh r in remainder a b r & r =/= zero & gcd b r c };;
 
   let simplify a b a' b'=
-    let open LNat in let open LoNat in
-    conde [
-      (?& [a === b ; a' === one ; b' === one]);
-      (?& [b < a ; Fresh.one (fun q -> (?& [( * ) q b' b ; ( * ) q a' a ; gcd a b q ]))]);
-      (?& [a < b ; Fresh.one (fun q -> (?& [( * ) q a' a ; ( * ) q b' b ; gcd b a q ]))])];;
+    ocanren {  a == b & a' == one & b' == one
+    | b < a  & { fresh q in ( * ) q b' b & ( * ) q a' a & gcd a b q }
+    | a < b  & { fresh q in ( * ) q a' a & ( * ) q b' b & gcd b a q }};;
 
   let  radd  a b a' b' c d =
-    let open LNat in
     ocanren {
       b == b'  & { fresh k in ( + ) a a' k & simplify k b c d }
     | b =/= b' & { fresh  ab', a'b, nu, bb' in
