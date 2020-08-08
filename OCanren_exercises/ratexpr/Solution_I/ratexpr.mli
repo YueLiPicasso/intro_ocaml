@@ -112,9 +112,9 @@ module LoNat : sig
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
     module Bounded : sig
-      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
-      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
-      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+      val gcd       : groundi -> groundi -> groundi -> goal;;
+      val lcm       : groundi -> groundi -> groundi -> goal;;
+      val simplify  : groundi -> groundi -> groundi -> groundi -> goal;;
     end;;
   end;;
   
@@ -123,6 +123,18 @@ module LoNat : sig
     val lcm          : groundi -> groundi -> groundi -> goal;;
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    module Bounded : sig
+      val radd_core : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    end;;
+  end;;
+
+  module NonCom : sig
+    (** must be [b >= b'] *)
+    val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    module Bounded : sig
+      val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    end;;
   end;;
 (*
   (** [radd a b a' b' c d] if  a/b + a'/b' = c/d where c/d is in the normal form  *)

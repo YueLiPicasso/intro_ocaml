@@ -4,7 +4,8 @@ open Logic;;
 open Core;;
 open Ratexpr;;
 open LoNat;;
-(* open LoRat;; *)
+open Commutative;;
+open NonCom;;
   
 @type pr  = GT.int * GT.int with show;;
 @type pr3 =  GT.int * GT.int * GT.int with show;;
@@ -20,7 +21,61 @@ open LoNat;;
 @type lnp4  = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 
 
+
+let _ =  print_string "[Bounded.radd] check : Bounded.radd 3 10 1 5 1 2\n";
+  List.iter (fun p -> print_string @@ GT.show(LNat.logic) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run one ( fun a -> ocanren { Bounded.radd 3 10 1 5 1 2})
+    (fun a -> a#reify(LNat.reify)) ;;
+
+let _ =  print_string "[Bounded.radd] backward : Bounded.radd a b c d 1 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take ~n:60 @@
+  run four ( fun a b c d-> ocanren { Bounded.radd a b c d 1 2})
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+                    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+let _ =  print_string "[Bounded.radd] forward : Bounded.radd 2 5 1 4 a b\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { Bounded.radd 2 5 1 4 a b})
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+
 (*
+
+
+let _ =  print_string "[radd_core] backward : radd_core a b c d 1 3\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run four ( fun a b c d-> ocanren { radd_core a b c d 1 3})
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+let _ =  print_string "[radd_core] backward : radd_core a b c d 3 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run four ( fun a b c d-> ocanren {radd_core a b c d 3 2})
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+
+let _ =  print_string "[Bounded.radd_core] backward : Bounded.radd_core a b c d 1 3\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take  @@
+  run four ( fun a b c d-> ocanren { Bounded.radd_core a b c d 1 3})
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+let _ =  print_string "[Bounded.radd_core_bd] backward : Bounded.radd_core_bd a b c d 3 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take  @@
+  run four ( fun a b c d-> ocanren {Bounded.radd_core a b c d 3 2})
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+
 let _ =  print_string "[simplify_bd] generate : simplify_bd a b c\n";
   List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
   @@ RStream.take ~n:2500 @@

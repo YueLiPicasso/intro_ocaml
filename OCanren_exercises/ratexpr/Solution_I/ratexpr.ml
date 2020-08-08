@@ -217,28 +217,42 @@ module LoNat : sig
   open LNat;;
   val divisible_by : groundi -> groundi -> goal;;
   val remainder    : groundi -> groundi -> groundi -> goal;;
-  (*val radd         : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-    val radd_core_1  : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;*)
+  
   module Prj : sig
     val logic_to_ground : logic -> ground;;
   end;;
+  
   module NonCommutative : sig
     val gcd          : groundi -> groundi -> groundi -> goal;;
     val lcm          : groundi -> groundi -> groundi -> goal;;
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    
     module Bounded : sig
-      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
-      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
-      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
+      val gcd       : groundi -> groundi -> groundi -> goal;;
+      val lcm       : groundi -> groundi -> groundi -> goal;;
+      val simplify  : groundi -> groundi -> groundi -> groundi -> goal;;
     end;;
   end;;
+  
   module Commutative : sig
     val gcd          : groundi -> groundi -> groundi -> goal;;
     val lcm          : groundi -> groundi -> groundi -> goal;;
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
+    val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    module Bounded : sig
+      val radd_core : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    end;;
   end;;
+  
+  module NonCom : sig
+      val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+      module Bounded : sig
+        val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+      end;;
+  end;;
+  
 end = struct
   open LNat;;
 
@@ -264,17 +278,7 @@ end = struct
     | r =/= zero & r < b & fresh  m in ( + ) m r a & divisible_by m b };;
 
   (** Non-commutative relations *)
-  module NonCommutative : sig
-    val gcd          : groundi -> groundi -> groundi -> goal;;
-    val lcm          : groundi -> groundi -> groundi -> goal;;
-    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
-    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
-    module Bounded : sig
-      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
-      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
-      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
-    end;;
-  end = struct
+  module NonCommutative = struct
     (** not commutative: must be [a >= b]*)
     let rec gcd a b c =
       ocanren { b <= a & divisible_by a b & c == b
@@ -295,33 +299,27 @@ end = struct
         b =/= zero & a == b  & a' == one & b' == one
       | b =/= zero & a > b & fresh cm in  gcd a b cm & ( * ) cm a' a & ( * ) cm b' b };;
 
-    module Bounded : sig
-      val gcd_bd       : groundi -> groundi -> groundi -> goal;;
-      val lcm_bd       : groundi -> groundi -> groundi -> goal;;
-      val simplify_bd  : groundi -> groundi -> groundi -> groundi -> goal;;
-    end = struct
+   
+
+    module Bounded = struct
 
       (** add bound to [gcd] *)
-      let gcd_bd a b c = let bnd = OCanren.Std.nat 10 in
+      let gcd a b c = let bnd = OCanren.Std.nat 10 in
         ocanren { a < bnd & b < bnd & gcd a b c };;
 
       (** add bound to [lcm]. *)
-      let lcm_bd a b c = let bnd = OCanren.Std.nat 30 in
+      let lcm a b c = let bnd = OCanren.Std.nat 30 in
         ocanren { a < bnd & b < bnd & lcm a b c };;
 
       (** works in bounded space *)
-      let simplify_bd a b a' b'= let bnd = OCanren.Std.nat 50 in
+      let simplify a b a' b'= let bnd = OCanren.Std.nat 50 in
         ocanren { a < bnd & b < bnd & simplify_f a b a' b' };;
+
     end;;
 
   end;;
 
-  module Commutative : sig
-    val gcd          : groundi -> groundi -> groundi -> goal;;
-    val lcm          : groundi -> groundi -> groundi -> goal;;
-    val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
-    val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
-  end = struct
+  module Commutative = struct
     open NonCommutative;;
     
     (** commutative: if [gcd a b c] then [gcd b a c] *)
@@ -347,29 +345,39 @@ end = struct
       ocanren {
         b =/= zero & a == b  & a' == one & b' == one
       | b =/= zero & a =/= b & fresh cm in gcd a b cm & ( * ) cm a' a & ( * ) cm b' b };;
+
+    (** must be [b == b'] *)
+    let  radd_core  a b a' b' c d = 
+      ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
+
+    module Bounded = struct
+      let radd_core a b a' b' c d = let bnd = OCanren.Std.nat 20 in
+        ocanren { a < bnd & b < bnd & a' < bnd & b' < bnd & radd_core a b a' b' c d };;
+    end;;
+
   end;;
 
-  (*
-  (** must be [b == b'] *)
-  let  radd_core_1  a b a' b' c d =
-    ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
+  (** Non-commutative addtion *)
+  module NonCom = struct
 
   (** must be [b >= b'] *)
-  let  radd_core  a b a' b' c d =
-    ocanren {
-      radd_core_1 a b a' b' c d
-    | b >  b'  & { fresh cm, s, s', sa, sa' in
-                 lcm_core b b' cm
-               & ( * ) s   b   cm
-               & ( * ) s'  b'  cm
-               & ( * ) a   s   sa         
-               & ( * ) a'  s'  sa'                  
-               & radd_core_1 sa cm sa' cm c d } };;
+    let  radd  a b a' b' c d = 
+      ocanren {
+        Commutative.radd_core a b a' b' c d
+      | b >  b'  & { fresh cm, s, s', sa, sa' in
+                   NonCommutative.lcm b b' cm
+                   & ( * ) s   b   cm
+                   & ( * ) s'  b'  cm
+                   & ( * ) a   s   sa         
+                   & ( * ) a'  s'  sa'                  
+                   & Commutative.radd_core sa cm sa' cm c d } };;
 
-  let  radd  a b a' b' c d =
-    ocanren {
-      b >= b' & radd_core a  b  a' b' c d
-    | b < b'  & radd_core a' b' a  b  c d };; *)
+    module Bounded = struct
+      let radd a b a' b' c d = let bnd = OCanren.Std.nat 20 in
+        ocanren {a < bnd & b < bnd & a' < bnd & b' < bnd & radd a b a' b' c d};;
+    end;;
+
+  end;;
 
 end;;
 
