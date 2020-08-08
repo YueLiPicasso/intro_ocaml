@@ -241,6 +241,7 @@ module LoNat : sig
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
     val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    val radd_core_f    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
     module Bounded : sig
       val radd_core : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
     end;;
@@ -350,9 +351,13 @@ end = struct
     let  radd_core  a b a' b' c d = 
       ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
 
+    (** must be [b == b'], optimized for forward run  *)
+    let  radd_core_f  a b a' b' c d = 
+      ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify_f k b c d  };;
+
     module Bounded = struct
       let radd_core a b a' b' c d = let bnd = OCanren.Std.nat 20 in
-        ocanren { a < bnd & b < bnd & a' < bnd & b' < bnd & radd_core a b a' b' c d };;
+        ocanren { a < bnd & b < bnd & a' < bnd & b' < bnd & radd_core_f a b a' b' c d };;
     end;;
 
   end;;
