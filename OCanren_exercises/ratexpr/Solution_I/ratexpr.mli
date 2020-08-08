@@ -124,7 +124,7 @@ module LoNat : sig
     val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
     val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
     val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-    val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    val radd_core_f    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
     module Bounded : sig
       val radd_core : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
     end;;
