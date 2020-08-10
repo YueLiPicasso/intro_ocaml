@@ -20,17 +20,12 @@ open AddCases;;
 @type lnp4  = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 
 
+let _ =  print_string "[LoNat.div] backward: div a 4 3 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(GT.int) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run one ( fun  a -> ocanren {div a 4 3 0 })
+    (fun a  -> LNat.to_int @@ project a) ;;
 
-let _ =  print_string "[radd_gt] backward : radd_gt a b c d 1 2\n";
-  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
-  @@ RStream.take ~n:30 @@
-  run four ( fun a b c d-> ocanren {fresh r in radd_gt a b c d 1 2 & remainder b d r & r =/= 0 })
-    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
-                    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
-
-
-
-(*
 
 let _ =  print_string "[LoNat.div] backward: div a b 3 0 \n";
   List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
@@ -44,6 +39,33 @@ let _ =  print_string "[LoNat.div] scale: div a 3 b 0 \n";
   @@ RStream.take ~n:10 @@
   run two ( fun  a b -> ocanren {div a 3 b 0 })
     (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b) ;;
+
+let _ =  print_string "[remainder] backward: remainder a b r [r =/= 0] \n";
+  List.iter (fun p -> print_string @@ GT.show(lnp) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run two ( fun  a b -> ocanren {fresh r in remainder a b r & r =/= 0})
+    (fun a b -> a#reify(LNat.reify) , b#reify(LNat.reify) ) ;;
+
+(* very good, find why? *)
+let _ =  print_string "[radd_gt] backward : radd_gt a b 1 5 1 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:3 @@
+  run two ( fun a b -> ocanren { radd_gt a b 1 5 1 2 })
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+(* more care here ! *)
+let _ =  print_string "[radd_gt] backward : radd_gt a b c d 1 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
+  @@ RStream.take ~n:3 @@
+  run four ( fun a b c d-> ocanren {fresh r in radd_gt a b c d 16 19 & remainder b d r & r =/= 0 })
+    (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+                    LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
+
+
+
+(*
+
+
 
 let _ =  print_string "[LoNat.div] factor: div 71 a b 0 \n";
   List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )

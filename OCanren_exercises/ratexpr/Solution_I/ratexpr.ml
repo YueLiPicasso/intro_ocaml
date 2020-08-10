@@ -286,10 +286,10 @@ module LoNat = struct
                    r =/= 0
                  & remainder b b' r
                  & lcm b  b' cm
-                 & div cm  b  s  0
-                 & div cm  b' s' 0
-                 & div sa  a  s  0       
-                 & div sa' a' s' 0                 
+                 & div cm  b  s  0      
+                 & div cm  b' s' 0      (** the relative orders between ... *)
+                 & div sa  s  a  0      (** [s]  and [a], ... *)
+                 & div sa' s' a' 0      (** [s'] and [s'] are important *)           
                  & radd_ed sa cm sa' cm c d } };;
   end;;
 end;;
