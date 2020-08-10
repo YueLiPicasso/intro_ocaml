@@ -122,17 +122,10 @@ module LoNat : sig
   val lcm          : groundi -> groundi -> groundi -> goal;;
   (** [simplify a b c d] if the normal form of [a/b] is [c/d] *)
   val simplify     : groundi -> groundi -> groundi -> groundi -> goal;;
-  (** Similar to [simplify], optimized for forward run when [a] and [b] are concrete *)
-  val simplify_f   : groundi -> groundi -> groundi -> groundi -> goal;;
-  (** [radd_core a b a' b' c d] if  [b == b] and [a/b + a'/b'] has normal form [c/d] *)
-  val radd_core    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-  (** similar to [radd_core] but is optimized for forward run when [a,b,a',b'] are concrete *)
-  val radd_core_f    : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-  module NonCom : sig
-    val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-    module Bounded : sig
-      val radd : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
-    end;;
+  (** Cases of rational number addition *)
+  module AddCases : sig
+    val radd_ed : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
+    val radd_gt : groundi -> groundi -> groundi -> groundi -> groundi -> groundi-> goal;;
   end;;
 end;;
 (*

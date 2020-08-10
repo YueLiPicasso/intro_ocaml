@@ -270,41 +270,27 @@ module LoNat = struct
       ocanren {  b =/= 0 &
       {  a == 0  & a' == 0 & b' == 1
       |  a == b  & a' == 1 & b' == 1
-      |  a =/= 0 & a =/= b & fresh cm in ( * ) cm a' a & ( * ) cm b' b & gcd a b cm } };;
-  (** similar to [simplify], optimized for forward run *)
-  let simplify_f a b a' b'= 
-      ocanren {  b =/= 0 &
-      {  a == 0  & a' == 0 & b' == 1
-      |  a == b  & a' == 1 & b' == 1
-      |  a =/= 0 & a =/= b & fresh cm in gcd a b cm & ( * ) cm a' a & ( * ) cm b' b } };;
-  (** must be [b == b'] *)
-  let  radd_core  a b a' b' c d = 
-    ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
-  (** must be [b == b'], optimized for forward run  *)
-  let  radd_core_f  a b a' b' c d = 
-    ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify_f k b c d  };;
-  
-  module NonCom = struct
-  (** Non-commutative addition *)
-    let  radd  a b a' b' c d = 
+      |  a =/= 0 & a =/= b & fresh cm in div a cm a' 0 & div b cm b' 0 & gcd a b cm } };;
+  module AddCases = struct
+    (** must be [b == b']. [ed] for Equal Denominator *)
+    let  radd_ed  a b a' b' c d = 
+      ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
+    (** [gt] for Greater Than, i.e., b > b' *)
+    let  radd_gt  a b a' b' c d = 
       ocanren {
-        b >=  b' & { fresh q, a'' in
-                 div  b  b' q 0
-                 & ( * ) q a' a''
-                 & radd_core a b a'' b c d } 
-      | b >  b'  & { fresh q, r,cm, s, s', sa, sa' in
-                 div b b' q r
-                 & r =/= 0
-                 & lcm b b' cm
-                 & ( * ) s   b   cm
-                 & ( * ) s'  b'  cm
-                 & ( * ) a   s   sa         
-                 & ( * ) a'  s'  sa'                  
-                 & radd_core sa cm sa' cm c d } };;
-    module Bounded = struct
-      let radd a b a' b' c d = let bnd = OCanren.Std.nat 20 in
-        ocanren {a < bnd & b < bnd & a' < bnd & b' < bnd & radd a b a' b' c d};;
-    end;;
+        b >  b' & { fresh q, a'' in
+                 div  b  b' q  0
+                 & ( * ) q  a' a''
+                 & radd_ed a b a'' b c d } 
+      | b >  b'  & { fresh r, cm, s, s', sa, sa' in
+                   r =/= 0
+                 & remainder b b' r
+                 & lcm b  b' cm
+                 & div cm  b  s  0
+                 & div cm  b' s' 0
+                 & div sa  a  s  0       
+                 & div sa' a' s' 0                 
+                 & radd_ed sa cm sa' cm c d } };;
   end;;
 end;;
 

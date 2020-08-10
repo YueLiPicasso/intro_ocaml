@@ -4,7 +4,7 @@ open Logic;;
 open Core;;
 open Ratexpr;;
 open LoNat;;
-open NonCom;;
+open AddCases;;
   
 @type pr  = GT.int * GT.int with show;;
 @type pr3 =  GT.int * GT.int * GT.int with show;;
@@ -20,41 +20,76 @@ open NonCom;;
 @type lnp4  = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 
 
-let _ =  print_string "[LoNat.div] generate: div 12 5 c 0 \n";
-  List.iter (fun p -> print_string @@ GT.show(LNat.logic) p; print_newline() )
-  @@ RStream.take ~n:10 @@
-  run one ( fun  c -> ocanren {div 12 5 c 0 })
-    (fun  c ->  c#reify(LNat.reify)  ) ;;
 
-
-let _ =  print_string "[NoCom.radd] forward : radd 0 99 0 1 a b\n";
-  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
-  @@ RStream.take ~n:3 @@
-  run two ( fun a b -> ocanren {radd 0 99 0 1 a b})
-    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
-
-let _ =  print_string "[NoCom.radd] forward : radd 7 20 13 20 a b\n";
-  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
-  @@ RStream.take ~n:3 @@
-  run two ( fun a b -> ocanren {radd 7 20 13 20 a b})
-    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
-(* (* diverges *)
-let _ =  print_string "[NoCom.radd] forward : radd 7 12 3 5 a b\n";
-  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
-  @@ RStream.take ~n:3 @@
-  run two ( fun a b -> ocanren {radd 7 12 3 5 a b})
-    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
-*)
-let _ =  print_string "[NoCom.radd] backward : radd a b c d 1 2\n";
+let _ =  print_string "[radd_gt] backward : radd_gt a b c d 1 2\n";
   List.iter (fun p -> print_string @@ GT.show(pr4) p; print_newline() )
   @@ RStream.take ~n:30 @@
-  run four ( fun a b c d-> ocanren { radd a b c d 1 2})
+  run four ( fun a b c d-> ocanren {fresh r in radd_gt a b c d 1 2 & remainder b d r & r =/= 0 })
     (fun a b c d -> LNat.to_int @@ project a, LNat.to_int @@ project b,
                     LNat.to_int @@ project c ,LNat.to_int @@ project d ) ;;
 
 
 
 (*
+
+let _ =  print_string "[LoNat.div] backward: div a b 3 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run two ( fun  a b -> ocanren {div a b 3 0 })
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b) ;;
+
+
+let _ =  print_string "[LoNat.div] scale: div a 3 b 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run two ( fun  a b -> ocanren {div a 3 b 0 })
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b) ;;
+
+let _ =  print_string "[LoNat.div] factor: div 71 a b 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run two ( fun  a b -> ocanren {div 71 a b 0 })
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b) ;;
+
+
+let _ =  print_string "[LNat.( * )] refute: ( * ) 71 c 60 \n";
+  List.iter (fun p -> print_string @@ GT.show(GT.int) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run one ( fun  c -> ocanren {LNat.( * ) 71 c 60 })
+    (fun  c -> LNat.to_int @@ project c ) ;;
+
+
+let _ =  print_string "[LoNat.lcm] forward: lcm 12 5 c \n";
+  List.iter (fun p -> print_string @@ GT.show(GT.int) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run one ( fun  c -> ocanren {lcm 12 5 c })
+    (fun  c -> LNat.to_int @@ project c ) ;;
+
+let _ =  print_string "[LoNat.div] refute: div 12 5 c 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(LNat.logic) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run one ( fun  c -> ocanren {div 12 5 c 0 })
+    (fun  c ->  c#reify(LNat.reify)  ) ;;
+
+let _ =  print_string "[radd_gt] forward : radd_gt 0 99 0 1 a b\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:3 @@
+  run two ( fun a b -> ocanren {radd_gt 0 99 0 1 a b})
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+let _ =  print_string "[radd_ed] forward : radd_ed 7 20 13 20 a b\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:3 @@
+  run two ( fun a b -> ocanren {radd_ed 7 20 13 20 a b})
+    (fun a b -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+let _ =  print_string "[radd_gt] forward : radd_gt 7 12 3 5 a b\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:2 @@ (* ~n > 1 is slow *)
+  run two ( fun a b -> ocanren {radd_gt 7 12 3 5 a b})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
 
 let _ =  print_string "[LoNat.div] generate: div a b c 0 \n";
   List.iter (fun p -> print_string @@ GT.show(lnp3) p; print_newline() )
