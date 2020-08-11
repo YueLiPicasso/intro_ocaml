@@ -42,8 +42,8 @@ whose  performance is hindered by the relational adder.
 
 ## Discussion
 
-Defining the type for arithmetic expresssions in OCanren is an
-interestng task. Insights on OCanren's type system and syntactic transformation was also gained
+Appreciation of OCanren's type system and syntactic transformation was experienced when
+defining the type for arithmetic expresssions and 
 when writing the `Inj` module for injection primitives. Commutativity of arithmetic relations
 is a consideration. For example if `GCD(a,b,c)` holds, which  means that `c` is the GCD
 of `a` and `b`, then `GCD(b,a,c)` also holds. I found it conceptually helpful to distinguish
