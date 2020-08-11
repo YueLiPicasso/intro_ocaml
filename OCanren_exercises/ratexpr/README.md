@@ -1,6 +1,5 @@
 # Arithmetic Expressions of (Positive) Rational Numbers
-The discussion below is not about the most recent version, but about various intermediate
-versions, on their good characters or problems 
+
 ## Goal
 
 Relational interpretation of arithmetic expressions involving positive rational numbers.
