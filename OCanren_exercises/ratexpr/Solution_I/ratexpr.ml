@@ -225,43 +225,27 @@ module LoNat = struct
           | S b -> S (logic_to_ground b)
         end;;
   end;;
-  (** From the second clause we can infer that a =/= zero and that a >= b *)
-  let rec divisible_by a b =
-    ocanren{ a == zero & b =/= zero (** This setup for b is a must *)
-           | b =/= zero &  fresh c in ( + )  c b a & divisible_by c b };;  
-  let remainder a b r =
-    ocanren {
-      divisible_by a b & r == zero
-    | r =/= zero & r < b & fresh  m in ( + ) m r a & divisible_by m b };;
   let rec div a b q r =
     ocanren {
       b =/= 0 & a < b  & q == 0 & r == a
     | b =/= 0 & a == b & q == 1 & r == 0
     | b =/= 0 & a > b  & fresh c, q' in ( + ) b c a & ( + ) 1 q' q & div c b q' r };;
   (** Non-commutative relations *)
-  module NonCommutative = struct
+  module NonCom = struct
     (** not commutative: must be [a >= b]*)
     let rec gcd a b c =
-      ocanren { b <= a & divisible_by a b & c == b
-              | b < a & fresh r in remainder a b r & r =/= zero & gcd b r c };;
+      ocanren { b <= a & fresh q in div a b q 0 & c == b
+              | b < a & fresh q, r in div a b q r & r =/= zero & gcd b r c };;
     (** not commutative: must be [a >= b] *)
     let lcm a b c = ocanren { fresh ab, g in ( * ) a b ab & gcd a b g & ( * ) c g ab };;
-    module Bounded = struct
-      (** add bound to [gcd] *)
-      let gcd a b c = let bnd = OCanren.Std.nat 10 in
-        ocanren { a < bnd & b < bnd & gcd a b c };;
-      (** add bound to [lcm]. *)
-      let lcm a b c = let bnd = OCanren.Std.nat 30 in
-        ocanren { a < bnd & b < bnd & lcm a b c };;
-    end;;
   end;;
   (** commutative: if [gcd a b c] then [gcd b a c] *)
-  let gcd a b c =  let open NonCommutative in
+  let gcd a b c =  let open NonCom in
     ocanren { a == b & c == b & c =/= zero
             | a < b  & gcd b a c 
             | b < a  & gcd a b c };;
   (** commutative: if [lcm a b c] then [lcm b a c] *)
-  let lcm a b c =  let open NonCommutative in
+  let lcm a b c =  let open NonCom in
     ocanren { a == b & c == b
             | a < b  & lcm b a c 
             | b < a  & lcm a b c };;
@@ -275,22 +259,25 @@ module LoNat = struct
     (** must be [b == b']. [ed] for Equal Denominator *)
     let  radd_ed  a b a' b' c d = 
       ocanren { b == b'  &  fresh k in ( + ) a a' k & simplify k b c d  };;
-    (** [gt] for Greater Than, i.e., b > b' *)
-    let  radd_gt  a b a' b' c d = 
+    (** [gt] for Greater Than, i.e., b > b'. 
+    [dv] for dibisible, i.e., [b] is divisible by [b'] *)
+    let  radd_gt_dv  a b a' b' c d = 
       ocanren {
-        b >  b' & { fresh q, a'' in
+        b >  b' &  fresh q, a'' in
                  div  b  b' q  0
                  & ( * ) q  a' a''
-                 & radd_ed a b a'' b c d } 
-      | b >  b'  & { fresh r, cm, s, s', sa, sa' in
+                 & radd_ed a b a'' b c d };;
+    (** [gt] for Greater Than, i.e., b > b'.
+    [rm] for remainder, meaning that [b/b'] has a non-zero remainder*)
+    let  radd_gt_rm  a b a' b' c d = 
+      ocanren {
+         b >  b'  & { fresh q, r, cm, s, sa in
                    r =/= 0
-                 & remainder b b' r
-                 & lcm b  b' cm
-                 & div cm  b  s  0      
-                 & div cm  b' s' 0      (** the relative orders between ... *)
-                 & div sa  s  a  0      (** [s]  and [a], ... *)
-                 & div sa' s' a' 0      (** [s'] and [s'] are important *)           
-                 & radd_ed sa cm sa' cm c d } };;
+                 & div b   b' q  r
+                 & lcm b   b' cm
+                 & div cm  b  s  0        
+                 & div sa  s  a  0        
+                 & radd_gt_dv sa cm a' b' c d } };;
   end;;
 end;;
 
