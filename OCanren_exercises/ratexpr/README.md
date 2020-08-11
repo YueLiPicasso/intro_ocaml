@@ -62,9 +62,7 @@ compute useful answers.
  Essentially, that program evaluates arithmetic expressions
  on  (positive) rational numbers. My idea was to, instead, let the program
  produce an arithemtical expression which could be evaluated independently.
- 
-
-Later on we found that the performance problem of the gold mining puzzle was not with
+ Later on we found that the performance problem of the gold mining puzzle was not with
 rational numbers but with the order of conjuncts in the relation definition. A proper treatment of
 this aspect improved the program to a satisfactory level. Then we no longer need an
 expression evaluation part for the gold mining puzzle. See also the [history](history) folder.
