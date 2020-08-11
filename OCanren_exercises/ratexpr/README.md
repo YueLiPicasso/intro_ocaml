@@ -40,6 +40,8 @@ There is also a relational multiplier for rationals that does not work well back
 and a relational evaluator for (non-neg.) rational number arithmetic expressions
 whose  performance is hindered by the relational adder.
 
+## Discussion
+
 Defining the type for arithmetic expresssions in OCanren is an
 interestng task. Insights on OCanren's type system and syntactic transformation was also gained
 when writing the `Inj` module for injection primitives. Commutativity of arithmetic relations
