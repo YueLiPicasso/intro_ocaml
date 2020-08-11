@@ -48,9 +48,10 @@ when writing the `Inj` module for injection primitives. Commutativity of arithme
 is a consideration. For example if `GCD(a,b,c)` holds, which  means that `c` is the GCD
 of `a` and `b`, then `GCD(b,a,c)` also holds. It could helpful to distinguish
 a commutative implementation of `GCD` from a non-commutative implementation, the latter of which
-can be used to define the former. Alternative solutions exist for almost every relation name
-defined in this project: they are all written down and tested and only the pleasant ones are
-kept in the final source code and the rest are left in the commit history. 
+can be used to define the former.
+For each relation name, usually several alternative implementations
+were written down and tested, but only the most pleasant one was
+kept in the final source code and the rest were left in the commit history. 
 
 ## History
 
