@@ -46,11 +46,11 @@ Appreciation of OCanren's type system and syntactic transformation was experienc
 defining the type for arithmetic expresssions and 
 when writing the `Inj` module for injection primitives. Commutativity of arithmetic relations
 is a consideration. For example if `GCD(a,b,c)` holds, which  means that `c` is the GCD
-of `a` and `b`, then `GCD(b,a,c)` also holds. I found it conceptually helpful to distinguish
+of `a` and `b`, then `GCD(b,a,c)` also holds. It could helpful to distinguish
 a commutative implementation of `GCD` from a non-commutative implementation, the latter of which
 can be used to define the former. Alternative solutions exist for almost every relation name
 defined in this project: they are all written down and tested and only the pleasant ones are
-kept in the final source code and the rest are left in the commit records. 
+kept in the final source code and the rest are left in the commit history. 
 
 ## History
 
