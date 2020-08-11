@@ -4,7 +4,6 @@ open Logic;;
 open Core;;
 open Ratexpr;;
 open LoNat;;
-open AddCases;;
   
 @type pr  = GT.int * GT.int with show;;
 @type pr3 =  GT.int * GT.int * GT.int with show;;
@@ -19,6 +18,112 @@ open AddCases;;
 @type lnp3  = LNat.logic * LNat.logic * LNat.logic with show;;
 @type lnp4  = LNat.logic * LNat.logic * LNat.logic * LNat.logic with show;;
 
+let _ =  print_string "[radd] basic backward : radd a b 1 5 12 35\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren {radd a b 1 5 12 35})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+let _ =  print_string "[radd] basic backward : radd a b 1 7 12 35\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd a b 1 7 12 35})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+let _ =  print_string "[radd] basic backward : radd a b 4 15 14 15\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd  a b 4 15 14 15})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+let _ =  print_string "[radd] basic backward : radd a b 2 3 14 15\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd a b 2 3 14 15})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+
+
+
+(*
+
+(* for small rational the search is much faster *)
+let _ =  print_string "[radd_gt_rm] basic backward : radd_gt_rm 2 3 a b 7 6\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd_gt_rm 2 3 a b 7 6})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+(* slow search *)
+let _ =  print_string "[radd_gt_rm] basic backward : radd_gt_rm 2 13 a b 35 143\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd_gt_rm 2 13 a b 9 143})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+(* refutationally incomplete *)
+let _ =  print_string "[radd_gt_rm] basic backward : radd_gt_rm 2 13 a b 9 143\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd_gt_rm 2 13 a b 9 143})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+let _ =  print_string "[radd_gt_rm] basic backward : radd_gt_rm  36 15 a b 5 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd_gt_rm 36 15 a b 5 2})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+let _ =  print_string " div a 10 b c \n";
+  List.iter (fun p -> print_string @@ GT.show(pr3) p; print_newline() )
+  @@ RStream.take ~n:40 @@
+  run three ( fun  a b c -> ocanren {div a 10 b c})
+    (fun a b c -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c) ;;
+
+let _ =  print_string " div a b 10 c \n";
+  List.iter (fun p -> print_string @@ GT.show(pr3) p; print_newline() )
+  @@ RStream.take ~n:40 @@
+  run three ( fun  a b c -> ocanren { div a b 10 c})
+    (fun a b c -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c) ;;
+
+(* inefficient search: when b is guessed right (15), cm' is guessed for 360 times *)
+let _ =  print_string "[radd_gt_rm] basic backward : radd_gt_rm a b 1 10 5 2\n";
+  List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run two ( fun a b -> ocanren { radd_gt_rm a b 1 10 5 2})
+    (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
+
+
+let _ =  print_string "[radd_gt_rm] check : radd_gt_rm 36 15 1 10 5 2\n";
+  List.iter (fun p -> print_string @@ GT.show(LNat.logic) p; print_newline() )
+  @@ RStream.take ~n:1 @@
+  run one ( fun a -> ocanren { radd_gt_rm 36 15 1 10 5 2})
+    (fun a  -> a#reify(LNat.reify) ) ;;
+
+
+let _ =  print_string "[=/=, div] c =/= 0 & div 12 a b c \n";
+  List.iter (fun p -> print_string @@ GT.show(lnp3) p; print_newline() )
+  @@ RStream.take  @@
+  run three ( fun  a b c -> ocanren { c =/= 0 & div 12 a b c})
+    (fun a b c ->  a#reify(LNat.reify),  b#reify(LNat.reify),
+                    c#reify(LNat.reify)  ) ;;
+
+
+let _ =  print_string "[=/=] gen: c =/= 0 \n";
+  List.iter (fun p -> print_string @@ GT.show(LNat.logic) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run one ( fun  c -> ocanren { c =/= 0 })
+    (fun  c -> c#reify(LNat.reify) ) ;;
+
+
 
 (* genrated many before long *)
 let _ =  print_string "[radd_gt_dv] advanced backward : radd_gt_dv  a b c d 5 2\n";
@@ -29,7 +134,7 @@ let _ =  print_string "[radd_gt_dv] advanced backward : radd_gt_dv  a b c d 5 2\
     LNat.to_int @@ project c, LNat.to_int @@ project d) ;;
 
 
-(* yes it can genrate but the time might be too long *)
+(* no problem if you ask for one nswer, if you ask more, it diverges *)
 let _ =  print_string "[radd_gt_dv] basic backward : radd_gt_dv a b 1 10 5 2\n";
   List.iter (fun p -> print_string @@ GT.show(pr) p; print_newline() )
   @@ RStream.take ~n:1 @@
@@ -43,8 +148,13 @@ let _ =  print_string "[radd_gt_dv] basic backward : radd_gt_dv 1 10 a b 5 2\n";
     (fun a b  -> LNat.to_int @@ project a, LNat.to_int @@ project b ) ;;
 
 
+let _ =  print_string "[=/=, div] c =/= 0 & div a 10 b c \n";
+  List.iter (fun p -> print_string @@ GT.show(pr3) p; print_newline() )
+  @@ RStream.take ~n:10 @@
+  run three ( fun  a b c -> ocanren { c =/= 0 & div a 10 b c})
+    (fun a b c -> LNat.to_int @@ project a, LNat.to_int @@ project b,
+    LNat.to_int @@ project c) ;;
 
-(*
 
 
 (* finds all answers and does not diverge, better than remainder ! *)

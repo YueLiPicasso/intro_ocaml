@@ -268,17 +268,29 @@ module LoNat = struct
                  & ( * ) q  a' a''
                  & radd_ed a b a'' b c d };;
     (** [gt] for Greater Than, i.e., b > b'.
-    [rm] for remainder, meaning that [b/b'] has a non-zero remainder*)
+    [rm] for remainder, meaning that [b/b'] has a non-zero remainder. 
+    When only [a,b] are unknown, the search is inefficient; when only [a',b'] are unknown,
+    the search is better than the earlier case, because at least b' is bounded by [b > b'].
+    When used for subtruction, the best performance is obtained 
+    if the second addend [a'/b'] (rather than the first) is left unknown, 
+    and the denominator of the first addend is small *)
     let  radd_gt_rm  a b a' b' c d = 
       ocanren {
-         b >  b'  & { fresh q, r, cm, s, sa in
+         b >  b'  & { fresh q, r, lc, k, ka in
                    r =/= 0
-                 & div b   b' q  r
-                 & lcm b   b' cm
-                 & div cm  b  s  0        
-                 & div sa  s  a  0        
-                 & radd_gt_dv sa cm a' b' c d } };;
+                 & div b   b' q  r  
+                 & lcm b   b' lc        
+                 & div lc  b  k  0
+                 & div ka  k  a  0
+                 & radd_gt_dv ka lc a' b' c d } };;
   end;;
+  let radd a b a' b' c d = let open AddCases in
+    ocanren { radd_ed a b a' b' c d
+            | radd_gt_dv a b a' b' c d
+            | radd_gt_rm a b a' b' c d
+            | radd_gt_dv a' b' a b c d
+            | radd_gt_rm a' b' a b c d};;
+
 end;;
 
 (******************************************************************************************)
