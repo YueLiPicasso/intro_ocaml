@@ -18,18 +18,32 @@ for any certain direction.
 For non-negative rational numbers,
 I came up with
 - a modest relational adder and
-- a satifactory relational simplifier, that is  based on successful implementation of 
+- a satifactory relational simplifier, that is  based on successful implementations of 
     - a relational division algorithm for natural numbers and
     - a relational Euclidean algorithm.
 
-The relational multiplier for rationals does not work well backward.
-The performance of the relational evaluator for (non-neg.) rational number arithmetic expressions
-is hindered by the adder.
+The relational simplifier can:
+
+- simplify a rational number to the normal form
+- scale up a normal form rational number 
+- find rational numbers whose numerator and denominator are co-prime.
+
+See [here](history/Solution_I) for more technical discussions about the simplifier.
+
+The relational adder can:
+
+- add two rational numbers
+- subtract one rational number from another (but the search efficiency depends on input values)
+- split a rational number `r` into two rational numbers  that sum up to `r`.
+
+There is also a relational multiplier for rationals that does not work well backward,
+and a relational evaluator for (non-neg.) rational number arithmetic expressions
+whose  performance is hindered by the relational adder.
 
 Defining the type for arithmetic expresssions in OCanren is an
 interestng task. Insights on OCanren's type system and syntactic transformation was also gained
 when writing the `Inj` module for injection primitives. Many different versions of the solution
-were developed and they were condensed and organized into the current version. 
+were developed and they were condensed and organized to get the current version. 
 
 ## History
 

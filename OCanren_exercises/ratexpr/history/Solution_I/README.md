@@ -1,7 +1,8 @@
 # Solution I
 
 The discussion below is not about the most recent version, but about various intermediate
-versions, on their good characters or problems 
+versions, on their good characters or problems. Regarding relational simplification, the older
+version and the newest version share the same idea despite slightly different implementations. 
 
 ## Relational Simplification of Rational Numbers
 
