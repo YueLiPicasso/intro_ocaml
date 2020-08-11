@@ -70,9 +70,14 @@ was my second original contribution to the OCanren sample collection.
 
 ### Stochatic Gold Mining
 
-This uses a typical logic programming technique: generate-and-test. We also
+[This](Glod_Mining) uses a typical logic programming technique: generate-and-test. We also
 defined a simple library for positive rational numbers. The location
-of making recursive calls is shown to be important by this example.  
+of making recursive calls is shown to be important by this example.
+
+### Rational number arithmetic
+
+A [half-successful](ratexpr) treatment of relational arithmetic on (non-negative)
+rational numbers in OCanren. 
 
 ## Learning OCaml
 
