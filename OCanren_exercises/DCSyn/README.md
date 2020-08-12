@@ -19,7 +19,7 @@ The languages' syntaxes are given in BNF notation.
 
 _letter_ ::= **a** ... **z**
 
-_var_ ::= _letter_ { _Letter_ }
+_var_ ::= _letter_ { _letter_ }
 
 _expr_ ::= **0** | **1** | _var
 
