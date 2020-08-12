@@ -1,34 +1,18 @@
-<!DOCTYPE html PUBLIC "-//W3C//DTD HTML 4.01//EN">
-<html>
-<head>
-  <title>My first styled page</title>
-</head>
+# A Relational Translator for Digital Circuit Design
 
-<body>
 
-<!-- Site navigation menu -->
-<ul class="navbar">
-  <li><a href="index.html">Home page</a>
-  <li><a href="musings.html">Musings</a>
-  <li><a href="town.html">My town</a>
-  <li><a href="links.html">Links</a>
-</ul>
 
-<!-- Main content -->
-<h1>My first styled page</h1>
 
-<p>Welcome to my styled page!
+## The Imperative Language
 
-<p>It lacks images, but at least it has style.
-And it has links, even if they don't go
-anywhere&hellip;
 
-<p>There should be more here, but I don't know
-what yet.
+letter ::= [a] ... [z]
 
-<!-- Sign and date the page, it's only polite! -->
-<address>Made 5 April 2004<br>
-  by myself.</address>
+var :: = letter { Letter }
 
-</body>
-</html>
+expr ::= [0] | [1] | var
+
+statement ::= var [:=] expr
+           |  [if] expr [then] statement [else] statement [fi]
+
+program ::= { statement }
