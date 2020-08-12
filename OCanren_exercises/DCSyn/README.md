@@ -6,12 +6,12 @@
 ## The Imperative Language
 
 
-letter ::= [a]() ... [z]()
+>letter ::= [a]() ... [z]()
 
-var ::= letter { Letter }
+>var ::= letter { Letter }
 
-expr ::= [0]() | [1]() | var
+>expr ::= [0]() | [1]() | var
 
-statement ::= var [:=]() expr | [if]() expr [then]() statement [else]() statement [fi]()
+>statement ::= var [:=]() expr | [if]() expr [then]() statement [else]() statement [fi]()
 
-program ::= { statement }
+>program ::= { statement }
