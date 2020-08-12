@@ -2,7 +2,9 @@
 
 
 
-## Syntax of the languages concerned 
+## Syntaxes of the languages concerned
+
+The languages' syntaxes are given in BNF notation. 
 
 1. Lowercase _italic_ words are used to denote syntactic categories.
 1. **Boldface** words  denote terminal symbols.
