@@ -6,7 +6,7 @@
 ## The Imperative Language
 
 
-letter ::= [a] ... [z]
+letter ::= [a]() ... [z]()
 
 var :: = letter { Letter }
 
