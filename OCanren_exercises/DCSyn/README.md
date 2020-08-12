@@ -24,6 +24,6 @@ _var_ ::= _letter_ { _letter_ }
 
 _expr_ ::= **0** | **1** | _var_
 
-_statement_ ::= _var_ **:=** _expr_ | **if** _expr_ **then** _statement_ **else** _statement_ **fi**
+_statement_ ::= **if** _expr_ **then** _statement_ **else** _statement_ **fi** | _var_ **:=** _expr_ 
 
 _program_ ::= { _statement_ }
