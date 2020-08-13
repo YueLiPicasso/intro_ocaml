@@ -81,7 +81,7 @@ Table 2.2
  _statement_ | -> | _let-binging_  | Notes
 ---         | ---    |   ---  | ---
 _var_       | ->     | _var_  |
-**:+**      |        | **=**  |
+**:=**      |        | **=**  |
 _expr_      |  ->    | _graph_ | Reference to Table 1
 
 
@@ -90,23 +90,17 @@ the syntactic categories of the flowchart language. Finally we translate
 from _program_ to _graph_, in the way of Table 3.1 and 3.2. 
 
 Table 3.1
-_program_   |  ->  | _graph_  
----         | ---  |  ---     
-   .        |  .    |   **(**   
-_statement_ | ->   | _graph_  
-    .       |   .    |   **,**  
-[ _program_ ] |   ->  | _graph_  (Default **null**)
-     .      |   .    |   **)**  
+_program_   |  ->  | _graph_   | Default
+---         | ---  |  ---      | ---
+_statement_ | ->   | **(** _graph_ **,** | 
+[ _program_ ] |   ->  | _graph_   **)** | **null** 
 
 
 Table 3.2
-_program_   |  ->  | _graph_
----         | ---  |  ---
-      .     |  .    |   **let**
-_statement_ | ->   | _let-binding_
-      .     |    .   |   ** in **
-[ _program_ ] |   ->  | _graph_ (Default **null**)
-       .    |   .    |   **)**
+_program_   |  ->  | _graph_ | Default
+---         | ---  |  ---    | ---
+_statement_ | ->   |  **let** _let-binding_ ** in ** | 
+[ _program_ ] |   ->  | _graph_  **)** | **null**
 
 
 
