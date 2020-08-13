@@ -42,30 +42,32 @@ _let-binding_ ::= _var_ **=** _graph_
 
 ## Translation Design
 
-Mapping from syntactic categories of the imperative language (IP) to syntactic
-categories of the flowchart language  (FL).
+Mapping from syntactic categories of the imperative language to syntactic
+categories of the flowchart language .
 
 The syntactic category _var_ and the terminal symbols **0** and **1** are shared
 by both languages.
 
-IP    |     | FL
+Table 1.
+_expr_ | ->    | _graph_
 ---   |---  | ---
 **0** | ->  | **0**
 **1** | ->  | **1**
 _var_ | ->  | _var_
 
 
-### _statement_ -> _graph_
+The "if...then...else" part of _statement_ is
+translated into multiplexing (mux) of _graph_.
 
-      |         |           |             |        |             |
- ---   | ---    |   ---     |  ---        | ---     |  ---       | ---
-**if** | _expr_ | **then** | _statement_ |**else** |_statement_ | **fi**
-**mux(**| _graph_| **,**    |  _graph_     | **,**   | _graph_    | **)**
-      |         |           |             |        |             |
-      | _var_    | **:=**   | _expr_      |         |            |
-**let** |          |           |             |        |             |
+Table 2.
+ _statement_ | -> | _graph_   | Notes
+---         | ---    |   ---  | ---
+**if**     |    | **mux(**    |  
+_expr_     | -> | _graph_     | Table 1.
+**then**   |    | **,**       |
+_statement_| -> | _graph_     | Recur.
+**else**   |    |**,**        |
+_statement_| -> | _graph_     | Recur. 
+**fi**     |    | **)**       |      
 
-
-
-
-### _
+  
