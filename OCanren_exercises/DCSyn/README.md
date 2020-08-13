@@ -45,7 +45,7 @@ _let-binding_ ::= _var_ **=** _graph_
 Mapping from syntactic categories of the imperative language to syntactic
 categories of the flowchart language.
 
-The syntactic category _var_ and the termina symbols **0** and **1** are shared
+The syntactic category _var_ and the terminal symbols **0** and **1** are shared
 by both languages.
 
 ### _statement_ -> _graph_
