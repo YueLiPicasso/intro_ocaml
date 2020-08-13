@@ -92,7 +92,8 @@ from _program_ to _graph_, in the way of Table 3.1 and 3.2.
 Table 3.1
 _program_   |  ->  | _graph_   | Default
 ---         | ---  |  ---      | ---
-_statement_ | ->   | **(** _graph_ **,** | 
+_statement_ | ->   | **(** **mux(** _graph_ **,** _graph_ **,**
+ _graph_ **)** **,** | 
 [ _program_ ] |   ->  | _graph_   **)** | **null** 
 
 
