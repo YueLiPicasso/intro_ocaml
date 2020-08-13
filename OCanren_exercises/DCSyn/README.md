@@ -92,21 +92,21 @@ from _program_ to _graph_, in the way of Table 3.1 and 3.2.
 Table 3.1
 _program_   |  ->  | _graph_  
 ---         | ---  |  ---     
-           |      |   **(**   
+   .        |  .    |   **(**   
 _statement_ | ->   | _graph_  
-           |       |   **,**  
+    .       |   .    |   **,**  
 [ _program_ ] |   ->  | _graph_  (Default **null**)
-           |       |   **)**  
+     .      |   .    |   **)**  
 
 
 Table 3.2
 _program_   |  ->  | _graph_
 ---         | ---  |  ---
-           |      |   **let**
+      .     |  .    |   **let**
 _statement_ | ->   | _let-binding_
-           |       |   ** in **
+      .     |    .   |   ** in **
 [ _program_ ] |   ->  | _graph_ (Default **null**)
-           |       |   **)**
+       .    |   .    |   **)**
 
 
 
