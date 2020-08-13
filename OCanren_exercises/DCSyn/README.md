@@ -50,6 +50,6 @@ by both languages.
 
 ### _statement_ -> _graph_
 
-**if** | _expr_ | **then** | _statement_ |**else** |_statement_ | **fi**
  ---   | ---    |   ---     |  ---        | ---     |  ---       | ---
+**if** | _expr_ | **then** | _statement_ |**else** |_statement_ | **fi**
 **mux(**| _graph_| **,**    |  _graph_     | **,**   | _graph_    | **)**
