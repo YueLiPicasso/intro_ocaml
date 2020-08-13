@@ -1,6 +1,7 @@
 # A Relational Translator for Digital Circuit Design
 
-Work in progress.
+Translateing a simple imperative language program into a
+flowchart language program.  
 
 ## Syntaxes of the languages concerned
 
@@ -31,8 +32,24 @@ _program_ ::= { _statement_ }
 
 ### The flowchart language
 
+
 _graph_ ::= **0** | **1** | _var_ | _grapg_ **,** _graph_
 | **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,**
  _graph_ **)**
 
 _let-binding_ ::= _var_ **=** _graph_
+
+
+## Translation Design
+
+Mapping from syntactic categories of the imperative language to syntactic
+categories of the flowchart language.
+
+The syntactic category _var_ and the termina symbols **0** and **1** are shared
+by both languages.
+
+### _statement_ -> _graph_
+
+**if** | _expr_ | **then** | _statement_ |**else** |_statement_ | **fi**
+ ---   | ---    |   ---     |  ---        | ---     |  ---       | ---
+**mux(**| _graph_| **,**    |  _graph_     | **,**   | _graph_    | **)**
