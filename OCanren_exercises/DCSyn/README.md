@@ -27,7 +27,7 @@ _expr_ ::= **0** | **1** | _var_
 
 _statement_ ::= **if** _expr_ **then** _statement_ **else** _statement_ **fi** | _var_ **:=** _expr_ 
 
-_program_ ::= { _statement_ }
+_program_ ::= _statement_ { _program_ }
 
 
 ### The flowchart language
@@ -43,12 +43,14 @@ _let-binding_ ::= _var_ **=** _graph_
 ## Translation Design
 
 Mapping from syntactic categories of the imperative language to syntactic
-categories of the flowchart language .
+categories of the flowchart language . At the highest level we map a
+_program_ to a _graph_. 
+
 
 The syntactic category _var_ and the terminal symbols **0** and **1** are shared
 by both languages.
 
-Table 1.
+Table 1
 _expr_ | ->    | _graph_
 ---   |---  | ---
 **0** | ->  | **0**
@@ -59,15 +61,32 @@ _var_ | ->  | _var_
 The "if...then...else" part of _statement_ is
 translated into multiplexing (mux) of _graph_.
 
-Table 2.
+Table 2.1
  _statement_ | -> | _graph_   | Notes
 ---         | ---    |   ---  | ---
 **if**     |    | **mux(**    |  
-_expr_     | -> | _graph_     | Table 1.
+_expr_     | -> | _graph_     | Table 1
 **then**   |    | **,**       |
-_statement_| -> | _graph_     | Recur.
+_statement_| -> | _graph_     | Recursion
 **else**   |    |**,**        |
-_statement_| -> | _graph_     | Recur. 
+_statement_| -> | _graph_     | Recursion
 **fi**     |    | **)**       |      
 
-  
+
+The assignment ":=" part of _statement_ is translated into
+_let-binding_.
+
+
+Table 2.2
+ _statement_ | -> | _graph_   | Notes
+---         | ---    |   ---  | ---
+_var_       | ->     | _var_  |
+**:+**      |        | **=**  |
+_expr_      |  ->    | _graph_ | Table 1
+
+
+Table 2.1 and 2.2 combined, we complete the translation of _statement_ into
+the syntactic categories _graph_ and _let-binding_. Finally we translate
+from _program_ to _graph_.
+
+
