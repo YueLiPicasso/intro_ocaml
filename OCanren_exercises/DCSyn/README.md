@@ -78,7 +78,7 @@ _let-binding_.
 
 
 Table 2.2
- _statement_ | -> | _let-binging_  | Notes
+ _statement_ | -> | _let-binding_  | Notes
 ---         | ---    |   ---  | ---
 _var_       | ->     | _var_  |
 **:=**      |        | **=**  |
