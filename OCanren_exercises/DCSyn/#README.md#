@@ -55,6 +55,10 @@ IP    |     | FL
 _var_ | ->  | _var_
 
 
+Then "if...then...else" of IP is translated into multiplexing of FL.
+
+
+
 ### _statement_ -> _graph_
 
       |         |           |             |        |             |
