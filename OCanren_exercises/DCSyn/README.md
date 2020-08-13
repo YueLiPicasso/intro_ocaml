@@ -99,8 +99,8 @@ _statement_ | ->   | **(** _graph_ **,** |
 Table 3.2
 _program_   |  ->  | _graph_ | Default
 ---         | ---  |  ---    | ---
-_statement_ | ->   |  **let** _let-binding_ ** in ** | 
-[ _program_ ] |   ->  | _graph_  **)** | **null**
+_statement_ | ->   |  **let** _let-binding_ **in** | 
+[ _program_ ] |   ->  | _graph_  | **null**
 
 
 
