@@ -6,8 +6,8 @@ Work in progress.
 
 The languages' syntaxes are given in BNF notation. 
 
-1. Lowercase _italic_ words are used to denote syntactic categories.
-1. **Boldface** words  denote terminal symbols.
+1. Syntactic categories are set in _italic_ font.
+1. Terminal symbols are set in **Boldface**.
 1. A _production_ consists of a left-hand side, the symbol "::=" and a right-hand side, meaning that any occurrence of the left-hand side may be textually replaced by an instance of the right-hand side, where:
      1. A vertical bar ( | ) separates alternative items, any one of which can be used to replace an occurrence of the left-hand side;
      1. An ellipsis ( ... ) enumerates alternative items when it is  verbose to list them all with vertical bars;
@@ -34,3 +34,5 @@ _program_ ::= { _statement_ }
 _graph_ ::= **0** | **1** | _var_ | _grapg_ **,** _graph_
 | **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,**
  _graph_ **)**
+
+_let-binding_ ::= _var_ **=** _graph_
