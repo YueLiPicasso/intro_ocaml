@@ -1,6 +1,6 @@
 # A Relational Translator for Digital Circuit Design
 
-
+Work in progress.
 
 ## Syntaxes of the languages concerned
 
@@ -27,3 +27,10 @@ _expr_ ::= **0** | **1** | _var_
 _statement_ ::= **if** _expr_ **then** _statement_ **else** _statement_ **fi** | _var_ **:=** _expr_ 
 
 _program_ ::= { _statement_ }
+
+
+### The flowchart language
+
+_graph_ ::= **0** | **1** | _var_ | _grapg_ **,** _graph_
+| **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,**
+ _graph_ **)**
