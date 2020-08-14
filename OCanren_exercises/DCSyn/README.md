@@ -327,6 +327,7 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 
 ### The imperative language
 
+```
 <boolean> ::= 0 | 1
 
 <letter> ::= u | v | w | x | y | z
@@ -348,6 +349,8 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 <statement> ::=  <if clause > | <assignment>
 
 <program> ::=  <statement>  | <statement> <program>
+
+```
 
  Since the definition of
 <if clause> contains <statement> and vice versa, these definitions are
