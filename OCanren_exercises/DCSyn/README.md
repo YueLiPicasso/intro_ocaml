@@ -33,18 +33,24 @@ _program_ ::=  _statement_  [ _program_ ]
 ### The flowchart language
 
 
-_graph_ ::= **0** | **1** | _var_ | _grapg_ **,** _graph_
-| **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,**
- _graph_ **)**  | **null**
+_graph_ ::= **0** | **1** | _var_ | _graph_ **,** _graph_
+| **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,** _graph_ **)**  | **null**
 
 _let-binding_ ::= _var_ **=** _graph_
 
+ Note:  _graph_ **,** _graph_ refers to  parallel composition. **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
+ refers to multiplexing where the first argument is the selection signal.  
 
 ## Translation Design
 
+ No need for imaginations on how a graph
+might be converted into a schematic, although the context of this project is
+about digital circuits. Instead, we work on a certain level of abstraction,
+which is all and only about:
+
 Mapping from syntactic categories of the imperative language to syntactic
 categories of the flowchart language . At the highest level we map a
-_program_ to a _graph_. 
+_program_ to a _graph_.
 
 
 The syntactic category _var_ and the terminal symbols **0** and **1** are shared
@@ -92,8 +98,8 @@ from _program_ to _graph_, in the way of Table 3.1 and 3.2.
 Table 3.1
 _program_   |  ->  | _graph_   | Default
 ---         | ---  |  ---      | ---
-_statement_ | ->   | **(** **mux(** _graph_ **,** _graph_ **,** _graph_ **)** **,** | 
-[ _program_ ] |   ->  | _graph_   **)** | **null** 
+_statement_ | ->   |  **mux(** _graph_ **,** _graph_ **,** _graph_ **)** **,** | 
+[ _program_ ] |   ->  | _graph_   | **null** 
 
 
 Table 3.2
@@ -103,5 +109,9 @@ _statement_ | ->   |  **let** _let-binding_ **in** |
 [ _program_ ] |   ->  | _graph_  | **null**
 
 
-
-
+A _program_ is defined as a _statement_ followed by an optional [ _program_ ]. When
+the _statement_ is mapped to "mux", then with the _graph_ of the [ _program_ ] it forms
+a parallel composition, otherwise the _statement_ is mapped to a _let-binding_ and with the
+_graph_ of the [ _program_ ] it forms a "let...in..." structure. If the optional [ _program_ ]  is
+missing, i.e., if the _statement_ at the end of the program then we supply the "null" graph
+as the default image of the missing [ _program_ ]. 
