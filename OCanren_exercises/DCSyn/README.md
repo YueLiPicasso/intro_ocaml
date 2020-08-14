@@ -95,13 +95,18 @@ _expr_      |  ->    | _graph_ | Reference to Table 1
 
 Table 2.1 and 2.2 combined, we complete the translation of _statement_ into
 the syntactic categories of the flowchart language. Finally we translate
-from _program_ to _graph_, in the way of Table 3.1 and 3.2. 
+from _program_ to _graph_, in the way of Rewriting Rule 3.1 and Table 3.2. 
 
-Table 3.1
-_program_   |  ->  | _graph_   | Default
----         | ---  |  ---      | ---
-_statement_ | ->   |  **mux(** _graph_ **,** _graph_ **,** _graph_ **)** **,** | 
-[ _program_ ] |   ->  | _graph_   | **null** 
+Rule 3.1
+
+>Given a _program_ of the form
+>_statement_ [ _prog_ ]
+>where _statement_ has the form
+>**if** _expr_ **then** _stat1_ **else** _stat2_ **fi**
+>we set _prog1_ to _stat1_ [ _prog_ ] and _prog2_ to _stat2_ [ _prog_ ],
+>and then convert _prog1_ and _prog2_ to _graph1_ and _graph2_ separately. Further
+>assume that _expr_ is converted to _graph0_. Then whole _program is translated into_
+>**mux(** _graph0_ **,** _graph1_ **,** _graph2_ **)**.
 
 
 Table 3.2
