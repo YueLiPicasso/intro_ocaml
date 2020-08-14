@@ -310,3 +310,45 @@ mux( x ,
 
 ```
 
+## Alternative presentation of the syntaxes
+
+The syntaxes so far have been presented in ways inspired by both the VHDL
+standard 2019 and the OCaml manual 4.10.
+The following style follows the Algol 60 report.
+
+
+The syntaxes will be described with the aid of metalinguistic formulae.
+Wwords enclosed in brackets <> are metalinguistic variables whose
+values are sequences of symbols. The marks ::= and | are metalinguistic
+connectives (the latter means "or"). Any mark, which is neither a variable
+nor a connective, denotes itself. Juxtaposition of
+marks and/or variables signifies juxtaposition of the sequences denoted.
+
+
+### The imperative language
+
+<boolean> ::= 0 | 1
+
+<letter> ::= u | v | w | x | y | z
+
+<delimiter> := <sequential operator> | <separator> 
+
+<sequential operator> ::= if | then | else | fi
+
+<separator> ::= :=
+
+<variable> ::= <letter> | <variable> <letter>
+
+<expression> ::= <boolean> | <variablle>
+
+<if clause> ::+ if <expression> then <statement> else <statement> fi
+
+<assignment> ::= <variable> := <expression> 
+
+<statement> ::=  <if clause > | <assignment>
+
+<program> ::=  <statement>  | <statement> <program>
+
+ Since the definition of
+<if clause> contains <statement> and vice versa, these definitions are
+necessarily recursive.
