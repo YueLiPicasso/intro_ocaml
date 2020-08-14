@@ -126,26 +126,3 @@ if x then x := 0
 fi
 if x then y := 1 else z := 1 fi
 ```
-Using the rue, we have : oops it breaks down !
-```
-let x = 1 in
-let y = 0 in
-mux( x , let x = 0 in, 
-     mux( y, let z = 0 in, let y = 1 in )),
-mux( x, let y = 1 in, let z = 1 in), null
-
-```
-
-I should have something like this 
-
-```
-let x = 1 in
-let y = 0 in
-mux( x , let x = 0 in
-         mux( x, let y = 1 in null, let z = 1 in null), null, 
-     mux( y, let z = 0 in
-             mux( x, let y = 1 in null, let z = 1 in null), null,
-	     let y = 1 in
-	     mux( x, let y = 1 in null, let z = 1 in null), null)),
-
-```
