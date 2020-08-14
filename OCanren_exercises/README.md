@@ -1,7 +1,7 @@
 # On Learning OCanren 
 
 In this article I discuss about several OCanren programming
-exercises in terms of how I, as a beginner, approached them,
+exercises in terms of how I as a beginner approached them,
 and how I progressed from one to the next. This is
 to share learning experiences, not to engage in the technical details
 of the  exercises. Such details are to be found in the respective sub-directory,
