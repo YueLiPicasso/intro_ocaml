@@ -79,7 +79,7 @@ Assuming that _expr_ is converted to _graph0_ (by Table 1), then the whole _prog
 **mux(** _graph0_ **,** _graph1_ **,** _graph2_ **)**. This is summarized in Table 2.1.
 
 Table 2.1
- _statement_ [ _prog_ ] | -> | _graph_   | Notes
+ _stat_ [ _prog_ ] | -> | _graph_   | Notes
 ---         | ---    |   ---  | ---
 **if**     |    | **mux(**    |  
 _expr_     | -> | _graph0_    | Refer to Table 1
