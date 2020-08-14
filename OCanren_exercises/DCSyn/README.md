@@ -66,65 +66,51 @@ _expr_ | ->    | _graph_
 _var_ | ->  | _var_
 
 
-The "if...then...else" part of _statement_ is
-translated into multiplexing (mux) of _graph_.
+A _program_ is defined as a _statement_ followed by an optional [ _program_ ]. Translating from _program_ to _graph_ takes a case analysis on the shape of the first _statement_.
+
+
+Given a _program_ of the form
+_stat_ [ _prog_ ]
+where the _stat_ has the form
+**if** _expr_ **then** _stat1_ **else** _stat2_ **fi**
+we set  _stat1_ [ _prog_ ]  as _prog1_  and set _stat2_ [ _prog_ ] as  _prog2_.
+Then we convert _prog1_ and _prog2_ to _graph1_ and _graph2_ respectively. 
+Assuming that _expr_ is converted to _graph0_ (by Table 1), then the whole _program_ is translated into
+**mux(** _graph0_ **,** _graph1_ **,** _graph2_ **)**. This is summarized in Table 2.1.
 
 Table 2.1
- _statement_ | -> | _graph_   | Notes
+ _statement_ [ _prog_ ] | -> | _graph_   | Notes
 ---         | ---    |   ---  | ---
 **if**     |    | **mux(**    |  
-_expr_     | -> | _graph_     | Reference to Table 1
+_expr_     | -> | _graph0_    | Refer to Table 1
 **then**   |    | **,**       |
-_statement_| -> | _graph_     | Recursion of Table 2.1
+_stat1_    | -> |  _graph1_   | _prog1_ -> _graph1_ where _prog1_ is _stat1_ [ _prog_ ] 
 **else**   |    |**,**        |
-_statement_| -> | _graph_     | Recursion of Table 2.1
+_stat2_    | -> | _graph2_    | _prog2_ -> _graph2_ where _prog2_ is _stat2_ [ _prog_ ] 
 **fi**     |    | **)**       |      
 
 
-The assignment ":=" part of _statement_ is translated into
-_let-binding_.
+
+A _program_ of the form
+_stat_ [ _prog_ ], 
+where the _stat_ has the form _var_ **:=** _expr_, is translated into  **let** _var_ = _graph1_ **in**  _graph2_
+ where _var_ **=** _graph1_ is a straightforward translation of _var_ **:=** _expr_ and _graph2_ is a translation
+ of [ _prog_ ].  If the optional [ _prog_ ]  is
+missing then we supply the "null" graph
+as the default image. This is summarized in Table 2.2.
+
 
 
 Table 2.2
- _statement_ | -> | _let-binding_  | Notes
----         | ---    |   ---  | ---
-_var_       | ->     | _var_  |
-**:=**      |        | **=**  |
-_expr_      |  ->    | _graph_ | Reference to Table 1
+_stat_  [ _prog_ ] |  ->  | _graph_                         | Notes
+---                | ---  |  ---                            | ---
+_var_ **:=** _expr_    |  ->  |  **let** _var_ **=** _graph1_ **in**  | _expr_ -> _graph1_, see Table 1 
+[ _prog_ ]         |  ->  | _graph2_                          |  Default **null**
 
 
-Table 2.1 and 2.2 combined, we complete the translation of _statement_ into
-the syntactic categories of the flowchart language. Finally we translate
-from _program_ to _graph_, in the way of Rewriting Rule 3.1 and Table 3.2. 
-
-Rule 3.1
-
-Given a _program_ of the form
-_statement_ [ _prog_ ]
-where the _statement_ has the form
-**if** _expr_ **then** _stat1_ **else** _stat2_ **fi**
-we set _prog1_ to _stat1_ [ _prog_ ] and _prog2_ to _stat2_ [ _prog_ ],
-and convert _prog1_ and _prog2_ to _graph1_ and _graph2_ respectively. Further we
-assume that _expr_ is converted to _graph0_. Then the whole _program_ is translated into
-**mux(** _graph0_ **,** _graph1_ **,** _graph2_ **)**.
+We use Tables 1, 2.1 and 2.2 to translate any _program_ into a _graph_.
 
 
-Table 3.2
-_program_   |  ->  | _graph_ | Default
----         | ---  |  ---    | ---
-_statement_ | ->   |  **let** _let-binding_ **in** | 
-[ _program_ ] |   ->  | _graph_  | **null**
-
-
-A _program_ is defined as a _statement_ followed by an optional [ _program_ ]. When
-the _statement_ is mapped to "mux", then with the _graph_ of the [ _program_ ] it forms
-a parallel composition, otherwise the _statement_ is mapped to a _let-binding_ and with the
-_graph_ of the [ _program_ ] it forms a "let...in..." structure.
-
-If the optional [ _program_ ]  is
-missing, i.e., if the _statement_ is at the end of the _program_ then we supply the "null" graph
-as the default image of the missing optional  [ _program_ ]. Otherwie we recursively translate
-[ _program_ ].
 
 
 ### A Worked Example
