@@ -325,20 +325,28 @@ nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
 
 
-### The imperative language
+### Shared syntax
 
 ```
 <boolean> ::= 0 | 1
 
 <letter> ::= u | v | w | x | y | z
 
+<variable> ::= <letter> | <variable> <letter>
+
+```
+
+
+### The imperative language
+
+```
+<empty> ::= 
+
 <delimiter> := <sequential operator> | <separator> 
 
 <sequential operator> ::= if | then | else | fi
 
 <separator> ::= :=
-
-<variable> ::= <letter> | <variable> <letter>
 
 <expression> ::= <boolean> | <variablle>
 
@@ -348,10 +356,30 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 
 <statement> ::=  <if clause > | <assignment>
 
-<program> ::=  <statement>  | <statement> <program>
+<program> ::=  <statement> <empty> | <statement> <program>
 
 ```
 
- Since the definition of
+<empty> is the null string of symbols.  Since the definition of
 <if clause> contains <statement> and vice versa, these definitions are
 necessarily recursive.
+
+### The flowchart language
+
+```
+<fan-out operator> ::= let | in
+
+<separator> ::= , | = 
+
+<bracket> ::= ( | )
+
+<function> ::= mux
+
+<null graph> ::= null
+
+<fan-out> ::= let <variable> = <graph> in <graph>
+
+<multiplexing> ::= mux ( <graph> , <graph> , <graph> )
+
+<graph> ::= <boolean> | <variable> | <fan-out> | <multiplexing> | <null graph>
+```
