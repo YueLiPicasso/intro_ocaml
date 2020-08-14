@@ -335,7 +335,6 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 <variable> ::= <letter> | <variable> <letter>
 
 <expression> ::= <boolean> | <variablle>
-
 ```
 
 
@@ -357,7 +356,6 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 <statement> ::=  <if clause > | <assignment>
 
 <program> ::=  <statement> <empty> | <statement> <program>
-
 ```
 
 `<empty>` is the null string of symbols.  Since the definition of
