@@ -334,6 +334,8 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 
 <variable> ::= <letter> | <variable> <letter>
 
+<expression> ::= <boolean> | <variablle>
+
 ```
 
 
@@ -347,8 +349,6 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 <sequential operator> ::= if | then | else | fi
 
 <separator> ::= :=
-
-<expression> ::= <boolean> | <variablle>
 
 <if clause> ::= if <expression> then <statement> else <statement> fi
 
@@ -381,5 +381,5 @@ necessarily recursive.
 
 <multiplexing> ::= mux ( <graph> , <graph> , <graph> )
 
-<graph> ::= <boolean> | <variable> | <fan-out> | <multiplexing> | <null graph>
+<graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
 ```
