@@ -38,7 +38,9 @@ _graph_ ::= **0** | **1** | _var_ | _graph_ **,** _graph_
 
 _let-binding_ ::= _var_ **=** _graph_
 
- Note:  _graph_ **,** _graph_ refers to  parallel composition. **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
+### Note
+
+In the flowchart language _graph_ **,** _graph_ refers to  parallel composition. **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
  refers to multiplexing where the first argument is the selection signal.  
 
 ## Translation Design
@@ -48,7 +50,7 @@ might be converted into a schematic, although the context of this project is
 about digital circuits. Instead, we work on a certain level of abstraction,
 which is all and only about:
 
-Mapping from syntactic categories of the imperative language to syntactic
+> Mapping from syntactic categories of the imperative language to syntactic
 categories of the flowchart language. We eventually map a
 _program_ to a _graph_.
 
