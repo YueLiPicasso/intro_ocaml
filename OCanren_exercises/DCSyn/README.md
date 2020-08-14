@@ -84,9 +84,9 @@ Table 2.1
 **if**     |    | **mux(**    |  
 _expr_     | -> | _graph0_    | Refer to Table 1
 **then**   |    | **,**       |
-_stat1_    | -> |  _graph1_   | _prog1_ -> _graph1_ where _prog1_ is _stat1_ [ _prog_ ] 
+_stat1_    | with [ _prog_ ] -> |  _graph1_   | Recursion  
 **else**   |    |**,**        |
-_stat2_    | -> | _graph2_    | _prog2_ -> _graph2_ where _prog2_ is _stat2_ [ _prog_ ] 
+_stat2_    | with [ _prog_ ] -> | _graph2_    | Recursion  
 **fi**     |    | **)**       |      
 
 
