@@ -33,14 +33,13 @@ _program_ ::=  _statement_  [ _program_ ]
 ### The flowchart language
 
 
-_graph_ ::= **0** | **1** | _var_ | _graph_ **,** _graph_
-| **let** _let-binding_  **in** _graph_ | **mux(** _graph_ **,** _graph_ **,** _graph_ **)**  | **null**
-
-_let-binding_ ::= _var_ **=** _graph_
+_graph_ ::= **0** | **1** | _var_ 
+| **let** _var_ **=** _graph_ **in** _graph_ | **mux(** _graph_ **,** _graph_ **,** _graph_ **)**  | **null**
+ 
 
 ### Semantic note
 
-In the flowchart language _graph_ **,** _graph_ refers to  parallel composition. **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
+In the flowchart language **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
  refers to multiplexing where the first argument is the selection signal.  
 
 ## Translation Design
