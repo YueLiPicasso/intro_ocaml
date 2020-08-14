@@ -114,6 +114,10 @@ _statement_ | ->   |  **let** _let-binding_ **in** |
 A _program_ is defined as a _statement_ followed by an optional [ _program_ ]. When
 the _statement_ is mapped to "mux", then with the _graph_ of the [ _program_ ] it forms
 a parallel composition, otherwise the _statement_ is mapped to a _let-binding_ and with the
-_graph_ of the [ _program_ ] it forms a "let...in..." structure. If the optional [ _program_ ]  is
-missing, i.e., if the _statement_ at the end of the program then we supply the "null" graph
-as the default image of the missing [ _program_ ]. 
+_graph_ of the [ _program_ ] it forms a "let...in..." structure.
+
+If the optional [ _program_ ]  is
+missing, i.e., if the _statement_ is at the end of the _program_ then we supply the "null" graph
+as the default image of the missing optional  [ _program_ ]. Otherwie we recursively translate
+[ _program_ ].
+ 
