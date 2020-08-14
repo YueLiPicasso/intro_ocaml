@@ -318,8 +318,8 @@ The following style follows the Algol 60 report.
 
 
 The syntaxes will be described with the aid of metalinguistic formulae.
-Words enclosed in brackets <> are metalinguistic variables whose
-values are sequences of symbols. The marks ::= and | are metalinguistic
+Words enclosed in brackets `<>` are metalinguistic variables whose
+values are sequences of symbols. The marks `::=` and `|` are metalinguistic
 connectives (the latter means "or"). Any mark, which is neither a variable
 nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
