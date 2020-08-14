@@ -361,7 +361,7 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 ```
 
 `<empty>` is the null string of symbols.  Since the definition of
-<if clause> contains <statement> and vice versa, these definitions are
+`<if clause>` contains `<statement>` and vice versa, these definitions are
 necessarily recursive.
 
 ### The flowchart language
