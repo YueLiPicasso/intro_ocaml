@@ -45,7 +45,7 @@ In the flowchart language _graph_ **,** _graph_ refers to  parallel composition.
 
 ## Translation Design
 
- No need for imaginations on how a graph
+ No need for imaginations on how a _graph_
 might be converted into a schematic, although the context of this project is
 about digital circuits. Instead, we work on a certain level of abstraction,
 which is all and only about:
