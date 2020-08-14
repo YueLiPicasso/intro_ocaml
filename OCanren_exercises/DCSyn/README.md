@@ -100,12 +100,19 @@ from _program_ to _graph_, in the way of Rewriting Rule 3.1 and Table 3.2.
 Rule 3.1
 
 >Given a _program_ of the form
+
 >_statement_ [ _prog_ ]
+
 >where _statement_ has the form
+
 >**if** _expr_ **then** _stat1_ **else** _stat2_ **fi**
+
 >we set _prog1_ to _stat1_ [ _prog_ ] and _prog2_ to _stat2_ [ _prog_ ],
->and then convert _prog1_ and _prog2_ to _graph1_ and _graph2_ separately. Further
->assume that _expr_ is converted to _graph0_. Then whole _program is translated into_
+
+>and then convert _prog1_ and _prog2_ to _graph1_ and _graph2_ respectively. Further
+
+>assume that _expr_ is converted to _graph0_. Then the whole _program is translated into
+
 >**mux(** _graph0_ **,** _graph1_ **,** _graph2_ **)**.
 
 
