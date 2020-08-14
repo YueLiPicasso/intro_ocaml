@@ -114,7 +114,7 @@ We use Tables 1, 2.1 and 2.2 to translate any _program_ into a _graph_.
 
 ### A Worked Example
 
-We translate this program:
+The  program:
 
 ```
 x := 1
@@ -126,3 +126,187 @@ if x then x := 0
 fi
 if x then y := 1 else z := 1 fi
 ```
+
+is translated into:
+
+```
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, let y = 1 in null , let z = 1 in null) ,   
+	  let y = 1 in mux( x, let y = 1 in null , let z = 1 in null)))
+```
+
+We use `{{ }}` to denote the translation function, which has the type
+`program -> graph`, and show the state transition by `==>>` and show the
+redex by `<<<`. The detailed steps are given as follows.
+
+
+```
+{{
+x := 1  <<<
+y := 0
+if x then x := 0
+     else if y then z := 0 else y := 1 fi fi
+if x then y := 1 else z := 1 fi
+}}
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+{{
+y := 0  <<<
+if x then x := 0
+     else if y then z := 0 else y := 1 fi fi
+if x then y := 1 else z := 1 fi
+}}
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+{{
+if x then x := 0    <<<
+     else if y then z := 0 else y := 1 fi fi
+if x then y := 1 else z := 1 fi
+}}
+
+
+=(Table 2.1)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+   {{ x := 0  <<<
+      if x then y := 1 else z := 1 fi }} ,
+   {{ if y then z := 0 else y := 1 fi
+      if x then y := 1 else z := 1 fi }} )
+      
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in
+     {{ if x then y := 1 else z := 1 fi }} ,   <<<
+   {{ if y then z := 0 else y := 1 fi
+      if x then y := 1 else z := 1 fi }} )
+
+
+=(Table 2.1)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in
+    mux( x,  {{ y := 1 }} , {{ z := 1 }} ) ,   <<<
+   {{ if y then z := 0 else y := 1 fi
+      if x then y := 1 else z := 1 fi }} )
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+   {{ if y then z := 0 else y := 1 fi        <<<
+      if x then y := 1 else z := 1 fi }} )
+
+
+=(Table 2.1)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          {{ z := 0 if x then y := 1 else z := 1 fi }} ,   <<<
+	  {{ y := 1 if x then y := 1 else z := 1 fi }} ))
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in {{ if x then y := 1 else z := 1 fi }} ,   <<<
+	  {{ y := 1 if x then y := 1 else z := 1 fi }} ))
+
+
+=(Table 2.1)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, {{ y := 1 }} ,  {{ z := 1 }}) ,   <<<
+	  {{ y := 1 if x then y := 1 else z := 1 fi }} ))
+
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, let  y = 1 in null ,  let z = 1 in null) ,   
+	  {{ y := 1 if x then y := 1 else z := 1 fi }} ))  <<<
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, let  y = 1 in null ,  let z = 1 in null) ,   
+	  let y = 1 {{ if x then y := 1 else z := 1 fi }} ))  <<<
+
+=(Table 2.1)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, let y = 1 in null ,  let z = 1 in null) ,   
+	  let y = 1 in mux( x, {{y := 1}} , {{z := 1}} )))  <<<
+
+
+=(Table 2.2)=>>
+
+
+let x = 1 in
+let y = 0 in
+mux( x ,
+     let x = 0 in mux(x,  let y = 1 in null , let z = 1 in null) ,      
+     mux( y ,
+          let z = 0 in mux( x, let y = 1 in null , let z = 1 in null) ,   
+	  let y = 1 in mux( x, let y = 1 in null , let z = 1 in null)))
+
+```
+
