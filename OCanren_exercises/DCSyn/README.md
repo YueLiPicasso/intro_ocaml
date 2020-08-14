@@ -340,6 +340,7 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 
 ### The imperative language
 
+A declaration of basic symbols is as follows:
 ```
 <empty> ::= 
 
@@ -348,7 +349,11 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 <sequential operator> ::= if | then | else | fi
 
 <separator> ::= :=
+```
 
+Then comes the higher level constructs:
+
+```
 <if clause> ::= if <expression> then <statement> else <statement> fi
 
 <assignment> ::= <variable> := <expression> 
@@ -364,6 +369,7 @@ necessarily recursive.
 
 ### The flowchart language
 
+A declaration of basic symbols is as follows:
 ```
 <fan-out operator> ::= let | in
 
@@ -374,7 +380,11 @@ necessarily recursive.
 <function> ::= mux
 
 <null graph> ::= null
+```
 
+Then comes the higher level constructs:
+
+```
 <fan-out> ::= let <variable> = <graph> in <graph>
 
 <multiplexing> ::= mux ( <graph> , <graph> , <graph> )
