@@ -70,7 +70,7 @@ was my second original contribution to the OCanren sample collection.
 
 ### Stochatic Gold Mining
 
-[This](Glod_Mining) uses a typical logic programming technique: generate-and-test. We also
+[This](Gold_Mining) uses a typical logic programming technique: generate-and-test. We also
 defined a simple library for positive rational numbers. The location
 of making recursive calls is shown to be important by this example.
 
