@@ -120,4 +120,42 @@ If the optional [ _program_ ]  is
 missing, i.e., if the _statement_ is at the end of the _program_ then we supply the "null" graph
 as the default image of the missing optional  [ _program_ ]. Otherwie we recursively translate
 [ _program_ ].
- 
+
+
+### A Worked Example
+
+We translate this program:
+
+```
+x := 1
+y := 0
+if x then x := 0
+     else if y then z := 0
+               else y := 1
+	  fi
+fi
+if x then y := 1 else z := 1 fi
+```
+Using the rue, we have : oops it breaks down !
+```
+let x = 1 in
+let y = 0 in
+mux( x , let x = 0 in, 
+     mux( y, let z = 0 in, let y = 1 in )),
+mux( x, let y = 1 in, let z = 1 in), null
+
+```
+
+I should have something like this 
+
+```
+let x = 1 in
+let y = 0 in
+mux( x , let x = 0 in
+         mux( x, let y = 1 in null, let z = 1 in null), null, 
+     mux( y, let z = 0 in
+             mux( x, let y = 1 in null, let z = 1 in null), null,
+	     let y = 1 in
+	     mux( x, let y = 1 in null, let z = 1 in null), null)),
+
+```
