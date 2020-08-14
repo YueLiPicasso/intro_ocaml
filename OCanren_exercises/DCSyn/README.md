@@ -49,7 +49,7 @@ about digital circuits. Instead, we work on a certain level of abstraction,
 which is all and only about:
 
 Mapping from syntactic categories of the imperative language to syntactic
-categories of the flowchart language . At the highest level we map a
+categories of the flowchart language. We eventually map a
 _program_ to a _graph_.
 
 
