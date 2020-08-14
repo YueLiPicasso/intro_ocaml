@@ -342,7 +342,7 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 
 <expression> ::= <boolean> | <variablle>
 
-<if clause> ::+ if <expression> then <statement> else <statement> fi
+<if clause> ::= if <expression> then <statement> else <statement> fi
 
 <assignment> ::= <variable> := <expression> 
 
