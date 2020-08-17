@@ -141,7 +141,7 @@ mux( x ,
 The detailed steps are given in Appendix A.
 
 
-## Alternative syntaxes and translation 
+## Alternative syntaxes and translation presentation 
 
 The syntaxes so far have been presented in ways inspired by both the VHDL
 standard 2019 and the OCaml manual 4.10.
