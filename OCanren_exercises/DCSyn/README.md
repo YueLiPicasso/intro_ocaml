@@ -246,9 +246,9 @@ a value of `<graph>`. A generic translation algorithm is given by propagating
 (5)  {{ <if clause > <program> }}
      ::=  {{ if <expression> then <statement> else <statement> fi <program> }}  go to (9)
 
-(6)  {{ <assignment> <empty> }} ::= {{ <variable> := <expression> <empty> }}
+(6)  {{ <assignment> <empty> }} ::= {{ <variable> := <expression> <empty> }}      go to (10)
 		  
-(7)  {{ <assignment> <program> }} ::= {{ <variable> := <expression> <program> }}
+(7)  {{ <assignment> <program> }} ::= {{ <variable> := <expression> <program> }}  go to (11)
 
 (8)  {{ if <expression> then <statement> else <statement> fi <empty> }}
      ::= mux (<expression>, {{ <statement> <empty> }}, {{ <statement> <empty> }})      go to (2)
@@ -260,7 +260,7 @@ a value of `<graph>`. A generic translation algorithm is given by propagating
      ::= let <variable> = <expression> in <null graph>
 
 (11) {{ <variable> := <expression> <program> }}
-     ::= let <variable> = <expression> in {{ <program> }} go to (1)
+     ::= let <variable> = <expression> in {{ <program> }}   go to (1)
 ```
 
 
