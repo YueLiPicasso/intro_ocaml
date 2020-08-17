@@ -15,34 +15,34 @@ module Expr = struct
 end;;
 
 (** syntactic categories unique to the imperative language *)
-@type ('var, 'expr, 'stat ) stat = Ifte of 'expr * 'stat * 'stat (** if then else *)
-                                 | Asgn of 'var * 'expr          (** assignment *)
+@type ('expr, 'self ) stat = Ifte of 'expr * 'self * 'self (** if then else *)
+                           | Asgn of 'expr * 'expr          (** assignment *)
  with show, gmap, eq, compare;;
 
 module Stat = struct
-  @type ('a,'b,'c) t = ('a,'b,'c) stat  with show, gmap, eq, compare;;
-  let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
+  @type ('a,'b) t = ('a,'b) stat  with show, gmap, eq, compare;;
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
 (** a {i program} is a logical list of logical [stat] *)
 
 (** syntactic categories unique to the flowchart language *)
-@type ('var, 'expr, 'self) graph = Expr of 'expr
-                                 | Lein of 'var * 'self * 'self  (** let in *)
-                                 | Mux of 'self * 'self * 'self
-                                 | Null
+@type ('expr, 'self) graph = Expr of 'expr
+                           | Lein of 'expr * 'self * 'self  (** let in *)
+                           | Mux of 'self * 'self * 'self
+                           | Null
  with show, gmap, eq, compare;;
 
 module Graph = struct
-  @type ('a,'b,'c) t = ('a,'b,'c) graph  with show, gmap, eq, compare;;
-  let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
+  @type ('a,'b) t = ('a,'b) graph  with show, gmap, eq, compare;;
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-(** Injection and projection primitives *)  
-module Xjection = struct
+(** Injection primitives *)  
+module Inj = struct
   module FExpr = Fmap(Expr);;
-  module FStat = Fmap3(Stat);;
-  module FGraph = Fmap3(Graph);;
+  module FStat = Fmap2(Stat);;
+  module FGraph = Fmap2(Graph);;
 
   let low  = fun () -> inj @@ FExpr.distrib Low;;
   let high = fun () -> inj @@ FExpr.distrib High;;
@@ -57,4 +57,56 @@ module Xjection = struct
   let null = fun ()    -> inj @@ FGraph.distrib Null;;
 end;;
 
+open Inj;;
+
+let rec translate prog grap =
+  ocanren {
+    prog == [] & grap == Null
+  |
+   {fresh s in prog == [s] &
+               {{fresh e, s1, s2 in
+                   s == Ifte (e, s1, s2)
+                   & fresh g1, g2 in
+                       grap == Mux (Expr e, g1, g2)
+                       & translate [s1] g1
+                       & translate [s2] g2 }
+               |
+                 {fresh v,e in
+                   s == Asgn (Var v, e)
+                   & grap == Lein(Var v, Expr e, Null) }}}
+ |
+  {fresh s, s', p in prog == s :: s' :: p &
+                  {{fresh e, s1, s2 in
+                   s == Ifte (e, s1, s2)
+                   & fresh g1, g2 in
+                       grap == Mux (Expr e, g1, g2)
+                       & translate (s1 :: s' :: p) g1
+                       & translate (s2 :: s' :: p) g2 }
+               |
+                 {fresh v, e, g in
+                   s == Asgn (Var v, e)
+                   & grap == Lein(Var v, Expr e, g)
+                   & translate (s' :: p) g}}}
+  };;
+
+
+@type gra = (GT.string Expr.t, gra) Graph.t with show;;
+@type sta = (GT.string Expr.t, sta) Stat.t with show;;
+@type stal = sta GT.list with show;; 
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
+run q (fun q -> ocanren {translate [Asgn(Var "x", Var "y")] q}) project;;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(stal) x ; print_newline()) @@  Stream.take ~n:2 @@
+  run q (fun q -> ocanren {translate q (Lein (Var ("x"), Expr (Var ("y")), Null))})
+   (fun x -> List.to_list id @@ project x);;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
+  run q (fun q -> ocanren {translate [Asgn(Var "x", High);
+                                      Ifte(Var "x",
+                                           Asgn(Var "y", High),
+                                           Asgn(Var "y", Low))] q}) project;;
 
