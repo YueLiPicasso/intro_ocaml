@@ -229,7 +229,7 @@ Then comes the higher level constructs:
 
 We use `{{ }}` to denote a translation operation from a value of `<program>` to
 a value of `<graph>`. A generic translation algorithm is given by propagating
-`{{ }}` through the BNF defintion of the labguages.
+`{{ }}` through the BNF defintion of the labguages. Start reading from (1).
 
 
 ```
