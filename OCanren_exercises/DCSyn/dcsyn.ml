@@ -94,19 +94,33 @@ let rec translate prog grap =
 @type sta = (GT.string Expr.t, sta) Stat.t with show;;
 @type stal = sta GT.list with show;; 
 
+(* from impar to flowchar  *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
 run q (fun q -> ocanren {translate [Asgn(Var "x", Var "y")] q}) project;;
 
+(* from flowchar to impar  *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(stal) x ; print_newline()) @@  Stream.take ~n:2 @@
   run q (fun q -> ocanren {translate q (Lein (Var ("x"), Expr (Var ("y")), Null))})
    (fun x -> List.to_list id @@ project x);;
 
+(* from impar to flowchar  *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
   run q (fun q -> ocanren {translate [Asgn(Var "x", High);
                                       Ifte(Var "x",
                                            Asgn(Var "y", High),
                                            Asgn(Var "y", Low))] q}) project;;
+(* from flowchar to impar  *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(stal) x ; print_newline()) @@  Stream.take ~n:2 @@
+  run q (fun q -> ocanren {translate q (Lein (Var ("x"),
+                                              Expr (High),
+                                              Mux (Expr (Var ("x")),
+                                                   Lein (Var ("y"),
+                                                         Expr (High), Null),
+                                                   Lein (Var ("y"),
+                                                         Expr (Low), Null))))})
+     (fun x -> List.to_list id @@ project x);;
 
