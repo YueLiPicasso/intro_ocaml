@@ -238,7 +238,7 @@ a value of `<graph>`. A generic translation algorithm is given by propagating
                                  | {{ <assignment> <empty> }}     go to (6)
 			    
 (3)  {{ <statement> <program> }} ::= {{ <if clause > <program> }}   go to (5)	  
-   	                      | {{ <assignment> <program> }}        go to (7)
+   	                           | {{ <assignment> <program> }}   go to (7)
 		  
 (4)  {{ <if clause > <empty> }}
      ::= {{ if <expression> then <statement> else <statement> fi <empty> }}     go to (8)
