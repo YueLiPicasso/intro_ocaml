@@ -5,7 +5,7 @@ flowchart language program, and backward.
 Presentation 1 gives the syntaxes in ways inspired by both the _VHDL
 Standard 2019_ and the _OCaml Manual 4.10_ where modern BNF notation is used.
 Presentation 2 gives syntaxes in the way of the Algol 60 report where the BNF notation was first
-introduced. The same translation algotihm is also presented in two ways.
+introduced. The same translation algotihm is also presented in two styles.
 
 # Presentation 1 
 
