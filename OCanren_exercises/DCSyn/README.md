@@ -1,11 +1,16 @@
 # A Relational Translator for Digital Circuit Design
 
 Translateing a simple imperative language program into a
-flowchart language program.  
+flowchart language program. Presentation 1 gives the syntaxes in ways inspired by both the _VHDL
+Standard 2019_ and the _OCaml Manual 4.10_ where modern BNF notation are used.
+Presentation 2 gives syntaxes in the way of the Algol 60 report where the BNF notation was first
+introduced. 
 
-## Syntaxes of the languages concerned
+# Presentation 1 
 
-The languages' syntaxes are given in BNF notation. 
+## Syntaxes 
+
+The languages' syntaxes are given in modern BNF notation. 
 
 1. Syntactic categories are set in _italic_ font.
 1. Terminal symbols are set in **Boldface**.
@@ -30,19 +35,19 @@ _statement_ ::= **if** _expr_ **then** _statement_ **else** _statement_ **fi** |
 
 _program_ ::=  _statement_  [ _program_ ]
 
-### The flowchart language
+### The Flowchart Language
 
 
 _graph_ ::= **0** | **1** | _var_ 
 | **let** _var_ **=** _graph_ **in** _graph_ | **mux(** _graph_ **,** _graph_ **,** _graph_ **)**  | **null**
  
 
-### Semantic note
+### A Note on Semantics
 
 In the flowchart language **mux(** _graph_ **,** _graph_ **,** _graph_ **)**
  refers to multiplexing where the first argument is the selection signal.  
 
-## Translation Design
+## Translation 
 
  No need for imaginations on how a _graph_
 might be converted into a schematic, although the context of this project is
@@ -110,8 +115,6 @@ _var_ **:=** _expr_    |  ->  |  **let** _var_ **=** _graph1_ **in**  | _expr_ -
 We use Tables 1, 2.1 and 2.2 to translate any _program_ into a _graph_.
 
 
-
-
 ### A Worked Example
 
 The  program:
@@ -140,12 +143,10 @@ mux( x ,
 ```
 The detailed steps are given in Appendix A.
 
+# Presentation 2
 
-## Alternative syntaxes and translation presentation 
+## Syntaxes 
 
-The syntaxes so far have been presented in ways inspired by both the VHDL
-standard 2019 and the OCaml manual 4.10.
-The following style follows the Algol 60 report.
 
 
 The syntaxes will be described with the aid of metalinguistic formulae.
@@ -169,7 +170,7 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 ```
 
 
-### The imperative language
+### The Imperative Language
 
 A declaration of basic symbols is as follows:
 ```
@@ -198,7 +199,7 @@ Then comes the higher level constructs:
 `<if clause>` contains `<statement>` and vice versa, these definitions are
 necessarily recursive.
 
-### The flowchart language
+### The Flowchart Language
 
 A declaration of basic symbols is as follows:
 ```
@@ -223,7 +224,7 @@ Then comes the higher level constructs:
 <graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
 ```
 
-### Translation design
+## Translation
 
 We use `{{ }}` to denote a translation operation from a value of `<program>` to
 a value of `<graph>`. A generic translation algorithm is given by propagating
@@ -264,7 +265,7 @@ a value of `<graph>`. A generic translation algorithm is given by propagating
 ```
 
 
-## Appendix A
+# Appendix A
 
 We use `{{ }}` to denote the translation function, which has the type
 `program -> graph`, and show the state transition by `==>>` and show the
