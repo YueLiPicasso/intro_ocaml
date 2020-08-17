@@ -138,10 +138,137 @@ mux( x ,
           let z = 0 in mux( x, let y = 1 in null , let z = 1 in null) ,   
 	  let y = 1 in mux( x, let y = 1 in null , let z = 1 in null)))
 ```
+The detailed steps are given in Appendix A.
+
+
+## Alternative syntaxes and translation 
+
+The syntaxes so far have been presented in ways inspired by both the VHDL
+standard 2019 and the OCaml manual 4.10.
+The following style follows the Algol 60 report.
+
+
+The syntaxes will be described with the aid of metalinguistic formulae.
+Words enclosed in brackets `<>` are metalinguistic variables whose
+values are sequences of symbols. The marks `::=` and `|` are metalinguistic
+connectives (the latter means "or"). Any mark, which is neither a variable
+nor a connective, denotes itself. Juxtaposition of
+marks and/or variables signifies juxtaposition of the sequences denoted.
+
+
+### Shared syntax
+
+```
+<boolean> ::= 0 | 1
+
+<letter> ::= u | v | w | x | y | z
+
+<variable> ::= <letter> | <variable> <letter>
+
+<expression> ::= <boolean> | <variablle>
+```
+
+
+### The imperative language
+
+A declaration of basic symbols is as follows:
+```
+<empty> ::= 
+
+<delimiter> := <sequential operator> | <separator> 
+
+<sequential operator> ::= if | then | else | fi
+
+<separator> ::= :=
+```
+
+Then comes the higher level constructs:
+
+```
+<if clause> ::= if <expression> then <statement> else <statement> fi
+
+<assignment> ::= <variable> := <expression> 
+
+<statement> ::=  <if clause > | <assignment>
+
+<program> ::=  <statement> <empty> | <statement> <program>
+```
+
+`<empty>` is the null string of symbols.  Since the definition of
+`<if clause>` contains `<statement>` and vice versa, these definitions are
+necessarily recursive.
+
+### The flowchart language
+
+A declaration of basic symbols is as follows:
+```
+<fan-out operator> ::= let | in
+
+<separator> ::= , | = 
+
+<bracket> ::= ( | )
+
+<function> ::= mux
+
+<null graph> ::= null
+```
+
+Then comes the higher level constructs:
+
+```
+<fan-out> ::= let <variable> = <graph> in <graph>
+
+<multiplexing> ::= mux ( <graph> , <graph> , <graph> )
+
+<graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
+```
+
+### Translation design
+
+We use `{{ }}` to denote a translation operation from a value of `<program>` to
+a value of `<graph>`. A generic translation algorithm is given by propagating
+`{{ }}` through the BNF defintion of the labguages.
+
+
+```
+(1)  {{ <program> }} ::= {{ <statement> <empty> }}       go to (2)
+                       | {{ <statement> <program> }}     go to (3)
+
+(2)  {{ <statement> <empty> }} ::= {{ <if clause > <empty> }}     go to (4)
+                                 | {{ <assignment> <empty> }}     go to (6)
+			    
+(3)  {{ <statement> <program> }} ::= {{ <if clause > <program> }}   go to (5)	  
+   	                      | {{ <assignment> <program> }}        go to (7)
+		  
+(4)  {{ <if clause > <empty> }}
+     ::= {{ if <expression> then <statement> else <statement> fi <empty> }}     go to (8)
+
+(5)  {{ <if clause > <program> }}
+     ::=  {{ if <expression> then <statement> else <statement> fi <program> }}  go to (9)
+
+(6)  {{ <assignment> <empty> }} ::= {{ <variable> := <expression> <empty> }}
+		  
+(7)  {{ <assignment> <program> }} ::= {{ <variable> := <expression> <program> }}
+
+(8)  {{ if <expression> then <statement> else <statement> fi <empty> }}
+     ::= mux (<expression>, {{ <statement> <empty> }}, {{ <statement> <empty> }})      go to (2)
+
+(9)  {{ if <expression> then <statement> else <statement> fi <program> }}
+     ::= mux (<expression>, {{ <statement> <program> }}, {{ <statement> <program> }})  go to (3)
+   
+(10) {{ <variable> := <expression> <empty> }}
+     ::= let <variable> = <expression> in <null graph>
+
+(11) {{ <variable> := <expression> <program> }}
+     ::= let <variable> = <expression> in {{ <program> }} go to (1)
+```
+
+
+## Appendix A
 
 We use `{{ }}` to denote the translation function, which has the type
 `program -> graph`, and show the state transition by `==>>` and show the
-redex by `<<<`. The detailed steps are given as follows.
+redex by `<<<`. 
 
 
 ```
@@ -310,84 +437,3 @@ mux( x ,
 
 ```
 
-## Alternative presentation of the syntaxes
-
-The syntaxes so far have been presented in ways inspired by both the VHDL
-standard 2019 and the OCaml manual 4.10.
-The following style follows the Algol 60 report.
-
-
-The syntaxes will be described with the aid of metalinguistic formulae.
-Words enclosed in brackets `<>` are metalinguistic variables whose
-values are sequences of symbols. The marks `::=` and `|` are metalinguistic
-connectives (the latter means "or"). Any mark, which is neither a variable
-nor a connective, denotes itself. Juxtaposition of
-marks and/or variables signifies juxtaposition of the sequences denoted.
-
-
-### Shared syntax
-
-```
-<boolean> ::= 0 | 1
-
-<letter> ::= u | v | w | x | y | z
-
-<variable> ::= <letter> | <variable> <letter>
-
-<expression> ::= <boolean> | <variablle>
-```
-
-
-### The imperative language
-
-A declaration of basic symbols is as follows:
-```
-<empty> ::= 
-
-<delimiter> := <sequential operator> | <separator> 
-
-<sequential operator> ::= if | then | else | fi
-
-<separator> ::= :=
-```
-
-Then comes the higher level constructs:
-
-```
-<if clause> ::= if <expression> then <statement> else <statement> fi
-
-<assignment> ::= <variable> := <expression> 
-
-<statement> ::=  <if clause > | <assignment>
-
-<program> ::=  <statement> <empty> | <statement> <program>
-```
-
-`<empty>` is the null string of symbols.  Since the definition of
-`<if clause>` contains `<statement>` and vice versa, these definitions are
-necessarily recursive.
-
-### The flowchart language
-
-A declaration of basic symbols is as follows:
-```
-<fan-out operator> ::= let | in
-
-<separator> ::= , | = 
-
-<bracket> ::= ( | )
-
-<function> ::= mux
-
-<null graph> ::= null
-```
-
-Then comes the higher level constructs:
-
-```
-<fan-out> ::= let <variable> = <graph> in <graph>
-
-<multiplexing> ::= mux ( <graph> , <graph> , <graph> )
-
-<graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
-```
