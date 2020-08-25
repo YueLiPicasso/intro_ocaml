@@ -34,31 +34,37 @@ A declaration of basic symbols is as follows:
 ```
 <delimiter> := <sequential operator> | <separator> 
 
-<sequential operator> ::= if | then | else | fi | ; | skip
+<sequential operator> ::= if | then | else | fi | ; 
 
 <separator> ::= :=
+
+<empty> ::= 
 ```
 
-Then comes the higher level constructs:
+`<empty>` is the empty string of symbols. Then comes the higher level constructs:
 
 ```
-<if clause> ::= if <expression> then <conditional> else <conditional> fi
-
-<conditional> ::=  skip | <statement>
-
-<statement> ::= <if clause > ;
-              | <assignment> ;
-	      | <if clause > ; <statement>
-	      | <assignment> ; <statement>
+<if clause> ::= if <expression> then <statement> else <statement> fi
 
 <assignment> ::= <variable> := <expression>
 
+<basic statement> ::= <empty>
+                    | <if clause> 
+                    | <assignment> 
+	      
+<statement> ::= <basic statement> ;
+              | <basic statement> ; <statement>
 ```
 
 Since the definition of
 `<if clause>` contains `<conditional>` which in turn contains `<statement>` which
 in turn contains `<if clause>`, these definitions are
-necessarily recursive.  
+necessarily recursive.
+
+Some values from `<statement>` are, for example: `;`,  `if x then ; else y := 1 fi ;` and 
+`; ; x := 0 ; ;`. The semantics of `;` is, informally,  to sequence
+multiple `<if clause>` and <assignment>, and single or extra `;` are ignored and nothing
+else would be done.
 
 ### The Flowchart Language
 
@@ -115,10 +121,10 @@ a value of `<graph>`. A generic translation algorithm is given by propagating
                          ::= let <variable> = <expression> in <null graph>
 
 (6) {{ <if clause > ; <statement> }}
-          ::= {{ if <expression> then <conditional_1> else <conditional> fi ; <statement> }}
+          ::= {{ if <expression> then <conditional> else <conditional> fi ; <statement> }}
 	  ::= mux ( <expression> ,
-	            {{ <stat1> <stat3> }} ,
-		    {{ <stat2> <stat3> }} )   go to (4) or (5)
+	            {{ <conditional> <statement> }} ,
+		    {{ <conditional> <statement> }} )   go to (4) or (5)
           where <stat1> ::= <stat2>
 	        <stat2> ::= <stat3>
 		<stat3> ::= <statement>
