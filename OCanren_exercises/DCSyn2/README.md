@@ -34,7 +34,7 @@ A declaration of basic symbols is as follows:
 ```
 <delimiter> := <sequential operator> | <separator> 
 
-<sequential operator> ::= if | then | else | fi | ; 
+<sequential operator> ::= if | then | else | fi | ; | skip
 
 <separator> ::= :=
 
@@ -48,11 +48,11 @@ A declaration of basic symbols is as follows:
 
 <assignment> ::= <variable> := <expression>
 
-<basic statement> ::= <empty>
+<basic statement> ::= skip
                     | <if clause> 
                     | <assignment> 
 	      
-<statement> ::= <basic statement> ;
+<statement> ::= <basic statement> 
               | <basic statement> ; <statement>
 ```
 
@@ -61,10 +61,9 @@ Since the definition of
 in turn contains `<if clause>`, these definitions are
 necessarily recursive.
 
-Some values from `<statement>` are, for example: `;`,  `if x then ; else y := 1 fi ;` and 
-`; ; x := 0 ; ;`. The semantics of `;` is, informally,  to sequence
-multiple `<if clause>` and <assignment>, and single or extra `;` are ignored and nothing
-else would be done.
+Some values from `<statement>` are, for example: `skip`,  `if x then skip else x := 1 ; y := 1 fi` and 
+`skip; skip; x := 0; skip; skip`. The semantics of `;` is, informally,  to sequence
+multiple `<basic statement>`.  A `skip`is seem as an empty statement and is just ignored.
 
 ### The Flowchart Language
 
@@ -90,7 +89,7 @@ Then comes the higher level constructs:
 
 <graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
 ```
-
+<
 ## Translation
 
 We aim to map from `<statement>` to `<graph>`.
@@ -141,5 +140,5 @@ x := 1 ;
 y := 0 ;
 if x then y
 ```
-
+>
 
