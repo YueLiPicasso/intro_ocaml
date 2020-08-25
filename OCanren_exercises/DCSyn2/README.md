@@ -57,7 +57,7 @@ A declaration of basic symbols is as follows:
 ```
 
 Since the definition of
-`<if clause>` contains `<conditional>` which in turn contains `<statement>` which
+`<if clause>` contains `<statement>` which in turn contains `<basic statement>` which
 in turn contains `<if clause>`, these definitions are
 necessarily recursive.
 
