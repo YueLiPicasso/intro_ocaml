@@ -77,7 +77,12 @@ of making recursive calls is shown to be important by this example.
 ### Rational number arithmetic
 
 A [half-successful](ratexpr) treatment of relational arithmetic on (non-negative)
-rational numbers in OCanren. 
+rational numbers in OCanren.
+
+### Digital Circuit Synthesis
+
+Relational [translation](DCSyn) between a primitive imperative language and a
+minimal hardware  description language. 
 
 ## Learning OCaml
 
