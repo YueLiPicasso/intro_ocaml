@@ -30,32 +30,34 @@ marks and/or variables signifies juxtaposition of the sequences denoted.
 ### The Imperative Language
 
 A declaration of basic symbols is as follows:
-```
-<empty> ::= 
 
+```
 <delimiter> := <sequential operator> | <separator> 
 
-<sequential operator> ::= if | then | else | fi | ;
+<sequential operator> ::= if | then | else | fi | ; | skip
 
 <separator> ::= :=
 ```
 
-`<empty>` is the null string of symbols. Then comes the higher level constructs:
+Then comes the higher level constructs:
 
 ```
-<if clause> ::= if <expression> then <statement> else <statement> fi
+<if clause> ::= if <expression> then <conditional> else <conditional> fi
 
-<assignment> ::= <variable> := <expression> 
+<conditional> ::=  skip | <statement>
 
-<statement> ::=  <if clause >
-               | <assignment>
-	       | <statement> ; <statement>
-	       | <statement> ; <empty>
+<statement> ::= <if clause > ;
+              | <assignment> ;
+	      | <if clause > ; <statement>
+	      | <assignment> ; <statement>
+
+<assignment> ::= <variable> := <expression>
+
 ```
 
-A statement is an if-clause, an assignment or a sequence
-of statements. Since the definition of
-`<if clause>` contains `<statement>` and vice versa, these definitions are
+Since the definition of
+`<if clause>` contains `<conditional>` which in turn contains `<statement>` which
+in turn contains `<if clause>`, these definitions are
 necessarily recursive.  
 
 ### The Flowchart Language
@@ -85,47 +87,53 @@ Then comes the higher level constructs:
 
 ## Translation
 
-We aim to map from <statement> to <graph>.
+We aim to map from `<statement>` to `<graph>`.
 
 We use `{{ }}` to denote a translation operation from a value of
-`<statement>` to
+`<conditional>` to
 a value of `<graph>`. A generic translation algorithm is given by propagating
 `{{ }}` through the BNF defintion of the labguages. Start reading from (1).
 
 
 ```
-(1)  {{ <program> }} ::= {{ <statement> <empty> }}       go to (2)
-                       | {{ <statement> <program> }}     go to (3)
+(1) {{ <conditional> }} ::= {{ skip }}            go to (2)
+                         | {{ <statement> }}      go to (3)
 
-(2)  {{ <statement> <empty> }} ::= {{ <if clause > <empty> }}     go to (4)
-                                 | {{ <assignment> <empty> }}     go to (6)
-			    
-(3)  {{ <statement> <program> }} ::= {{ <if clause > <program> }}   go to (5)	  
-   	                           | {{ <assignment> <program> }}   go to (7)
-		  
-(4)  {{ <if clause > <empty> }}
-     ::= {{ if <expression> then <statement> else <statement> fi <empty> }}     go to (8)
+(2) {{ skip }} ::= <null graph> 
 
-(5)  {{ <if clause > <program> }}
-     ::=  {{ if <expression> then <statement> else <statement> fi <program> }}  go to (9)
+(3) {{ <statement> }} ::=  {{ <if clause > ; }}                 go to (4) 
+                         | {{ <assignment> ; }}                 go to (5)
+	                 | {{ <if clause > ; <statement> }}     go to (6)
+			 | {{ <assignment> ; <statement> }}     go to (7)	
 
-(6)  {{ <assignment> <empty> }} ::= {{ <variable> := <expression> <empty> }}      go to (10)
-		  
-(7)  {{ <assignment> <program> }} ::= {{ <variable> := <expression> <program> }}  go to (11)
+(4) {{ <if clause> ; }} ::= {{ if <expression> then <conditional> else <conditional> fi ; }}
+                        ::= mux ( <expression> ,
+			         {{ <conditional> }} ,          go to (1)
+				 {{ <conditional> }} )          go to (1)
 
-(8)  {{ if <expression> then <statement> else <statement> fi <empty> }}
-     ::= mux (<expression>, {{ <statement> <empty> }}, {{ <statement> <empty> }})      go to (2)
+(5) {{ <assignment> ; }} ::= {{ <variable> := <expression> }}
+                         ::= let <variable> = <expression> in <null graph>
 
-(9)  {{ if <expression> then <statement> else <statement> fi <program> }}
-     ::= mux (<expression>, {{ <statement> <program> }}, {{ <statement> <program> }})  go to (3)
-   
-(10) {{ <variable> := <expression> <empty> }}
-     ::= let <variable> = <expression> in <null graph>
+(6) {{ <if clause > ; <statement> }}
+          ::= {{ if <expression> then <conditional_1> else <conditional> fi ; <statement> }}
+	  ::= mux ( <expression> ,
+	            {{ <stat1> <stat3> }} ,
+		    {{ <stat2> <stat3> }} )   go to (4) or (5)
+          where <stat1> ::= <stat2>
+	        <stat2> ::= <stat3>
+		<stat3> ::= <statement>
 
-(11) {{ <variable> := <expression> <program> }}
-     ::= let <variable> = <expression> in {{ <program> }}   go to (1)
+() {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
+                                     ::= let <variable> = <expression> in {{ <statement> }} go to (1)
+                                     
 ```
 
+## A Worked Example
 
+```
+x := 1 ;
+y := 0 ;
+if x then y
+```
 
 
