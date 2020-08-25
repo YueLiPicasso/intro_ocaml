@@ -47,7 +47,10 @@ A declaration of basic symbols is as follows:
 
 <assignment> ::= <variable> := <expression> 
 
-<statement> ::=  <if clause > | <assignment> | <statement> ; <statement>
+<statement> ::=  <if clause >
+               | <assignment>
+	       | <statement> ; <statement>
+	       | <statement> ; <empty>
 ```
 
 A statement is an if-clause, an assignment or a sequence
