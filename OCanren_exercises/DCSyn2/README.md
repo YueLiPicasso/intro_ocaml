@@ -89,7 +89,9 @@ Then comes the higher level constructs:
 
 <graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
 ```
-<
+
+## --------------------------- to be worked on next -----------------------------------
+
 ## Translation
 
 We aim to map from `<statement>` to `<graph>`.
@@ -140,5 +142,5 @@ x := 1 ;
 y := 0 ;
 if x then y
 ```
->
+
 
