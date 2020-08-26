@@ -146,7 +146,7 @@ In (9) the translation proceeds and ignores `<no action>`.
 
 ## A Worked Example
 
-Translation the imperative program :
+Translate the imperative program :
 
 ```
 x := 1 ;
