@@ -158,4 +158,180 @@ if y then
      else skip fi
 ```
 
+Result:
 
+```
+let x = 1 in
+mux(x,
+    mux(y,
+        mux(z,
+	    let z = 0 in let x = 0 in let w = 0 in null,
+	    let z = 1 in let y = 0 in let w = 0 in null),
+	null),
+    let y = 1 in
+    mux(y,
+        mux(z,
+	    let z = 0 in let x = 0 in let w = 0 in null,
+	    let z = 1 in let y = 0 in let w = 0 in null),
+	null))
+```
+
+
+
+The translation steps are given below with selected intermediate states.
+
+```
+State 1.
+
+{{
+x := 1 ;
+if x then skip else y := 1 fi ;
+if y then
+     if z then z := 0 ; x := 0
+          else z := 1 ; y := 0 fi ;
+     w := 0
+     else skip fi
+}}
+
+          ||
+          ||
+         \||/
+          \/
+
+State 2.
+
+let x = 1 in
+{{
+if x then skip else y := 1 fi ;
+if y then
+     if z then z := 0 ; x := 0
+          else z := 1 ; y := 0 fi ;
+     w := 0
+     else skip fi
+}}
+
+          ||
+          ||
+         \||/
+          \/
+
+State 3.
+
+let x = 1 in
+mux( x
+   ,
+    {{ skip ;
+       if y then
+            if z then z := 0 ; x := 0
+                 else z := 1 ; y := 0 fi ;
+            w := 0
+            else skip fi }}
+    ,
+     {{ y := 1 ;
+        if y then
+             if z then z := 0 ; x := 0
+                  else z := 1 ; y := 0 fi ;
+             w := 0
+             else skip fi }}
+     )
+
+           ||
+           ||
+          \||/
+           \/
+
+State 4.
+
+let x = 1 in
+mux( x
+   ,
+    {{ if y then
+            if z then z := 0 ; x := 0
+                 else z := 1 ; y := 0 fi ;
+            w := 0
+            else skip fi }}
+    ,
+        let y = 1 in
+    {{  if y then
+             if z then z := 0 ; x := 0
+                  else z := 1 ; y := 0 fi ;
+             w := 0
+             else skip fi }}
+     )
+
+
+           ||
+           ||
+          \||/
+           \/
+
+State 5.
+
+let x = 1 in
+mux( x
+   ,
+     mux ( y
+         , 
+           mux ( z
+	       ,
+	       {{ z := 0 ; x := 0 ; w := 0 }}
+	       ,
+	       {{ z := 1 ; y := 0 ; w := 0 }}
+	       )
+	 , 
+            null
+	 )
+    ,
+        let y = 1 in
+    {{  if y then
+             if z then z := 0 ; x := 0
+                  else z := 1 ; y := 0 fi ;
+             w := 0
+             else skip fi }}
+     )
+
+
+           ||
+           ||
+          \||/
+           \/
+
+State 6.
+
+let x = 1 in
+mux( x
+   ,
+     mux ( y
+         , 
+           mux ( z
+	       ,
+	         let z = 0 in let x = 0 in let w = 0 in null
+	       ,
+	         let z = 1 in let y = 0 in let w = 0 in null 
+	       )
+	 , 
+            null
+	 )
+    ,
+      let y = 1 in
+      mux ( y
+          , 
+           mux ( z
+	       ,
+	         let z = 0 in let x = 0 in let w = 0 in null
+	       ,
+	         let z = 1 in let y = 0 in let w = 0 in null 
+	       )
+	 , 
+            null
+	 )
+     )
+
+
+
+
+```
+
+
+There are things that might be done better. For instance, in State 4 `{{}}` is applied twice to the same statement.
+This results in duplication of multiplexing in State 6. 
