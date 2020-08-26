@@ -59,7 +59,7 @@ Since the definition of
 in turn contains `<if clause>`, these definitions are
 necessarily recursive.
 
-Moreover,  we have the following proposition
+Moreover,  we have the following _proposition_:
 
 ```
 <statement> ::= <statement> ; <statement>
