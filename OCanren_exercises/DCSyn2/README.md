@@ -127,28 +127,35 @@ We use `{{ }}` to denote a translation operation from a value of
 (5) {{ <no action> }} ::= {{ skip }} ::= <null graph>
 
 (6) {{ <basic statement> ; <statement> }} ::= {{ <if clause> ; <statement> }}    go to (7)
-                                            | {{ <assignment> ; <statement> }}   go to ()
-					    | {{ <no action> ; <statement> }}    go to ()
+                                            | {{ <assignment> ; <statement> }}   go to (8)
+					    | {{ <no action> ; <statement> }}    go to (9)
 
 (7) {{ <if clause> ; <statement> }} ::= {{ if <expression> then <stat1> else <stat2> fi ; <statement> }}
-                                        where <stat1> ::= <stat2> ::= <statement>
 	                            ::= mux ( <expression> ,
 	                                      {{ <stat1> ; <statement> }} ,   go to (1)
 		                              {{ <stat2> ; <statement> }} )   go to (1)
-					      
-                                    
 
-() {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
-                                     ::= let <variable> = <expression> in {{ <statement> }} go to (1)
-                                     
+Note :  <stat1> ::= <stat2> ::= <statement>
+					      
+(8) {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
+                                     ::= let <variable> = <expression> in {{ <statement> }}    go to (1)
+
+(9) {{ <no action> ; <statement> }} ::= {{ <statement> }}   go to (1)
 ```
+In (9) the translation proceeds and ignores `<no action>`.
 
 ## A Worked Example
 
+Translation the imperative program :
+
 ```
 x := 1 ;
-y := 0 ;
-if x then y
+if x then skip else y := 1 fi ;
+if y then
+     if z then z := 0 ; x := 0
+          else z := 1 ; y := 0 fi ;
+     w := 0
+     else skip fi
 ```
 
 
