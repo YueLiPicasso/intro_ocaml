@@ -103,7 +103,7 @@ We aim to map from `<statement>` to `<graph>`.
 
 We use `{{ }}` to denote a translation operation from a value of
 `<statement>` to a value of `<graph>`. A generic translation algorithm is given by propagating
-`{{ }}` through the BNF defintion of the labguages. Start reading from (1).
+`{{ }}` through the BNF defintion of the imperative language. Start reading from (1).
 
 
 ```
