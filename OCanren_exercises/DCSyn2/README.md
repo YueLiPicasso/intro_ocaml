@@ -64,7 +64,7 @@ necessarily recursive.
 Some values from `<statement>` are, for example:
 `skip ;`,
 `if x then skip ; else x := 1 ; y := 1 ; fi ;` and 
-`skip ; skip ; x := 0 ; if x then else fi ;`.
+`if x then else fi ;`.
 The semantics of `;` is, informally,  to sequence
 multiple `<basic statement>`s. The following proposition is provable by induction.
 
