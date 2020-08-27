@@ -68,7 +68,7 @@ Some values from `<statement>` are, for example:
 The semantics of `;` is, informally,  to sequence
 multiple `<basic statement>`s. The following proposition is provable by induction.
 
-_PROPOSITION (Stat)_  The syntactic category `<statement>` is closed under juxtaposition : a value of `<statement> <statement>` is
+__PROPOSITION (Stat)__  The syntactic category `<statement>` is closed under juxtaposition : a value of `<statement> <statement>` is
  a value of `<statement>`.
 
 ### The Flowchart Language
