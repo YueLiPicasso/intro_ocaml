@@ -246,6 +246,8 @@ mux( x
      )
 
 
+In State 4 `{{}}` is applied twice to the same statement. We focus on the upper one.
+
            ||
            ||
           \||/
@@ -314,6 +316,3 @@ mux( x
      )
 ```
 
-
-There are things that might be done better. For instance, in State 4 `{{}}` is applied twice to the same statement.
-This results in duplication of multiplexing in State 6. 
