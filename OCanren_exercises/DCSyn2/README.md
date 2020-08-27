@@ -259,15 +259,42 @@ let x = 1 in
 mux( x
    ,
      mux ( y
-         , 
+         ,
+           {{  if z then z := 0 ; x := 0 ;
+                    else z := 1 ; y := 0 ; fi ;
+               w := 0 ; }}
+	 ,
+	   {{  skip ; }}
+	 )
+    ,
+        let y = 1 in
+    {{  if y then
+             if z then z := 0 ; x := 0 ;
+                  else z := 1 ; y := 0 ; fi ;
+             w := 0 ;
+             else skip ; fi ; }}
+     )
+
+           ||
+           ||
+          \||/
+           \/
+
+State 6.
+
+let x = 1 in
+mux( x
+   ,
+     mux ( y
+         ,
            mux ( z
 	       ,
-	       {{ z := 0 ; x := 0 ; w := 0 ; }}
+	         {{ z := 0 ; x := 0 ; w := 0 ; }}
 	       ,
-	       {{ z := 1 ; y := 0 ; w := 0 ; }}
+                 {{ z := 1 ; y := 0 ; w := 0 ; }}
 	       )
-	 , 
-            null
+	 ,
+	   null
 	 )
     ,
         let y = 1 in
@@ -284,7 +311,7 @@ mux( x
           \||/
            \/
 
-State 6.
+State 7.
 
 let x = 1 in
 mux( x
