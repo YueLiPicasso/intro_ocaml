@@ -179,6 +179,8 @@ if y then
      else skip ; fi ;
 }}
 
+Apply rule (5).
+
           ||
           ||
          \||/
@@ -195,6 +197,8 @@ if y then
      w := 0 ;
      else skip ; fi ;
 }}
+
+Apply rule (4).
 
           ||
           ||
@@ -221,6 +225,9 @@ mux( x
              else skip ; fi ; }}
      )
 
+Apply rule (6) and (5) to respectively the second and third
+argument of `mux`.
+
            ||
            ||
           \||/
@@ -246,7 +253,8 @@ mux( x
      )
 
 
-In State 4 `{{}}` is applied twice to the same statement. We focus on the upper one.
+In State 4 `{{}}` is applied twice to the same statement.
+We focus on the upper one. Apply rule (4).
 
            ||
            ||
@@ -274,6 +282,8 @@ mux( x
              w := 0 ;
              else skip ; fi ; }}
      )
+
+Use rules (4), (6) and (2).
 
            ||
            ||
@@ -305,6 +315,9 @@ mux( x
              else skip ; fi ; }}
      )
 
+
+Use rule (5) repeatedly, and copy the result as the third argument
+of the top level `mux`.
 
            ||
            ||
