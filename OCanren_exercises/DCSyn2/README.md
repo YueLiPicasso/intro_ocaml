@@ -66,7 +66,10 @@ Some values from `<statement>` are, for example:
 `if x then skip ; else x := 1 ; y := 1 ; fi ;` and 
 `skip ; skip ; x := 0 ; skip ; skip ;`.
 The semantics of `;` is, informally,  to sequence
-multiple `<basic statement>`s.  
+multiple `<basic statement>`s. The following proposition is provable by induction.
+
+_PROPOSITION_  The syntactic category `<statement>` is closed under juxtaposition : a value of `<statement> <statement>` is
+ a value of `<statement>`.
 
 ### The Flowchart Language
 
@@ -118,7 +121,7 @@ We use `{{ }}` to denote a translation operation from a value of
 	                                      {{ <stat1> <statement> }} ,   go to (1)
 		                              {{ <stat2> <statement> }} )   go to (1)
 
-Note :  <stat1> ::= <stat2> ::= <statement>
+Note :  <stat1> ::= <stat2> ::= <statement> 
 					      
 (5) {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
                                      ::= let <variable> = <expression> in {{ <statement> }}    go to (1)
