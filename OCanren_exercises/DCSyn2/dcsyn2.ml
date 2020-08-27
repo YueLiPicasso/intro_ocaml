@@ -29,15 +29,7 @@ module BStat = struct
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-(** Essentially a statement is a list of basic statements. 
-    Note the similarity with OCanren.Std.List.t *)
-@type ('bstat, 'self) stat = Nil | Seq of 'bstat * 'self
- with show, gmap, eq, compare;;
-
-module Stat = struct
-  @type ('a, 'b) t = ('a, 'b) stat with show, gmap, eq, compare;;
-  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
-end;;
+(** The statement type ['stat] is an [OCanren.Std.List] of [`bstat]. *)
 
 (** syntactic categories unique to the flowchart language *)
 @type ('expr, 'self) graph = Expr of 'expr
@@ -54,8 +46,7 @@ end;;
 (** Injection primitives *)  
 module Inj = struct
   module FExpr  = Fmap(Expr);;
-  module FBStat = Fmap(BStat);;
-  module FStat  = Fmap2(Stat);;
+  module FBStat = Fmap2(BStat);;
   module FGraph = Fmap2(Graph);;
 
   let low  = fun () -> inj @@ FExpr.distrib Low;;
@@ -66,48 +57,37 @@ module Inj = struct
   let asgn = fun x y   -> inj @@ FBStat.distrib (Asgn (x,y));;
   let skip = fun ()    -> inj @@ FBStat.distrib Skip;;
 
-  let nil  = fun ()  -> inj @@ FStat.distrib Nil;;
-  let seq  = fun x y -> inj @@ FStat.distrib (Seq (x,y));; 
-  
   let expr = fun x     -> inj @@ FGraph.distrib (Expr x);;
   let lein = fun x y z -> inj @@ FGraph.distrib (Lein (x,y,z));;
   let mux  = fun x y z -> inj @@ FGraph.distrib (Mux (x,y,z));;
   let null = fun ()    -> inj @@ FGraph.distrib Null;;
 end;;
 
+
+
 open Inj;;
 
 let rec translate sta gra =
   ocanren {
-    prog == [] & grap == Null
-  |
-   {fresh s in prog == [s] &
-               {{fresh e, s1, s2 in
-                   s == Ifte (e, s1, s2)
-                   & fresh g1, g2 in
-                       grap == Mux (Expr e, g1, g2)
-                       & translate [s1] g1
-                       & translate [s2] g2 }
-               |
-                 {fresh v,e in
-                   s == Asgn (Var v, e)
-                   & grap == Lein(Var v, Expr e, Null) }}}
+    sta == [] & gra == Null
  |
-  {fresh s, s', p in prog == s :: s' :: p &
-                  {{fresh e, s1, s2 in
-                   s == Ifte (e, s1, s2)
-                   & fresh g1, g2 in
-                       grap == Mux (Expr e, g1, g2)
-                       & translate (s1 :: s' :: p) g1
-                       & translate (s2 :: s' :: p) g2 }
-               |
-                 {fresh v, e, g in
-                   s == Asgn (Var v, e)
-                   & grap == Lein(Var v, Expr e, g)
-                   & translate (s' :: p) g}}}
+    fresh h, t in sta == h :: t &
+      { { fresh e, s1, s2, s1', s2', g1, g2 in
+          h == Ifte (e, s1, s2)
+          & gra == Mux (Expr e, g1, g2)
+          & List.appendo s1 t s1'
+          & List.appendo s2 t s2'
+          & translate s1' g1
+          & translate s2' g2 }
+       |
+        { fresh v, e, g in
+          h == Asgn (Var v, e)
+          & gra == Lein (Var v, Expr e, g)
+          & translate t g }
+       |  h == Skip & translate t gra }
   };;
 
-
+(*
 @type gra = (GT.string Expr.t, gra) Graph.t with show;;
 @type sta = (GT.string Expr.t, sta) Stat.t with show;;
 @type stal = sta GT.list with show;; 
@@ -143,3 +123,4 @@ let _ =
                                                          Expr (Low), Null))))})
      (fun x -> List.to_list id @@ project x);;
 
+*)
