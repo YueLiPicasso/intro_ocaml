@@ -66,7 +66,7 @@ Some values from `<statement>` are, for example:
 `if x then skip ; else x := 1 ; y := 1 ; fi ;` and 
 `skip ; skip ; x := 0 ; skip ; skip ;`.
 The semantics of `;` is, informally,  to sequence
-multiple `<basic statement>`.  
+multiple `<basic statement>`s.  
 
 ### The Flowchart Language
 
