@@ -29,7 +29,7 @@ module BStat = struct
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-(** The statement type ['stat] is an [OCanren.Std.List] of [`bstat]. *)
+(** The statement type [stat] is an [OCanren.Std.List] of [bstat]. *)
 
 (** syntactic categories unique to the flowchart language *)
 @type ('expr, 'self) graph = Expr of 'expr
