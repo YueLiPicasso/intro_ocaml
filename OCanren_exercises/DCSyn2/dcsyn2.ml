@@ -7,7 +7,8 @@ open OCanren.Std;;
 (** {0 Abstract types for syntactic categries} *)
 
 (** shared syntactic categories *)
-@type 'a expr = Low | High | Var of 'a with show, gmap, eq, compare;; (** use string as ['a] *)
+@type 'a expr = Low | High | Var of 'a
+ with show, gmap, eq, compare;; (** use string as ['a] *)
 
 module Expr = struct
   @type 'a t = 'a expr with show, gmap, eq, compare;;
@@ -15,16 +16,28 @@ module Expr = struct
 end;;
 
 (** syntactic categories unique to the imperative language *)
-@type ('expr, 'self ) stat = Ifte of 'expr * 'self * 'self (** if then else *)
-                           | Asgn of 'expr * 'expr          (** assignment *)
+
+(** basic statement *)
+@type ('expr, 'stat ) bstat =
+     Ifte of 'expr * 'stat * 'stat (** if then else *)
+   | Asgn of 'expr * 'expr         (** assignment *)
+   | Skip           
  with show, gmap, eq, compare;;
 
-module Stat = struct
-  @type ('a,'b) t = ('a,'b) stat  with show, gmap, eq, compare;;
+module BStat = struct
+  @type ('a,'b) t = ('a,'b) bstat  with show, gmap, eq, compare;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-(** a {i program} is a logical list of logical [stat] *)
+(** Essentially a statement is a list of basic statements. 
+    Note the similarity with OCanren.Std.List.t *)
+@type ('bstat, 'self) stat = Nil | Seq of 'bstat * 'self
+ with show, gmap, eq, compare;;
+
+module Stat = struct
+  @type ('a, 'b) t = ('a, 'b) stat with show, gmap, eq, compare;;
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
+end;;
 
 (** syntactic categories unique to the flowchart language *)
 @type ('expr, 'self) graph = Expr of 'expr
@@ -40,16 +53,21 @@ end;;
 
 (** Injection primitives *)  
 module Inj = struct
-  module FExpr = Fmap(Expr);;
-  module FStat = Fmap2(Stat);;
+  module FExpr  = Fmap(Expr);;
+  module FBStat = Fmap(BStat);;
+  module FStat  = Fmap2(Stat);;
   module FGraph = Fmap2(Graph);;
 
   let low  = fun () -> inj @@ FExpr.distrib Low;;
   let high = fun () -> inj @@ FExpr.distrib High;;
   let var  = fun x  -> inj @@ FExpr.distrib (Var x);;
   
-  let ifte = fun x y z -> inj @@ FStat.distrib (Ifte (x,y,z));;
-  let asgn = fun x y   -> inj @@ FStat.distrib (Asgn (x,y));;
+  let ifte = fun x y z -> inj @@ FBStat.distrib (Ifte (x,y,z));;
+  let asgn = fun x y   -> inj @@ FBStat.distrib (Asgn (x,y));;
+  let skip = fun ()    -> inj @@ FBStat.distrib Skip;;
+
+  let nil  = fun ()  -> inj @@ FStat.distrib Nil;;
+  let seq  = fun x y -> inj @@ FStat.distrib (Seq (x,y));; 
   
   let expr = fun x     -> inj @@ FGraph.distrib (Expr x);;
   let lein = fun x y z -> inj @@ FGraph.distrib (Lein (x,y,z));;
@@ -59,7 +77,7 @@ end;;
 
 open Inj;;
 
-let rec translate prog grap =
+let rec translate sta gra =
   ocanren {
     prog == [] & grap == Null
   |

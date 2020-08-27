@@ -37,8 +37,11 @@ A declaration of basic symbols is as follows:
 <sequential operator> ::= if | then | else | fi | ; | skip
 
 <separator> ::= :=
+
+<empty> ::= 
 ```
 
+The value of `<empty>` is the null string.
 Operator `;` is right associative. Then comes the higher level constructs:
 
 ```
@@ -50,8 +53,7 @@ Operator `;` is right associative. Then comes the higher level constructs:
 
 <basic statement> ::=  <if clause> | <assignment> | <no action>
 	      
-<statement> ::= <basic statement> 
-              | <basic statement> ; <statement>
+<statement> ::= <empty> | <basic statement> ; <statement>
 ```
 
 Since the definition of
@@ -59,17 +61,11 @@ Since the definition of
 in turn contains `<if clause>`, these definitions are
 necessarily recursive.
 
-Moreover,  we have the following _proposition_:
-
-```
-<statement> ::= <statement> ; <statement>
-```
-
-which is provable by induction on the length of the left operand of `;` and which says that the
-syntactic category `<statement>` is closed under the operator `;`.
-
-Some values from `<statement>` are, for example: `skip`,  `if x then skip else x := 1 ; y := 1 fi` and 
-`skip; skip; x := 0; skip; skip`. The semantics of `;` is, informally,  to sequence
+Some values from `<statement>` are, for example:
+`skip ;`,
+`if x then skip ; else x := 1 ; y := 1 ; fi ;` and 
+`skip ; skip ; x := 0 ; skip ; skip ;`.
+The semantics of `;` is, informally,  to sequence
 multiple `<basic statement>`.  
 
 ### The Flowchart Language
@@ -108,41 +104,28 @@ We use `{{ }}` to denote a translation operation from a value of
 
 
 ```
-(1) {{ <statement> }} ::= {{ <basic statement> }}                  go to (2) 
-                        | {{ <basic statement> ; <statement> }}    go to (6)
+(1) {{ <statement> }} ::= {{ <empty> }}                            go to (2) 
+                        | {{ <basic statement> ; <statement> }}    go to (3)
 
-(2) {{ <basic statement> }} ::= {{ <if clause > }}    go to (3) 
-                              | {{ <assignment> }}    go to (4)
-	                      | {{ <no action> }}     go to (5)
-			
+(2) {{ <empty> }} ::= <null graph>
 
-(3) {{ <if clause> }} ::= {{ if <expression> then <statement> else <statement> fi }}
-                      ::= mux ( <expression> ,
-              	                {{ <statement> }} ,          go to (1)
-		                {{ <statement> }} )          go to (1)
+(3) {{ <basic statement> ; <statement> }} ::= {{ <if clause> ; <statement> }}    go to (4)
+                                            | {{ <assignment> ; <statement> }}   go to (5)
+					    | {{ <no action> ; <statement> }}    go to (6)
 
-(4) {{ <assignment> }} ::= {{ <variable> := <expression> }}
-                       ::= let <variable> = <expression> in <null graph>
-
-(5) {{ <no action> }} ::= {{ skip }} ::= <null graph>
-
-(6) {{ <basic statement> ; <statement> }} ::= {{ <if clause> ; <statement> }}    go to (7)
-                                            | {{ <assignment> ; <statement> }}   go to (8)
-					    | {{ <no action> ; <statement> }}    go to (9)
-
-(7) {{ <if clause> ; <statement> }} ::= {{ if <expression> then <stat1> else <stat2> fi ; <statement> }}
+(4) {{ <if clause> ; <statement> }} ::= {{ if <expression> then <stat1> else <stat2> fi ; <statement> }}
 	                            ::= mux ( <expression> ,
-	                                      {{ <stat1> ; <statement> }} ,   go to (1)
-		                              {{ <stat2> ; <statement> }} )   go to (1)
+	                                      {{ <stat1> <statement> }} ,   go to (1)
+		                              {{ <stat2> <statement> }} )   go to (1)
 
 Note :  <stat1> ::= <stat2> ::= <statement>
 					      
-(8) {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
+(5) {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
                                      ::= let <variable> = <expression> in {{ <statement> }}    go to (1)
 
-(9) {{ <no action> ; <statement> }} ::= {{ <statement> }}   go to (1)
+(6) {{ <no action> ; <statement> }} ::= {{ <statement> }}   go to (1)
 ```
-In (9) the translation proceeds and ignores `<no action>`.
+In (6) the translation proceeds and ignores `<no action>`.
 
 ## A Worked Example
 
@@ -150,12 +133,12 @@ Translate the imperative program :
 
 ```
 x := 1 ;
-if x then skip else y := 1 fi ;
+if x then skip ; else y := 1 ; fi ;
 if y then
-     if z then z := 0 ; x := 0
-          else z := 1 ; y := 0 fi ;
-     w := 0
-     else skip fi
+     if z then z := 0 ; x := 0 ;
+          else z := 1 ; y := 0 ; fi ;
+     w := 0 ;
+     else skip ; fi ;
 ```
 
 Result:
@@ -185,12 +168,12 @@ State 1.
 
 {{
 x := 1 ;
-if x then skip else y := 1 fi ;
+if x then skip ; else y := 1 ; fi ;
 if y then
-     if z then z := 0 ; x := 0
-          else z := 1 ; y := 0 fi ;
-     w := 0
-     else skip fi
+     if z then z := 0 ; x := 0 ;
+          else z := 1 ; y := 0 ; fi ;
+     w := 0 ;
+     else skip ; fi ;
 }}
 
           ||
@@ -202,12 +185,12 @@ State 2.
 
 let x = 1 in
 {{
-if x then skip else y := 1 fi ;
+if x then skip ; else y := 1 ; fi ;
 if y then
-     if z then z := 0 ; x := 0
-          else z := 1 ; y := 0 fi ;
-     w := 0
-     else skip fi
+     if z then z := 0 ; x := 0 ;
+          else z := 1 ; y := 0 ; fi ;
+     w := 0 ;
+     else skip ; fi ;
 }}
 
           ||
@@ -222,17 +205,17 @@ mux( x
    ,
     {{ skip ;
        if y then
-            if z then z := 0 ; x := 0
-                 else z := 1 ; y := 0 fi ;
-            w := 0
-            else skip fi }}
+            if z then z := 0 ; x := 0 ;
+                 else z := 1 ; y := 0 ; fi ;
+            w := 0 ;
+            else skip ; fi ; }}
     ,
      {{ y := 1 ;
         if y then
-             if z then z := 0 ; x := 0
-                  else z := 1 ; y := 0 fi ;
-             w := 0
-             else skip fi }}
+             if z then z := 0 ; x := 0 ;
+                  else z := 1 ; y := 0 ; fi ;
+             w := 0 ;
+             else skip ; fi ; }}
      )
 
            ||
@@ -246,17 +229,17 @@ let x = 1 in
 mux( x
    ,
     {{ if y then
-            if z then z := 0 ; x := 0
-                 else z := 1 ; y := 0 fi ;
-            w := 0
-            else skip fi }}
+            if z then z := 0 ; x := 0 ;
+                 else z := 1 ; y := 0 ; fi ;
+            w := 0 ;
+            else skip ; fi ; }}
     ,
         let y = 1 in
     {{  if y then
-             if z then z := 0 ; x := 0
-                  else z := 1 ; y := 0 fi ;
-             w := 0
-             else skip fi }}
+             if z then z := 0 ; x := 0 ;
+                  else z := 1 ; y := 0 ; fi ;
+             w := 0 ;
+             else skip ; fi ; }}
      )
 
 
@@ -274,9 +257,9 @@ mux( x
          , 
            mux ( z
 	       ,
-	       {{ z := 0 ; x := 0 ; w := 0 }}
+	       {{ z := 0 ; x := 0 ; w := 0 ; }}
 	       ,
-	       {{ z := 1 ; y := 0 ; w := 0 }}
+	       {{ z := 1 ; y := 0 ; w := 0 ; }}
 	       )
 	 , 
             null
@@ -284,10 +267,10 @@ mux( x
     ,
         let y = 1 in
     {{  if y then
-             if z then z := 0 ; x := 0
-                  else z := 1 ; y := 0 fi ;
-             w := 0
-             else skip fi }}
+             if z then z := 0 ; x := 0 ;
+                  else z := 1 ; y := 0 ; fi ;
+             w := 0 ;
+             else skip ; fi ; }}
      )
 
 
