@@ -316,7 +316,7 @@ mux( x
      )
 
 
-Use rule (5) repeatedly, and copy the result as the third argument
+Use rule (5) repeatedly, and copy the result for the third argument
 of the top level `mux`.
 
            ||
