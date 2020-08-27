@@ -121,7 +121,7 @@ We use `{{ }}` to denote a translation operation from a value of
 	                                      {{ <stat1> <statement> }} ,   go to (1)
 		                              {{ <stat2> <statement> }} )   go to (1)
 
-Note :  <stat1> ::= <stat2> ::= <statement> and Proposition (Stat).
+Note :  <stat1> ::= <stat2> ::= <statement> and PROPOSITION (Stat).
 					      
 (5) {{ <assignment> ; <statement> }} ::= {{ <variable> := <expression> ; <statement> }}
                                      ::= let <variable> = <expression> in {{ <statement> }}    go to (1)
