@@ -87,33 +87,40 @@ let rec translate sta gra =
        |  h == Skip & translate t gra }
   };;
 
-(*
+
+
 @type gra = (GT.string Expr.t, gra) Graph.t with show;;
-@type sta = (GT.string Expr.t, sta) Stat.t with show;;
-@type stal = sta GT.list with show;; 
-@type pr = stal * gra with show;;
+@type sta = (GT.string Expr.t, sta) BStat.t List.ground with show;;
+
 
 (* from impar to flowchar  *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
-run q (fun q -> ocanren {translate [Asgn(Var "x", Var "y")] q}) project;;
+  run q (fun q -> ocanren {translate [Asgn(Var "x", Var "y")] q}) project;;
+
+let _ = Printf.printf "\n\n\n";;
 
 (* from flowchar to impar  *)
 let _ =
-  L.iter (fun x -> print_string @@ GT.show(stal) x ; print_newline()) @@  Stream.take ~n:2 @@
-  run q (fun q -> ocanren {translate q (Lein (Var ("x"), Expr (Var ("y")), Null))})
-   (fun x -> List.to_list id @@ project x);;
+  L.iter (fun x -> print_string @@ GT.show(sta) x ; print_newline()) @@  Stream.take ~n:6 @@
+  run q (fun q -> ocanren {translate q (Lein (Var ("x"), Expr (Var ("y")), Null))}) project;;
+
+
+let _ = Printf.printf "\n\n\n";;
 
 (* from impar to flowchar  *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
   run q (fun q -> ocanren {translate [Asgn(Var "x", High);
                                       Ifte(Var "x",
-                                           Asgn(Var "y", High),
-                                           Asgn(Var "y", Low))] q}) project;;
+                                           [Asgn(Var "y", High)],
+                                           [Asgn(Var "y", Low)])] q}) project;;
+
+let _ = Printf.printf "\n\n\n";;
+
 (* from flowchar to impar  *)
 let _ =
-  L.iter (fun x -> print_string @@ GT.show(stal) x ; print_newline()) @@  Stream.take ~n:2 @@
+  L.iter (fun x -> print_string @@ GT.show(sta) x ; print_newline()) @@  Stream.take ~n:2 @@
   run q (fun q -> ocanren {translate q (Lein (Var ("x"),
                                               Expr (High),
                                               Mux (Expr (Var ("x")),
@@ -121,6 +128,37 @@ let _ =
                                                          Expr (High), Null),
                                                    Lein (Var ("y"),
                                                          Expr (Low), Null))))})
-     (fun x -> List.to_list id @@ project x);;
+      project;;
 
-*)
+
+let _ = Printf.printf "\n\n\n";;
+
+(* from impar to flowchar  *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(gra) x ; print_newline()) @@  Stream.take ~n:2 @@
+  run q (fun q -> ocanren {translate [Asgn(Var "x", Low);
+                                      Ifte(Var "x",
+                                           [Skip],
+                                           [Asgn(Var "y", High);
+                                            Ifte(Var "y",
+                                                 [Asgn(Var "x", High);
+                                                  Asgn(Var "y", Low)],
+                                                 [Skip])])] q}) project;;
+
+let _ = Printf.printf "\n\n\n";;
+
+(* from flowchar to impar  *)
+let _ =
+  L.iter (fun x -> print_newline();print_string @@ GT.show(sta) x ; print_newline()) @@  Stream.take ~n:7 @@
+  run q (fun q ->
+      ocanren {translate  q
+                 (Lein (Var ("x"), Expr (Low),
+                        Mux (Expr (Var ("x")),
+                             Null,
+                             Lein (Var ("y"), Expr (High),
+                                   Mux (Expr (Var ("y")),
+                                        Lein (Var ("x"), Expr (High),
+                                              Lein (Var ("y"), Expr (Low),
+                                                    Null)),
+                                        Null)))))})
+      project;;
