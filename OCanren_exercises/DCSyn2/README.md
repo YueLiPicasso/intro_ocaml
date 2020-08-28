@@ -128,7 +128,9 @@ Note :  <stat1> ::= <stat2> ::= <statement> and PROPOSITION (Stat).
 
 (6) {{ <no action> ; <statement> }} ::= {{ <statement> }}   go to (1)
 ```
-In (6) the translation proceeds and ignores `<no action>`.
+In (6) the translation proceeds and ignores `<no action>`. The `Skip` operator
+is superfluous: `if x then skip ; else y := 1 ; fi ;`
+and `if x then else y := 1 fi ;` translate to the same graph.
 
 ## A Worked Example
 
