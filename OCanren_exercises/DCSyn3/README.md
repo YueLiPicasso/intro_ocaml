@@ -74,32 +74,4 @@ evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
 
 
 
-We also have a flowchart language:
 
-
-```
-<fan-out> ::= let <variable> = <graph> in <graph>
-
-<multiplexing> ::= mux ( <graph> , <graph> , <graph> )
-
-<graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
-```
-
-
-eg. 
-
-
-mux (mux (1, x,  slice(a,10)), slice(a,0), y) 
-
-if a[i] then a[i] else x fi
-
-mux (slice(a,i), slice(a,i),x)
-
-simplifies to let ai = slice(a,i) in mux (ai,ai,x)
-
-
-The goal :
-forall s, o : eval_imp (p, s, o) /\ eval_flow (P, s, o)
-what is P such that for all s and o such that eval_imp(p,s,o) 
-
-http://minikanren.org/workshop/2020/minikanren-2020-paper9.pdf 
