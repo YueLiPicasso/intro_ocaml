@@ -37,12 +37,10 @@ syntactic categories.
 <if clause> ::= if <expression> then <expression> else <expression> fi
 ```
 
-The `<variable> [ <expression> ]` construct denotes arrays.
-Regarding  arrays and variables, for now we do not
-concern ourselves with value assigment to them,
-but we allow reading booleans off them, i.e., a
-variable equals either 0 or 1, and an array is just a fixed-length
-list of 0's and 1's.
+A variable can hold either a constant or an array of constants. In the latter
+case `<variable> [ <expression> ]` refers to the constant held in the
+array cell that is iindexed by the value of the `<expression>`.
+For now we do not concern ourselves with value assigment to variables.
 
 
 We also have a flowchart language:
