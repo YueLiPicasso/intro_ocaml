@@ -69,7 +69,7 @@ fi
 There are three variables `x`, `a` and `y`. One 
 state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
  and `y` has value `111`. Then
-`if x then a else a[y]` evaluates to `{101, 111, 000}` and the top-level clause
+`if x then a else a[y] fi` evaluates to `{101, 111, 000}` and the top-level clause
 evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`. 
 
 
