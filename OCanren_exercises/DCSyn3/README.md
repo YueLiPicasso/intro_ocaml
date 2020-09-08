@@ -14,7 +14,7 @@ We have a simple imperative language, whose BNF syntax is given below:
 
 <expression> ::= <constant>
                | <variablle>
-	       | <variablle> [ <expr> ]
+	       | <variablle> [ <expression> ]
 	       | <if clause>
 
 <if clause> ::= if <expression> then <expression> else <expression> fi
