@@ -70,11 +70,7 @@ There are three variables `x`, `a` and `y`. One
 state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
  and `y` has value `10`. Then
 `if x then 01 else a[y]` evaluates to `01` and the top-level clause
-evaluates to the value of `a[if x then 1 else 0 fi]` which is `111`. Note that
-evaluation fails if an array is provided with an index that is greater than
- or equal to its size. For instance, under the context in which has `b` has
-  value `00110` and `j` has value `101`, the expression `b[j]` cannot be
-  evaluated whilst if `j` is `10` then `b[j]` is `1`.
+evaluates to the value of `a[if x then 1 else 0 fi]` which is `111`. 
 
 
 
