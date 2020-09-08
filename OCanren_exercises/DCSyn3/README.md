@@ -50,16 +50,11 @@ evaluating an expression to obtain its _value_.
 * The value of a constant is itself.
 * The value of a variable is either a constant or an array, specified by a _state_.
 * The value of an expression of the form `a[i]` is defined only if the value of `a` is an array,
-and the value of `i` is a constant.
+and the value of `i` is a constant less than the length of `a`.
 
-Array indices start from 0, and grow like 0, 1, 10, 11,
+As usual, array indices start from 0, and grow like 0, 1, 10, 11,
 100, 101, 110, etc. If leading 0's appear, they are ignored.
-For example
-`a[1]`, `a[01]`, `a[001]` etc
-all refer to the second cell of the array `a`. For all arrays `a`
-and constants
-`i` We define that `a[i] = a[i']` where `i' = i mod (size_of a)`.
-
+For example `a[1]`, `a[01]`, `a[001]` etc all refer to the second cell of the array `a`. 
 
 
 
