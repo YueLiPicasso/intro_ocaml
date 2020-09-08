@@ -42,10 +42,26 @@ case `<variable> [ <expression> ]` refers to the constant held in the
 array cell that is iindexed by the value of the `<expression>`.
 For now we do not concern ourselves with value assigment to variables.
 
+Consider the if-clause below as a concrete example:
+
+```
+if if x then 01 else a[y] fi
+then a[if x then 1 else 0 fi]
+else y fi 
+```
+ We can evaluate it under a
+variable context where all variables have known values.
+There are three variables `x`, `a` and `y`. One 
+context designates that `x` has value `011`, `a` has value `{101, 111, 000}`
+(so `a` is an array of three constants) and `y` has value `10`. Then
+`if x then 01 else a[y]` evaluates to `01` and the top-level clause
+evalustes to the value of `a[if x then 1 else 0 fi]` which is `111`.
+
+
 
 We also have a flowchart language:
 
-```
+
 ```
 <fan-out> ::= let <variable> = <graph> in <graph>
 
@@ -53,9 +69,9 @@ We also have a flowchart language:
 
 <graph> ::= <expression> | <fan-out> | <multiplexing> | <null graph>
 ```
-```
 
-eg. if if 11 then x else a[10] fi then a[0] else y fi 
+
+eg. 
 
 
 mux (mux (1, x,  slice(a,10)), slice(a,0), y) 
