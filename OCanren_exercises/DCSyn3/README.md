@@ -10,9 +10,12 @@ We have a simple imperative language, whose BNF syntax is given below:
 
 <letter> ::= u | v | w | x | y | z
 
-<variable> ::= <letter> | <variable> <letter>
+<variable> ::= <letter> | <variable> <letter> 
 
-<expression> ::= <constant> | <variablle> | <variablle> [ <expr> ] | <if clause>
+<expression> ::= <constant>
+               | <variablle>
+	       | <variablle> [ <expr> ]
+	       | <if clause>
 
 <if clause> ::= if <expression> then <expression> else <expression> fi
 ```
