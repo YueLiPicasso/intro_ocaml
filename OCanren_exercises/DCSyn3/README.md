@@ -36,11 +36,35 @@ syntactic categories.
 
 <if clause> ::= if <expression> then <expression> else <expression> fi
 ```
+We now give the informal semantics of the imperative language in terms of
+evaluating an expression to obtain its _value_.
 
-A variable can hold either a constant or an array of constants. In the latter
-case `<variable> [ <expression> ]` refers to the constant held in the
-array cell that is iindexed by the value of the `<expression>`.
-For now we do not concern ourselves with value assigment to variables.
+```
+<value> ::= <constant> | <array> 
+
+<array> ::= { <array body> }
+
+<array body> ::= <constant> | <array body> , <constant>
+```
+
+* The value of a constant is itself.
+* The value of a variable is either a constant or an array, specified by a _state_.
+* The value of an expression of the form `a[i]` is defined only if the value of `a` is an array,
+and the value of `i` is a constant.
+
+Array indices start from 0, and grow like 0, 1, 10, 11,
+100, 101, 110, etc. If leading 0's appear, they are ignored.
+For example
+`a[1]`, `a[01]`, `a[001]` etc
+all refer to the second cell of the array `a`. For all arrays `a`
+and constants
+`i` We define that `a[i] = a[i']` where `i' = i mod (size_of a)`.
+
+
+
+
+For now
+we do not concern ourselves with value assigment to variables. 
 
 Consider the if-clause below as a concrete example:
 
@@ -55,7 +79,11 @@ There are three variables `x`, `a` and `y`. One
 context designates that `x` has value `011`, `a` has value `{101, 111, 000}`
 (so `a` is an array of three constants) and `y` has value `10`. Then
 `if x then 01 else a[y]` evaluates to `01` and the top-level clause
-evalustes to the value of `a[if x then 1 else 0 fi]` which is `111`.
+evaluates to the value of `a[if x then 1 else 0 fi]` which is `111`. Note that
+evaluation fails if an array is provided with an index that is greater than
+ or equal to its size. For instance, under the context in which has `b` has
+  value `00110` and `j` has value `101`, the expression `b[j]` cannot be
+  evaluated whilst if `j` is `10` then `b[j]` is `1`.
 
 
 
