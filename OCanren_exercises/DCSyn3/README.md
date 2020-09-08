@@ -59,18 +59,18 @@ For example `a[1]`, `a[01]`, `a[001]` etc all refer to the second cell of the ar
 The semantics of if-clauses is given by an example. Consider:
 
 ```
-if if x then 01 else a[y] fi
+if if x then a else a[y] fi
  then
-   a[if x then 1 else 0 fi]
+   a[if 0 then 1 else 0 fi]
  else
    y
 fi 
 ```
 There are three variables `x`, `a` and `y`. One 
 state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
- and `y` has value `10`. Then
-`if x then 01 else a[y]` evaluates to `01` and the top-level clause
-evaluates to the value of `a[if x then 1 else 0 fi]` which is `111`. 
+ and `y` has value `111`. Then
+`if x then a else a[y]` evaluates to `{101, 111, 000}` and the top-level clause
+evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`. 
 
 
 
