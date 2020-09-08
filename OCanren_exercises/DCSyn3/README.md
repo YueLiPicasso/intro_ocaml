@@ -40,7 +40,7 @@ syntactic categories.
 The `<variable> [ <expression> ]` construct denotes arrays.
 Regarding  arrays and variables, for now we do not
 concern ourselves with value assigment to them,
-but We allow reading booleans off them, i.e., a
+but we allow reading booleans off them, i.e., a
 variable equals either 0 or 1, and an array is just a fixed-length
 list of 0's and 1's.
 
