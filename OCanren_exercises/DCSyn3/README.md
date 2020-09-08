@@ -6,11 +6,11 @@ We have a simple imperative language, whose BNF syntax is given below:
 ```
 <boolean> ::= 0 | 1
 
+<constant> ::= <boolean> | <constant> <boolean> 
+
 <letter> ::= u | v | w | x | y | z
 
 <variable> ::= <letter> | <variable> <letter>
-
-<constant> ::= <boolean> | <constant> <boolean> 
 
 <expression> ::= <constant> | <variablle> | <variablle> [ <expr> ] | <if clause>
 
