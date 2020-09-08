@@ -3,7 +3,7 @@
 
 We have a simple imperative language, whose BNF syntax is given below: 
 
-
+```
 <boolean> ::= 0 | 1
 
 <letter> ::= u | v | w | x | y | z
@@ -15,6 +15,7 @@ We have a simple imperative language, whose BNF syntax is given below:
 <expression> ::= <constant> | <variablle> | <variablle> [ <expr> ] | <if clause>
 
 <if clause> ::= if <expression> then <expression> else <expression> fi
+```
 
 The syntax above is described with the aid of metalinguistic formulae.
 Words enclosed in brackets `<>` are metalinguistic variables whose
