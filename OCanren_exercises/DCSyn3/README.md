@@ -25,7 +25,7 @@ nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
 
 
-Furthermore, The simple imperative language has the following unique
+Furthermore, the simple imperative language has the following unique
 syntactic categories. 
 
 ```
