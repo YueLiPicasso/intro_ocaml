@@ -24,6 +24,7 @@ connectives (the latter means "or"). Any mark, which is neither a variable
 nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
 
+## Simple Imperative Language:  Syntax and Semantics
 
 Furthermore, the simple imperative language has the following unique
 syntactic categories. 
@@ -70,7 +71,24 @@ There are three variables `x`, `a` and `y`. One
 state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
  and `y` has value `111`. Then
 `if x then a else a[y] fi` evaluates to `{101, 111, 000}` and the top-level clause
-evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`. 
+evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
+
+## Flowchart Language: Syntax and Semantics
+
+
+The flowchart language (modelled after the Lava HDL) has the following
+unique syntactic categories:
+
+```
+<fan-out> ::= let <variable> = <signal> in <signal>
+
+<multiplexing> ::= mux ( <signal> , <signal> , <signal> )
+
+<slicing> ::= slice ( <signal> , <signal> )
+
+<signal> ::= <constant> | <variable> | <fan-out> | <multiplexing> | <slicing>
+```
+
 
 
 
