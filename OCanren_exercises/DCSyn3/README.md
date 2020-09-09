@@ -1,5 +1,7 @@
 # Problem Description
 
+The problem concerns translation between two languages using
+relational programming techniques, in the context of hardware synthesis.. 
 
 There is a simple imperative language and a flowchart language, and they
 share the following syntactic categories:
