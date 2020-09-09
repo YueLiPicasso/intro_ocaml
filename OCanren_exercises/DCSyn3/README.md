@@ -62,6 +62,8 @@ For example `a[1]`, `a[01]`, `a[001]` etc all refer to the second cell of the ar
 The semantics of if-clauses is given by an example. Consider:
 
 ```
+EXAMPLE (1).
+
 if if x then a else a[y] fi
  then
    a[if 0 then 1 else 0 fi]
@@ -78,7 +80,7 @@ evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
 ## Flowchart Language: Syntax and Semantics
 
 
-The flowchart language (modelled after the Lava HDL) has the following
+The flowchart language, modelled after the Lava HDL [1], has the following
 unique syntactic categories:
 
 ```
@@ -91,7 +93,22 @@ unique syntactic categories:
 <signal> ::= <constant> | <variable> | <fan-out> | <multiplexing> | <slicing>
 ```
 
+where the `<signal>` category represents an input, output or internal wire in a
+circuit.
+
+``
+EXAMPLE (2).
+
+let arr = slice (a , y) in
+let sel = mux (x , a , arr) in
+let offet = mux (0 , 1 , 0) in
+let arr' = slice (a, offset) in
+mux (sel , arr', y)
+```
 
 
 
+## Reference
 
+[1] The 2014 ACM paper on Kansas Lava
+https://www.csee.umbc.edu/courses/331/fall16/01/haskell/p42-gill.pdf
