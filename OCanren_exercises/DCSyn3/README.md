@@ -98,7 +98,7 @@ circuit.
 
 The program below encodes [this flowchart](flowchart.jpg).
 
-<img src="flowchart.jpg">
+<img src="flowchart.jpg" alt="HTML5 Icon" width="128" height="128">
 
 ```
 EXAMPLE (2).
