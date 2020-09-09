@@ -96,7 +96,7 @@ unique syntactic categories:
 where the `<signal>` category represents an input, output or internal wire in a
 circuit.
 
-``
+```
 EXAMPLE (2).
 
 let arr = slice (a , y) in
