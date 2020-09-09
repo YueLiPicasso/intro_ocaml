@@ -98,6 +98,8 @@ circuit.
 
 The program below encodes [this flowchart](https://github.com/YueLiPicasso/intro_ocaml/issues/1#issue-696667586).
 
+The program below encodes ![this flowchart](flowchart.jpg).
+
 
 ```
 EXAMPLE (2).
