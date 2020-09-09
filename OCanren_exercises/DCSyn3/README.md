@@ -96,6 +96,8 @@ unique syntactic categories:
 where the `<signal>` category represents an input, output or internal wire in a
 circuit.
 
+The program below encode [this flowchart](flowchart.jpg). 
+
 ```
 EXAMPLE (2).
 
