@@ -96,7 +96,7 @@ unique syntactic categories:
 where the `<signal>` category represents an input, output or internal wire in a
 circuit.
 
-The program below encodes [this flowchart](flowchart.pdf).
+The program below encodes [this flowchart](https://github.com/YueLiPicasso/intro_ocaml/issues/1#issue-696667586).
 
 
 ```
