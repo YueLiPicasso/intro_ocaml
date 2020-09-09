@@ -98,9 +98,6 @@ circuit.
 
 The program below encodes [this flowchart](https://github.com/YueLiPicasso/intro_ocaml/issues/1#issue-696667586).
 
-The program below encodes ![this flowchart](flowchart.jpg).
-
-
 ```
 EXAMPLE (2).
 
@@ -110,7 +107,8 @@ let offet = mux (0 , 1 , 0) in
 let arr' = slice (a, offset) in
 mux (sel , arr', y)
 ```
-
+The semantics of the langauge, informally, is to derive the output of a
+flowchart from any possible input. 
 
 
 ## Reference
