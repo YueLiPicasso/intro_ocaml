@@ -91,7 +91,8 @@ compute `o3` and test
 The correspondence between `(*)` and `(**)` is more easliy seen if `(**)`
 is not evaluated left-to-right but evalb-first: all `evalb` subgoals are
 evaluated before any `eval` subgoal is evaluated. This way when all and
-only `evalb` subgoals have been evaluated the state is exactly `(*)`.
+only `evalb` subgoals have been evaluated the state is exactly `(*)`. In this
+sense `(**)` is also a _generate-and-test_ exercise. 
 
 If the source function _q_ operates on an infinite domain _A_ it
 might be possible to find a finite subset _B_ of _A_, called the
