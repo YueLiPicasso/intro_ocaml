@@ -25,8 +25,8 @@ This is a typical _generate-and-test_ exercise where the first atomic goal
 The generator finds a `p` such that `p(i1) = o1` and the tester checks
 that this also holds for all the pairs `(i2,o2),...,(in,on)`. If the test
 fails then a new `p` is generated and tested again, and so on until a `p`
-is found that passes the test. A complete search stragety would find all
-such `p`s.
+is found that passes the test. A complete search strategy would find all
+such `p`'s.
 
 
 Certain programs such as a pattern matching specification, a switch
