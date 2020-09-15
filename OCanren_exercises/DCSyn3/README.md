@@ -85,7 +85,7 @@ evalb(in, q, on?) /\ eval(in, p, on?)
 __Transition 4__: `eval(i2, p, o2)` tests `p(i2)=o2`. If so proceed to
 compute `o3` and test
 `p(i3)=o3` etc., otherwise backtrack and recompute `p`.
-```
+
 
 
 Certain programs such as a pattern matching specification, a switch
