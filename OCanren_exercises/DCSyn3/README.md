@@ -1,6 +1,29 @@
 # Problem Description
 
-## The mathematical and logic programmatical nature of the problem
+## The mathematical and logic-programmatical nature of the problem
+
+We are interested in finding equivalent functions. Given a function
+_f : A -> B_ we would like to find a function _g : A -> B_ such that
+for all x in A, f(x) = g(x). The functions _f_ and _g_ are equal in the
+sense that they have the same input-output characteristics but on the
+other hand they differ in terms of the internal structures. 
+
+More specificlly, we will use the technique of logic programminng
+(aka. relational programming) to find equal-behavior programs.
+Let `p` be a program such that for every valid input `i` there is
+exactly one output `o`. Such a program can thus be regarded as a function.
+Let `eval` be a relational interpretor for the language of `p`, then the
+goal would be:
+```
+eval(i1, p, o1) /\ eval(i2, p, o2) /\ ... /\ eval(in, p, on)
+```
+which reads: "What is `p` such that `eval(i1, p, o1)` and `eval(i2, p, o2)`
+and  ... `eval(in, p, on)` where all `i`'s and `o`'s are given ?".
+
+
+Certain programs such as a pattern matching specification, a switch
+ language program, a sequential description of  
+
 
 
 ## The incarnation of the problem in the field of dgital crcuit synthesis
