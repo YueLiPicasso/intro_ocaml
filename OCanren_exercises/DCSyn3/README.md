@@ -23,7 +23,7 @@ This is a typical _generate-and-test_ exercise where the first atomic goal
 `eval(i1, p?, o1)` is the generator and the remaining conjunction
 `eval(i2, p?, o2) /\ ... /\ eval(in, p?, on)` as a whole is the tester.
 The generator finds a `p` such that `p(i1) = o1` and the tester checks
-that this also holds for all the pairs `(i2,o2),...,(in,on)`. If the test
+that this also holds for all the I/O pairs `(i2,o2),...,(in,on)`. If the test
 fails then a new `p` is generated and tested again, and so on until a `p`
 is found that passes the test. A complete search strategy would find all
 such `p`'s.
