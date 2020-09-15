@@ -94,7 +94,8 @@ evaluated before any `eval` subgoal is evaluated. This way when all and
 only `evalb` subgoals have been evaluated the state is exactly `(*)`.
 
 If the source function _q_ operates on an infinite domain _A_ it
-might be possible to finite a finite subset _B_ of _A_,
+might be possible to find a finite subset _B_ of _A_, called the
+_complete set of samples_,
 so that an equivalent function _p_ (of _q_) restricted to _B_ is also
 equivalent to _q_ on _A_.
 
