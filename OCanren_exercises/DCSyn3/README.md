@@ -2,8 +2,8 @@
 
 ## The mathematical and logic-programmatical nature of the problem
 
-We are interested in finding equivalent functions. Given a function
-_f : A -> B_ we would like to find a function _g : A -> B_ such that
+We are interested in finding equivalent functions. Given a _source function_
+_f : A -> B_ we would like to find a _target function_ _g : A -> B_ such that
 for all x in A, f(x) = g(x). The functions _f_ and _g_ are equal in the
 sense that they have the same input-output characteristics but on the
 other hand they differ in terms of the internal structures. 
@@ -90,8 +90,13 @@ compute `o3` and test
 
 The correspondence between `(*)` and `(**)` is more easliy seen if `(**)`
 is not evaluated left-to-right but evalb-first: all `evalb` subgoals are
-evaluated before any `eval` subgoal is evaluated. This way When all `evalb`
-subgoals have just been evaluated the state is just `(*)`.  
+evaluated before any `eval` subgoal is evaluated. This way when all and
+only `evalb` subgoals have been evaluated the state is exactly `(*)`.
+
+If the source function _q_ operates on an infinite domain _A_ it
+might be possible to finite a finite subset _B_ of _A_,
+so that an equivalent function _p_ (of _q_) restricted to _B_ is also
+equivalent to _q_ on _A_.
 
 
 ## The incarnation of the problem in the field of dgital crcuit synthesis
