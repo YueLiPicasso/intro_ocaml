@@ -44,7 +44,7 @@ evalb(in, q, on?) /\ eval(in, p?, on?)                         (**)
 
 
 When put into left-to-right execution `(**)` has the following
-state transition flow where _State k_ transitions to _State k+1_ in
+(SLD resolution style) state transition flow where _State k_ transitions to _State k+1_ in
 the manner of _Transition k_.
 
 
