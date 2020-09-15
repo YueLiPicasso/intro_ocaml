@@ -43,44 +43,48 @@ evalb(in, q, on?) /\ eval(in, p?, on?)
 ```
 
 
-which when put into execution acts like:
+which when put into execution has the following State/Transition flow
+, State k ==[Transition k]==> State k+1:
 
+
+__State 1__: The goal above.
+
+
+__Transition 1__: `evalb(i1, q, o1?)` computes a unique `o1`
+that is then provided to `eval(i1, p?, o1?)`.
+
+__State 2__:
 ```
-evalb(i1, q, o1?) /\ eval(i1, p?, o1?) /\
-evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
-...
-evalb(in, q, on?) /\ eval(in, p?, on?)
-
-
-"evalb(i1, q, o1?) computes a unique 'o1' that is then provided
-to eval(i1, p?, o1?)"
-====>
                      eval(i1, p?, o1)  /\
 evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
 ...
 evalb(in, q, on?) /\ eval(in, p?, on?)
+```
 
+__Transition 2__: `eval(i1, p?, o1)` generates a `p` such that `p(i1)=o1`
+and then provides it to the rest of the goal.
 
-"eval(i1, p?, o1) generates a 'p' such that p(i1)=o1 and then provide
-it to the rest of the goal"
-===>
-
+__State 3__:
+```
 evalb(i2, q, o2?) /\ eval(i2, p, o2?) /\
 ...
 evalb(in, q, on?) /\ eval(in, p, on?)
+```
+
+__Transition 3__: `evalb(i2, q, o2?)` computes a unique `o2` that is then
+provided to `eval(i2, p, o2?)`.
 
 
-"evalb(i2, q, o2?) computes a unique 'o2' that is then provided
-to eval(i2, p, o2?)"
-====>
-
+__State 4__:
+```
                      eval(i2, p, o2) /\
 ...
 evalb(in, q, on?) /\ eval(in, p, on?)
+```
 
-
-" eval(i2, p, o2) tests p(i2)=o2. If so proceed to compute 'o3' and test
-p(i3)=o3, otherwise backtrack and recompute "
+__Transition 4__: `eval(i2, p, o2)` tests `p(i2)=o2`. If so proceed to
+compute `o3` and test
+`p(i3)=o3` etc., otherwise backtrack and recompute `p`.
 ```
 
 
