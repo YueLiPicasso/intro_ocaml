@@ -102,9 +102,10 @@ equivalent to _q_ on _A_.
 
 
 ## The incarnation of the problem in the field of dgital crcuit synthesis
-
-The problem concerns translation between two languages using
-relational programming techniques, in the context of hardware synthesis.. 
+ 
+We have prepared above that mathematically the problem is about finding
+equivalent functions and logic-programmatically it is a generate-and-test
+exercise. Now we see the peculiarities that arise from the context of hardware synthesis.
 
 There is a simple imperative language and a flowchart language, and they
 share the following syntactic categories:
