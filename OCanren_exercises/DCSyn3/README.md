@@ -95,9 +95,6 @@ Certain programs such as a pattern matching specification, a switch
 
 ## The incarnation of the problem in the field of dgital crcuit synthesis
 
-We work on the problem of finding equal function 
-
-
 The problem concerns translation between two languages using
 relational programming techniques, in the context of hardware synthesis.. 
 
