@@ -213,7 +213,14 @@ The semantics of the langauge, informally, is to derive the output of a
 flowchart from any possible input. 
 
 
+## Related work
+
+Relational synthesis for pattern matching. [2] 
+
 ## Reference
 
 [1] The 2014 ACM paper on Kansas Lava
 https://www.csee.umbc.edu/courses/331/fall16/01/haskell/p42-gill.pdf
+
+[2] Relational synthesis for pattern matching
+http://minikanren.org/workshop/2020/minikanren-2020-paper9.pdf 
