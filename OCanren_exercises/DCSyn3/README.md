@@ -15,18 +15,73 @@ exactly one output `o`. Such a program can thus be regarded as a function.
 Let `eval` be a relational interpretor for the language of `p`, then the
 goal would be:
 ```
-eval(i1, p, o1) /\ eval(i2, p, o2) /\ ... /\ eval(in, p, on)
+eval(i1, p?, o1) /\ eval(i2, p?, o2) /\ ... /\ eval(in, p?, on)
 ```
 which reads: "What is `p` such that given `i1` it produces `o1`, 
 and given `i2` it produces `o2` and  ... given `in` it produces `on`?".
 This is a typical _generate-and-test_ exercise where the first atomic goal
-`eval(i1, p, o1)` is the generator and the remaining conjunction
-`eval(i2, p, o2) /\ ... /\ eval(in, p, on)` as a whole is the tester.
+`eval(i1, p?, o1)` is the generator and the remaining conjunction
+`eval(i2, p?, o2) /\ ... /\ eval(in, p?, on)` as a whole is the tester.
 The generator finds a `p` such that `p(i1) = o1` and the tester checks
 that this also holds for all the pairs `(i2,o2),...,(in,on)`. If the test
 fails then a new `p` is generated and tested again, and so on until a `p`
 is found that passes the test. A complete search strategy would find all
 such `p`'s.
+
+The notaion `?` indicates an unknown parameter, otherwise the
+parameter is assumed to be knowm.
+
+In a variation of the problem, the I/O pairs are given by another program `q`
+that has the same domain and codomain as `p` but is in a different language and
+thus has a dfferent (relational) interpretor `evalb`. In this case a goal
+has the form:
+```
+evalb(i1, q, o1?) /\ eval(i1, p?, o1?) /\
+evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
+...
+evalb(in, q, on?) /\ eval(in, p?, on?)
+```
+
+
+which when put into execution acts like:
+
+```
+evalb(i1, q, o1?) /\ eval(i1, p?, o1?) /\
+evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
+...
+evalb(in, q, on?) /\ eval(in, p?, on?)
+
+
+"evalb(i1, q, o1?) computes a unique 'o1' that is then provided
+to eval(i1, p?, o1?)"
+====>
+                     eval(i1, p?, o1)  /\
+evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
+...
+evalb(in, q, on?) /\ eval(in, p?, on?)
+
+
+"eval(i1, p?, o1) generates a 'p' such that p(i1)=o1 and then provide
+it to the rest of the goal"
+===>
+
+evalb(i2, q, o2?) /\ eval(i2, p, o2?) /\
+...
+evalb(in, q, on?) /\ eval(in, p, on?)
+
+
+"evalb(i2, q, o2?) computes a unique 'o2' that is then provided
+to eval(i2, p, o2?)"
+====>
+
+                     eval(i2, p, o2) /\
+...
+evalb(in, q, on?) /\ eval(in, p, on?)
+
+
+" eval(i2, p, o2) tests p(i2)=o2. If so proceed to compute 'o3' and test
+p(i3)=o3, otherwise backtrack and recompute "
+```
 
 
 Certain programs such as a pattern matching specification, a switch
