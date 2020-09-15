@@ -1,5 +1,13 @@
 # Problem Description
 
+## The mathematical and logic programmatical nature of the problem
+
+
+## The incarnation of the problem in the field of dgital crcuit synthesis
+
+We work on the problem of finding equal function 
+
+
 The problem concerns translation between two languages using
 relational programming techniques, in the context of hardware synthesis.. 
 
