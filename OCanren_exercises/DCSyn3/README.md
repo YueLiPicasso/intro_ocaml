@@ -17,9 +17,9 @@ goal would be:
 ```
 eval(i1, p, o1) /\ eval(i2, p, o2) /\ ... /\ eval(in, p, on)
 ```
-which reads: "What is `p` such that `eval(i1, p, o1)` and `eval(i2, p, o2)`
-and  ... `eval(in, p, on)` where all `i`'s and `o`'s are given ?". This is
-a typical _generate-and-test_ exercise where the first atomic goal
+which reads: "What is `p` such that given `i1` it produces `o1`, 
+and given `i2` it produces `o2` and  ... given `in` it produces `on`?".
+This is a typical _generate-and-test_ exercise where the first atomic goal
 `eval(i1, p, o1)` is the generator and the remaining conjunction
 `eval(i2, p, o2) /\ ... /\ eval(in, p, on)` as a whole is the tester.
 The generator finds a `p` such that `p(i1) = o1` and the tester checks
