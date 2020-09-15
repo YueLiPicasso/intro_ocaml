@@ -15,7 +15,7 @@ exactly one output `o`. Such a program can thus be regarded as a function.
 Let `eval` be a relational interpretor for the language of `p`, then the
 goal would be:
 ```
-eval(i1, p?, o1) /\ eval(i2, p?, o2) /\ ... /\ eval(in, p?, on)
+eval(i1, p?, o1) /\ eval(i2, p?, o2) /\ ... /\ eval(in, p?, on)       (*)
 ```
 which reads: "What is `p` such that given `i1` it produces `o1`, 
 and given `i2` it produces `o2` and  ... given `in` it produces `on`?".
@@ -39,15 +39,16 @@ has the form:
 evalb(i1, q, o1?) /\ eval(i1, p?, o1?) /\
 evalb(i2, q, o2?) /\ eval(i2, p?, o2?) /\
 ...
-evalb(in, q, on?) /\ eval(in, p?, on?)
+evalb(in, q, on?) /\ eval(in, p?, on?)                         (**)
 ```
 
 
-which when put into execution has the following State/Transition flow
-, State k ==[Transition k]==> State k+1:
+When put into left-to-right execution `(**)` has the following
+state transition flow where _State k_ transitions to _State k+1_ in
+the manner of _Transition k_.
 
 
-__State 1__: The goal above.
+__State 1__: The goal `(**)` above.
 
 
 __Transition 1__: `evalb(i1, q, o1?)` computes a unique `o1`
@@ -87,10 +88,10 @@ compute `o3` and test
 `p(i3)=o3` etc., otherwise backtrack and recompute `p`.
 
 
-
-Certain programs such as a pattern matching specification, a switch
- language program, a sequential description of  
-
+The correspondence between `(*)` and `(**)` is more easliy seen if `(**)`
+is not evaluated left-to-right but evalb-first: all `evalb` subgoals are
+evaluated before any `eval` subgoal is evaluated. This way When all `evalb`
+subgoals have just been evaluated the state is just `(*)`.  
 
 
 ## The incarnation of the problem in the field of dgital crcuit synthesis
@@ -121,7 +122,7 @@ connectives (the latter means "or"). Any mark, which is neither a variable
 nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
 
-## Simple Imperative Language:  Syntax and Semantics
+### Simple Imperative Language:  Syntax and Semantics
 
 Furthermore, the simple imperative language has the following unique
 syntactic categories. 
@@ -172,7 +173,7 @@ state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
 `if x then a else a[y] fi` evaluates to `{101, 111, 000}` and the top-level clause
 evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
 
-## Flowchart Language: Syntax and Semantics
+### Flowchart Language: Syntax and Semantics
 
 
 The flowchart language, modelled after the Lava HDL [1], has the following
