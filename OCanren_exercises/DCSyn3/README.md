@@ -221,7 +221,7 @@ has value `011`, `a` has value `{101, 111, 000}`
 `arr` is undefined since `y` is  not a valid index for `a`; `sel` is `a`
 because `x` is not zero; `offset` is 0; `arr'` is `a[offset]` that is `a[0]`
  or `101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `101`
- because ``sel` is not zero. 
+ because `sel` is not zero. 
 
 
 
