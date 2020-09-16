@@ -1,6 +1,6 @@
 # Problem Description
 
-## The mathematical and logic-programmatical nature of the problem
+## I. The mathematical and logic-programmatical nature of the problem
 
 We are interested in finding equivalent functions. Given a _source function_
 _f : A -> B_ we would like to find a _target function_ _g : A -> B_ such that
@@ -101,7 +101,7 @@ so that an equivalent function _p_ (of _q_) restricted to _B_ is also
 equivalent to _q_ on _A_.
 
 
-## The incarnation of the problem in the field of digital circuit synthesis
+## II. The incarnation of the problem in the field of digital circuit synthesis
  
 We have prepared above that mathematically the problem is about finding
 equivalent functions and logic-programmatically it is a generate-and-test
@@ -130,7 +130,7 @@ connectives (the latter means "or"). Any mark, which is neither a variable
 nor a connective, denotes itself. Juxtaposition of
 marks and/or variables signifies juxtaposition of the sequences denoted.
 
-### Simple Imperative Language:  Syntax and Semantics
+### II(1). Simple Imperative Language:  Syntax and Semantics
 
 Furthermore, the simple imperative language has the following unique
 syntactic categories. 
@@ -182,7 +182,7 @@ state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
 `if x then a else a[y] fi` evaluates to `{101, 111, 000}` and the top-level clause
 evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
 
-### Flowchart Language: Syntax and Semantics
+### II(2). Flowchart Language: Syntax and Semantics
 
 
 The flowchart language, modelled after the Lava HDL [1], has the following
@@ -223,7 +223,7 @@ because `x` is not zero; `offset` is 0; `arr'` is `a[offset]` that is `a[0]`
  or `101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `101`
  because `sel` is not zero. 
 
-### Compiling an imperative program into an equivalent flowchart program
+### II(3). Compiling an imperative program into an equivalent flowchart program
 
 An imperative program and a flowchart program, when regarded as
 functions, share the same domain and codomain: the domain is a state which is
@@ -234,7 +234,7 @@ using relational/logic programming techniques described above: we first
 define relational interpreters for both languages, and then use the
 generate-and-test style to find the result.
 
-## Related work
+## III. Related work
 
 Relational synthesis for pattern matching. [2] There are two languages involved:
 a pattern match language as the source and a switch language as the target. We
