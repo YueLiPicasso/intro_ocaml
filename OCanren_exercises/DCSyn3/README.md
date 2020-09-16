@@ -147,7 +147,7 @@ We now give the informal semantics of the imperative language in terms of
 evaluating an expression to obtain its _value_.
 
 ```
-<value> ::= <constant> | <array> 
+<value> ::= <constant> | <array> | undefined
 
 <array> ::= { <array body> }
 
@@ -157,7 +157,8 @@ evaluating an expression to obtain its _value_.
 * The value of a constant is itself.
 * The value of a variable is either a constant or an array, specified by a _state_.
 * The value of an expression of the form `a[i]` is defined only if the value of `a` is an array,
-and the value of `i` is a constant less than the length of `a`.
+and the value of `i` is a constant less than the length of `a`. Otherwise it is
+_undefined_.
 
 As usual, array indices start from 0, and grow like 0, 1, 10, 11,
 100, 101, 110, etc. If leading 0's appear, they are ignored.
@@ -212,7 +213,16 @@ let arr' = slice (a, offset) in
 mux (sel , arr', y)
 ```
 The semantics of the langauge, informally, is to derive the output of a
-flowchart from any possible input. 
+flowchart from any possible input. In example (2) there are three input
+ports `a`,`x` and `y`. If we assume a state that designates that `x`
+has value `011`, `a` has value `{101, 111, 000}`
+ and `y` has value `111`, then we can compute the output in the following way:
+
+`arr` is undefined since `y` is  not a valid index for `a`; `sel` is `a`
+because `x` is not zero; `offset` is 0; `arr'` is `a[offset]` that is `a[0]`
+ or `101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `101`
+ because ``sel` is not zero. 
+
 
 
 ## Related work
