@@ -239,7 +239,8 @@ generate-and-test style to find the result.
 Relational synthesis for pattern matching. [2] There are two languages involved:
 a pattern match language as the source and a switch language as the target. We
 try to find an equivalent program in the switch language, given a program in
-the pattern matching language.
+the pattern matching language. Example (2) is one of several possible equals
+of example (1).
 
 ## Reference
 
