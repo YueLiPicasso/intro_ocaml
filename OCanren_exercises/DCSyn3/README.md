@@ -101,7 +101,7 @@ so that an equivalent function _p_ (of _q_) restricted to _B_ is also
 equivalent to _q_ on _A_.
 
 
-## The incarnation of the problem in the field of digital crcuit synthesis
+## The incarnation of the problem in the field of digital circuit synthesis
  
 We have prepared above that mathematically the problem is about finding
 equivalent functions and logic-programmatically it is a generate-and-test
