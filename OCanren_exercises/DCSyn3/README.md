@@ -223,11 +223,23 @@ because `x` is not zero; `offset` is 0; `arr'` is `a[offset]` that is `a[0]`
  or `101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `101`
  because `sel` is not zero. 
 
+### Compiling an imperative program into an equivalent flowchart program
 
+An imperative program and a flowchart program, when regarded as
+functions, share the same domain and codomain: the domain is a state which is
+a relation between variables and values, and the codomain is the set of all
+values. Given an imperative program, we would like to find an equal flowchart
+program sharing the same input/output characteristics. This could be solved
+using relational/logic programming techniques described above: we first
+define relational interpreters for both languages, and then use the
+generate-and-test style to find the result.
 
 ## Related work
 
-Relational synthesis for pattern matching. [2] 
+Relational synthesis for pattern matching. [2] There are two languages involved:
+a pattern match language as the source and a switch language as the target. We
+try to find an equivalent program in the switch language, given a program in
+the pattern matching language.
 
 ## Reference
 
