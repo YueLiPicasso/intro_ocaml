@@ -113,7 +113,7 @@ share the following syntactic categories:
 ```
 <boolean> ::= 0 | 1
 
-<constant> ::= <boolean> | <constant> <boolean> 
+<constant> ::= { <boolean> }x4 
 
 <letter> ::= a | b | c | d | e | f | g
            | h | i | j | k | l | m | n
@@ -127,8 +127,12 @@ The syntax above is described with the aid of metalinguistic formulae.
 Words enclosed in brackets `<>` are metalinguistic variables whose
 values are sequences of symbols. The marks `::=` and `|` are metalinguistic
 connectives (the latter means "or"). Any mark, which is neither a variable
-nor a connective, denotes itself. Juxtaposition of
-marks and/or variables signifies juxtaposition of the sequences denoted.
+nor a connective, denotes itself with the exception that the notation
+`{ }x4` and `{ }x16` means 4 (resp. 16) times of juxtapostion  of the enclosed
+meta-variable where Juxtaposition of
+marks and/or variables signifies juxtaposition of the sequences denoted. For
+example,  `<constant>` is a four-bit binary number, and in below  `<array>`
+is defined to have 16 cells each of which contains a constant.
 
 ### II(1). Simple Imperative Language:  Syntax and Semantics
 
@@ -149,20 +153,15 @@ evaluating an expression to obtain its _value_.
 ```
 <value> ::= <constant> | <array> | undefined
 
-<array> ::= { <array body> }
-
-<array body> ::= <constant> | <array body> , <constant>
+<array> ::= { <constant> }x16
 ```
 
 * The value of a constant is itself.
 * The value of a variable is either a constant or an array, specified by a _state_.
-* The value of an expression of the form `a[i]` is defined only if the value of `a` is an array,
-and the value of `i` is a constant less than the length of `a`. Otherwise it is
+* The value of an expression of the form `a[i]` is defined only if the value of `a` is an array
+and the value of `i` is a constant. Otherwise it is
 _undefined_.
 
-As usual, array indices start from 0, and grow like 0, 1, 10, 11,
-100, 101, 110, etc. If leading 0's appear, they are ignored.
-For example `a[1]`, `a[01]`, `a[001]` etc all refer to the second cell of the array `a`.  
 
 The semantics of if-clauses is given by an example. Consider:
 
@@ -177,10 +176,10 @@ if if x then a else a[y] fi
 fi 
 ```
 There are three variables `x`, `a` and `y`. One 
-state designates that `x` has value `011`, `a` has value `{101, 111, 000}`
- and `y` has value `111`. Then
-`if x then a else a[y] fi` evaluates to `{101, 111, 000}` and the top-level clause
-evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `101`.
+state designates that `x` has value `0011`, `a` has value `0101 0111 0000 ...`
+ and `y` has value `0111`. Then
+`if x then a else a[y] fi` evaluates to `a` and the top-level clause
+evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `0101`.
 
 ### II(2). Flowchart Language: Syntax and Semantics
 
