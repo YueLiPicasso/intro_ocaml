@@ -4,12 +4,10 @@ open OCanren.Std;;
 
 @type boolean = O | I with show;;
 
-(* a constant is a 4-tuple of boolean *)
-
-@type 'boolean arr2  = ('boolean, 'boolean) Pait.t with show, gmap;;
-@type 'arr2    arr4  = ('arr2, 'arr2) Pait.t with show, gmap;;
-@type 'arr4    arr8  = ('arr4, 'arr4) Pait.t with show, gmap;;
-@type 'arr4    arr16 = ('arr8, 'arr8) Pait.t with show, gmap;;
+(* constants in different sizes: constntN is an N-bit binary number *)
+@type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
+@type ('b,'c2) constnt3 = ('b, 'c2) Pair.t with show, gmap;;
+@type ('b,'c3) constnt4 = ('b, 'c3) Pair.t with show, gmap;;    
 
 
 (* a variable is a character string *)
@@ -20,7 +18,12 @@ open OCanren.Std;;
                          | Brh of 'self * 'self * 'self
  with show, gmap;;
 
-(* an array is a list of constant *)
+(* arrays in different sizes: arrN is an N-cell array *)
+@type 'constnt arr2  = ('constnt, 'constnt) Pait.t with show, gmap;;
+@type 'arr2    arr4  = ('arr2, 'arr2) Pait.t with show, gmap;;
+@type 'arr4    arr8  = ('arr4, 'arr4) Pait.t with show, gmap;;
+@type 'arr4    arr16 = ('arr8, 'arr8) Pait.t with show, gmap;;
+
 
 @type ('c, 'a) value = Conv of 'c | Arrv of 'a  | Undef
  with show, gmap;;
