@@ -6,6 +6,12 @@ open OCanren.Std;;
 
 (* a constant is a 4-tuple of boolean *)
 
+@type 'boolean arr2  = ('boolean, 'boolean) Pait.t with show, gmap;;
+@type 'arr2    arr4  = ('arr2, 'arr2) Pait.t with show, gmap;;
+@type 'arr4    arr8  = ('arr4, 'arr4) Pait.t with show, gmap;;
+@type 'arr4    arr16 = ('arr8, 'arr8) Pait.t with show, gmap;;
+
+
 (* a variable is a character string *)
 
 @type ('c,'v,'self) expr = Con of 'c
@@ -46,7 +52,7 @@ end;;
 
 
 
-
+(*
 
 
 (* args: state, expr, value *)
@@ -57,3 +63,4 @@ let rec eval_imp s e v =
 | {fresh va, ex, idx in e == Arr (va, ex) & eval_imp s ex idx & v ==  }
   };;
 
+*)
