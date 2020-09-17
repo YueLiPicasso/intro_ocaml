@@ -2,7 +2,19 @@ open OCanren;;
 module L = List ;;
 open OCanren.Std;;
 
-@type boolean = O | I with show;;
+(* Aliasing the OCanren standard type constructor [logic] 
+   and the associated object [logic] *)
+@type 'a logic' = 'a logic with show, gmap;;
+let logic' = logic;; (* check the types again *)
+
+module BooleanTypes = struct
+  @type boolean = O | I with show;;
+  @type t = boolean  with show;;
+  @type ground = t  with show;;
+  @type logic = t logic' with show;;
+end;;
+
+
 
 (* constants in different sizes: constntN is an N-bit binary number *)
 @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
@@ -19,10 +31,10 @@ open OCanren.Std;;
  with show, gmap;;
 
 (* arrays in different sizes: arrN is an N-cell array *)
-@type 'constnt arr2  = ('constnt, 'constnt) Pait.t with show, gmap;;
-@type 'arr2    arr4  = ('arr2, 'arr2) Pait.t with show, gmap;;
-@type 'arr4    arr8  = ('arr4, 'arr4) Pait.t with show, gmap;;
-@type 'arr4    arr16 = ('arr8, 'arr8) Pait.t with show, gmap;;
+@type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
+@type 'arr2    arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
+@type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
+@type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
 
 
 @type ('c, 'a) value = Conv of 'c | Arrv of 'a  | Undef
@@ -53,6 +65,11 @@ module Inj = struct
   
 end;;
 
+
+let acc_arr2 b ar c =
+  let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
+  ocanren{ { fresh c' in b == b0 & ar == (c, c') }
+         | { fresh d  in b == b1 & ar == (d, c ) }};;
 
 
 (*
