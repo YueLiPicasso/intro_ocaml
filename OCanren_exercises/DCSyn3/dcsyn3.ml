@@ -5,6 +5,9 @@ open OCanren.Std;;
 (* aliasing the standard OCanren type constructor [logic] *)
 @type 'a logic' = 'a logic with show, gmap;;
 
+(* constants in different sizes: constntN is an N-bit binary number. 
+   constnt1 is just boolean. *)
+
 module BooleanTypes = struct
   @type boolean = O | I with show, gmap;;
   @type t = boolean  with show, gmap;;
@@ -12,8 +15,6 @@ module BooleanTypes = struct
   @type logic = t logic' with show, gmap;;
   type groundi = (ground, logic) injected;;
 end;;
-
-(* constants in different sizes: constntN is an N-bit binary number *)
 
 module Constnt2Types = struct
   @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
@@ -47,7 +48,8 @@ end;;
 (* use four-bit constant. Change here if wider constants are used *)
 module Constant = Constnt4Types;;
 
-(* arrays in different sizes: arrN is an N-cell array *)
+(* arrays in different sizes: arrN is an N-cell array, 
+   and each cell holds a constant *)
 
 module Arr2Types = struct
   @type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
@@ -65,10 +67,27 @@ module Arr4Types = struct
   type groundi = (ground, logic) injected;;
 end;;
 
-@type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
-@type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
+module Arr8Types = struct
+  @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
+  @type 'a t = 'a arr8 with show, gmap;;
+  @type ground = Arr4Types.ground t with show, gmap;;
+  @type logic = Arr4Types.logic t logic' with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
+module Arr16Types = struct
+  @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
+  @type 'a t = 'a arr16  with show, gmap;;
+  @type ground = Arr8Types.ground t with show, gmap;;
+  @type logic = Arr8Types.logic t logic' with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
+(* Use 16-cell arrays. Change here iff larger arrays are used  *)
+module Array = Arr16Types;;
 
 module ArrayAccess = struct
+  (* ArrayAccess implements a binary search tree *)
   let branch :
     BooleanTypes.groundi ->
     ('a,'b,'a,'b) Pair.groundi -> ('a, 'b) injected -> goal
@@ -88,6 +107,27 @@ module ArrayAccess = struct
         & branch b1 ar arr2
         & acc_arr2 b2 arr2 c' };;
 
+  let acc_arr8 :
+    Constnt3Types.groundi -> Arr8Types.groundi -> Constant.groundi -> goal
+    = fun c ar c' -> 
+      ocanren{ fresh b,c2,arr4 in
+        c == (b, c2)
+        & branch b ar arr4
+        & acc_arr4 c2 arr4 c' };;
+
+  let acc_arr16 :
+    Constnt4Types.groundi -> Arr16Types.groundi -> Constant.groundi -> goal
+    = fun c ar c' -> 
+      ocanren{ fresh b,c3,arr8 in
+        c == (b, c3)
+        & branch b ar arr8
+        & acc_arr8 c3 arr8 c' };;
+
+  (* The default access method *)
+  let access_array :
+    Constant.groundi -> Array.groundi -> Constant.groundi -> goal
+    = fun a b c -> acc_arr16 a b c;;
+  
 end;;
 
 (* a variable is a character string *)
