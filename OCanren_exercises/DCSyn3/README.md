@@ -170,7 +170,7 @@ EXAMPLE (1).
 
 if if x then a else a[y] fi
  then
-   a[if 0 then 1 else 0 fi]
+   a[if 0000 then 0001 else 0000 fi]
  else
    y
 fi 
@@ -179,7 +179,7 @@ There are three variables `x`, `a` and `y`. One
 state designates that `x` has value `0011`, `a` has value `0101 0111 0000 ...`
  and `y` has value `0111`. Then
 `if x then a else a[y] fi` evaluates to `a` and the top-level clause
-evaluates to the value of `a[if 0 then 1 else 0 fi]` which is `0101`.
+evaluates to the value of `a[if 0000 then 0001 else 0000 fi]` which is `0101`.
 
 ### II(2). Flowchart Language: Syntax and Semantics
 
@@ -207,19 +207,18 @@ EXAMPLE (2).
 
 let arr = slice (a , y) in
 let sel = mux (x , a , arr) in
-let offet = mux (0 , 1 , 0) in
+let offet = mux (0000 , 0001 , 0000) in
 let arr' = slice (a, offset) in
 mux (sel , arr', y)
 ```
 The semantics of the langauge, informally, is to derive the output of a
 flowchart from any possible input. In example (2) there are three input
-ports `a`,`x` and `y`. If we assume a state that designates that `x`
-has value `011`, `a` has value `{101, 111, 000}`
- and `y` has value `111`, then we can compute the output in the following way:
+ports `a`,`x` and `y`. If we assume a state that designates that `x` has value `0011`, `a` has value `0101 0111 0000 ...`
+ and `y` has value `0111`, then we can compute the output in the following way:
 
 `arr` is undefined since `y` is  not a valid index for `a`; `sel` is `a`
-because `x` is not zero; `offset` is 0; `arr'` is `a[offset]` that is `a[0]`
- or `101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `101`
+because `x` is not zero; `offset` is 0000; `arr'` is `a[offset]` that is `a[0000]`
+ or `0101`; then the output is  `mux(sel, arr', y)` that is `arr'` or `0101`
  because `sel` is not zero. 
 
 ### II(3). Compiling an imperative program into an equivalent flowchart program
