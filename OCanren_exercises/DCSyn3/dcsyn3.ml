@@ -57,9 +57,38 @@ module Arr2Types = struct
   type groundi = (ground, logic) injected;; 
 end;;
 
-@type 'arr2    arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
+module Arr4Types = struct
+  @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
+  @type 'a t = 'a arr4 with show, gmap;;
+  @type ground = Arr2Types.ground t with show, gmap;;
+  @type logic = Arr2Types.logic t logic' with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
 @type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
 @type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
+
+module ArrayAccess = struct
+  let branch :
+    BooleanTypes.groundi ->
+    ('a,'b,'a,'b) Pair.groundi -> ('a, 'b) injected -> goal
+    = fun b ar c -> let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
+      ocanren{ { b == b0 & fresh c' in ar == (c, c') }
+             | { b == b1 & fresh c' in ar == (c', c) }};;
+
+  let acc_arr2 :
+    BooleanTypes.groundi -> Arr2Types.groundi -> Constant.groundi -> goal
+    = fun b ar c -> branch b ar c;;
+
+  let acc_arr4 :
+    Constnt2Types.groundi -> Arr4Types.groundi -> Constant.groundi -> goal
+    = fun c ar c' -> 
+      ocanren{ fresh b1,b2,arr2 in
+        c == (b1, b2)
+        & branch b1 ar arr2
+        & acc_arr2 b2 arr2 c' };;
+
+end;;
 
 (* a variable is a character string *)
 
@@ -99,11 +128,6 @@ module Inj = struct
 end;;
 
 
-let acc_arr2 :
-  BooleanTypes.groundi -> Arr2Types.groundi -> Constant.groundi -> goal
-  = fun b ar c -> let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
-  ocanren{ { fresh c' in b == b0 & ar == (c, c') }
-         | { fresh d  in b == b1 & ar == (d, c ) }};;
 
 
 (*
