@@ -124,31 +124,45 @@ module ArrayAccess = struct
         & acc_arr8 c3 arr8 c' };;
 
   (* The default access method *)
-  let access_array :
+  let rel :
     Constant.groundi -> Array.groundi -> Constant.groundi -> goal
     = fun a b c -> acc_arr16 a b c;;
   
 end;;
 
-(* a variable is a character string *)
-
-@type ('c,'v,'self) expr = Con of 'c
-                         | Var of 'v
-                         | Arr of 'v * 'self
-                         | Brh of 'self * 'self * 'self
- with show, gmap;;
-
-
-@type ('c, 'a) value = Conv of 'c | Arrv of 'a  | Undef
- with show, gmap;;
-
 module Expr = struct
+  @type ('c,'v,'self) expr = Con of 'c
+                           | Var of 'v  (** a variable is a character string *)
+                           | Arr of 'v * 'self
+                           | Brh of 'self * 'self * 'self
+   with show, gmap;;
+  
   @type ('a,'b,'c) t = ('a,'b,'c) expr with show, gmap;;
+
+  @type ground = (Constant.ground, GT.string, ground) t with show, gmap;;
+  
+  @type logic = (Constant.logic, GT.string logic', logic) t logic'
+   with show, gmap;;
+  
+  type groundi = (ground, logic) injected;;
+  
   let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
 end;;
 
 module Value = struct
+  @type ('c, 'a) value = Conv of 'c   (** constant value *)
+                       | Arrv of 'a   (** array value *)
+                       | Undef        (** undefined *)
+   with show, gmap;;
+  
   @type ('a,'b) t = ('a,'b) value with show, gmap;;
+
+  @type ground = (Constant.ground, Array.ground) t with show, gmap;;
+
+  @type logic = (Constant.logic, Array.logic) t logic' with show, gmap;;
+
+  type groundi = (ground, logic) injected;;
+  
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
@@ -168,17 +182,26 @@ module Inj = struct
 end;;
 
 
-
-
-(*
-
-
 (* args: state, expr, value *)
-let rec eval_imp s e v =
+let rec eval_imp : 'a -> Expr.groundi -> Value.groundi -> goal
+  = fun s e v ->
+    let open Inj  in
+    let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
+    let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
     { fresh c in e == Con c & v == Conv c }
-| {fresh va, r in e == Var va & List.assoc va s r & v == r}
-| {fresh va, ex, idx in e == Arr (va, ex) & eval_imp s ex idx & v ==  }
+| {fresh va, r in e == Var va & List.assoco va s r & v == r}
+| {fresh va, ex, ar, idx, c in
+e == Arr (va, ex)
+& List.assoco va s (Arrv ar)
+& eval_imp s ex (Conv idx)
+& ArrayAccess.rel idx ar c
+& v == Conv c }
+| {fresh e1,e2,e3 in
+e == Brh (e1,e2,e3)
+& eval_imp s e1 (Conv (tup4 b0 b0 b0 b0))
+& eval_imp s e3 v
+}
   };;
 
-*)
+
