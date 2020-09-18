@@ -44,8 +44,19 @@ module Constnt4Types = struct
   type groundi = (ground, logic) injected;;
 end;;
 
+(* use four-bit constant. Change here if wider constants are used *)
+module Constant = Constnt4Types;;
+
 (* arrays in different sizes: arrN is an N-cell array *)
-@type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
+
+module Arr2Types = struct
+  @type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
+  @type 'c t = 'c arr2 with show, gmap;;
+  @type ground = Constant.ground t with show, gmap;;
+  @type logic = Constant.logic t logic' with show, gmap;;
+  type groundi = (ground, logic) injected;; 
+end;;
+
 @type 'arr2    arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
 @type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
 @type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
@@ -89,7 +100,7 @@ end;;
 
 
 let acc_arr2 :
-  BooleanTypes.groundi -> 'a -> BooleanTypes.groundi -> goal
+  BooleanTypes.groundi -> Arr2Types.groundi -> Constant.groundi -> goal
   = fun b ar c -> let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
   ocanren{ { fresh c' in b == b0 & ar == (c, c') }
          | { fresh d  in b == b1 & ar == (d, c ) }};;
