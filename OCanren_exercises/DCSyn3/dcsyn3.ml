@@ -204,4 +204,11 @@ e == Brh (e1,e2,e3)
 }
   };;
 
+(* remaining cases: 
+
+invalid array access: var nor 
+an array or index not a constant;
+branching on the first expression
+
+*)
 
