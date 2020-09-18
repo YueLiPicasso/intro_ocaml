@@ -2,25 +2,53 @@ open OCanren;;
 module L = List ;;
 open OCanren.Std;;
 
-(* Aliasing the OCanren standard type constructor [logic] 
-   and the associated object [logic] *)
+(* aliasing the standard OCanren type constructor [logic] *)
 @type 'a logic' = 'a logic with show, gmap;;
-let logic' = logic;; (* check the types again *)
 
 module BooleanTypes = struct
-  @type boolean = O | I with show;;
-  @type t = boolean  with show;;
-  @type ground = t  with show;;
-  @type logic = t logic' with show;;
+  @type boolean = O | I with show, gmap;;
+  @type t = boolean  with show, gmap;;
+  @type ground = t  with show, gmap;;
+  @type logic = t logic' with show, gmap;;
+  type groundi = (ground, logic) injected;;
 end;;
 
-
-
 (* constants in different sizes: constntN is an N-bit binary number *)
-@type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
-@type ('b,'c2) constnt3 = ('b, 'c2) Pair.t with show, gmap;;
-@type ('b,'c3) constnt4 = ('b, 'c3) Pair.t with show, gmap;;    
 
+module Constnt2Types = struct
+  @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
+  @type 'b t = 'b constnt2 with show, gmap;;
+  @type ground = BooleanTypes.ground t with show, gmap;;
+  @type logic = BooleanTypes.logic t logic'
+   with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
+module Constnt3Types = struct
+  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t with show, gmap;;
+  @type ('b,'c2) t = ('b,'c2) constnt3 with show,gmap;;
+  @type ground = (BooleanTypes.ground, Constnt2Types.ground) Pair.ground
+   with show,gmap;;
+  @type logic = (BooleanTypes.logic, Constnt2Types.logic) Pair.logic
+   with show,gmap;;
+  type groundi = (ground, logic) injected;; 
+end;;
+
+module Constnt4Types = struct
+  @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t with show, gmap;;
+  @type ('b,'c3) t = ('b,'c3) constnt4 with show, gmap;;
+  @type ground = (BooleanTypes.ground, Constnt3Types.ground) Pair.ground
+   with show, gmap;;
+  @type logic = (BooleanTypes.logic, Constnt3Types.logic) Pair.logic
+   with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
+(* arrays in different sizes: arrN is an N-cell array *)
+@type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
+@type 'arr2    arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
+@type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
+@type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
 
 (* a variable is a character string *)
 
@@ -29,12 +57,6 @@ end;;
                          | Arr of 'v * 'self
                          | Brh of 'self * 'self * 'self
  with show, gmap;;
-
-(* arrays in different sizes: arrN is an N-cell array *)
-@type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
-@type 'arr2    arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
-@type 'arr4    arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
-@type 'arr8    arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
 
 
 @type ('c, 'a) value = Conv of 'c | Arrv of 'a  | Undef
@@ -66,8 +88,9 @@ module Inj = struct
 end;;
 
 
-let acc_arr2 b ar c =
-  let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
+let acc_arr2 :
+  BooleanTypes.groundi -> 'a -> BooleanTypes.groundi -> goal
+  = fun b ar c -> let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
   ocanren{ { fresh c' in b == b0 & ar == (c, c') }
          | { fresh d  in b == b1 & ar == (d, c ) }};;
 
