@@ -23,7 +23,12 @@ module Constnt2Types = struct
   @type logic = BooleanTypes.logic t logic'
    with show, gmap;;
   type groundi = (ground, logic) injected;;
+  let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
+
+module FC2 = Fmap(Constnt2Types);;
+
+let c2reify : VarEnv.t -> Constnt2Types.groundi -> Constnt2Types.logic = fun h x -> FC2.reify reify h x;;
 
 module Constnt3Types = struct
   @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t with show, gmap;;
@@ -81,7 +86,10 @@ module Arr16Types = struct
   @type ground = Arr8Types.ground t with show, gmap;;
   @type logic = Arr8Types.logic t logic' with show, gmap;;
   type groundi = (ground, logic) injected;;
+  let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
+
+module FA16 = Fmap(Arr16Types);;
 
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
 module Array = Arr16Types;;
@@ -244,3 +252,9 @@ let _ =
   @@ Stream.take ~n:3 @@ 
   run q (fun q -> ocanren {ArrayAccess.rel c1 array1 q}) project;;
 
+(*
+let _ = 
+  L.iter (fun x -> print_string @@ GT.show(Array.logic) x;print_newline())
+    @@  Stream.take ~n:3 @@ 
+  run q (fun q -> ocanren {ArrayAccess.rel c1 q c1}) (* reify ? *);;
+*)
