@@ -37,8 +37,14 @@ module Constnt3Types = struct
    with show,gmap;;
   @type logic = (BooleanTypes.logic, Constnt2Types.logic) Pair.logic
    with show,gmap;;
-  type groundi = (ground, logic) injected;; 
+  type groundi = (ground, logic) injected;;
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
+
+module FC3 = Fmap2(Constnt3Types);;
+
+let c3reify : VarEnv.t -> Constnt3Types.groundi -> Constnt3Types.logic = fun h x -> FC3.reify reify c2reify h x;;
+
 
 module Constnt4Types = struct
   @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t with show, gmap;;
@@ -48,10 +54,16 @@ module Constnt4Types = struct
   @type logic = (BooleanTypes.logic, Constnt3Types.logic) Pair.logic
    with show, gmap;;
   type groundi = (ground, logic) injected;;
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
+module FC4 = Fmap2(Constnt4Types);;
+
+let c4reify : VarEnv.t -> Constnt4Types.groundi -> Constnt4Types.logic = fun h x -> FC4.reify reify c3reify h x;;
+
+
 (* use four-bit constant. Change here if wider constants are used *)
-module Constant = Constnt4Types;;
+module Constant = struct include Constnt4Types;; let reify = fun h x -> c4reify h x;; end;;
 
 (* arrays in different sizes: arrN is an N-cell array, 
    and each cell holds a constant *)
