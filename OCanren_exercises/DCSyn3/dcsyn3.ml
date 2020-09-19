@@ -63,7 +63,10 @@ let c4reify : VarEnv.t -> Constnt4Types.groundi -> Constnt4Types.logic = fun h x
 
 
 (* use four-bit constant. Change here if wider constants are used *)
-module Constant = struct include Constnt4Types;; let reify = fun h x -> c4reify h x;; end;;
+module Constant = struct
+  include Constnt4Types;;
+  let reify = fun h x -> c4reify h x;;
+end;;
 
 (* arrays in different sizes: arrN is an N-cell array, 
    and each cell holds a constant *)
@@ -122,7 +125,10 @@ module FA16 = Fmap(Arr16Types);;
 let a16reify : VarEnv.t -> Arr16Types.groundi -> Arr16Types.logic = fun h x -> FA16.reify a8reify h x;;
 
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
-module Array = struct include Arr16Types;; let reify = fun h x -> a16reify h x;; end;; 
+module Array = struct
+  include Arr16Types;;
+  let reify = fun h x -> a16reify h x;;
+end;; 
 
 module ArrayAccess = struct
   (* ArrayAccess implements a binary search tree *)
@@ -282,9 +288,9 @@ let _ =
   @@ Stream.take ~n:3 @@ 
   run q (fun q -> ocanren {ArrayAccess.rel c1 array1 q}) project;;
 
-(*
+
 let _ = 
   L.iter (fun x -> print_string @@ GT.show(Array.logic) x;print_newline())
     @@  Stream.take ~n:3 @@ 
-  run q (fun q -> ocanren {ArrayAccess.rel c1 q c1}) (* reify ? *);;
-*)
+  run q (fun q -> ocanren {ArrayAccess.rel c1 q c1}) (fun q -> q#reify(Array.reify));;
+
