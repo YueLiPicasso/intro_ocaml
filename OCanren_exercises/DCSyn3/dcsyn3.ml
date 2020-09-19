@@ -212,3 +212,35 @@ branching on the first expression
 
 *)
 
+let b0  : BooleanTypes.groundi = !!(BooleanTypes.O)
+and b1  : BooleanTypes.groundi = !!(BooleanTypes.I);;
+
+let c1 : Constant.groundi = ocanren { (b1,b0,b0,b1) };;
+
+let array1 : Array.groundi = ocanren {
+    (((((b0,b0,b0,b0),
+        (b0,b0,b0,b1)),
+       ((b0,b0,b1,b0),
+        (b0,b0,b1,b1))),
+      (((b0,b1,b0,b0),
+        (b0,b1,b0,b1)),
+       ((b0,b1,b1,b0),
+        (b0,b1,b1,b1)))),
+     ((((b1,b0,b0,b0),
+        (b1,b0,b0,b1)),
+       ((b1,b0,b1,b0),
+        (b1,b0,b1,b1))),
+      (((b1,b1,b0,b0),
+        (b1,b1,b0,b1)),
+       ((b1,b1,b1,b0),
+        (b1,b1,b1,b1)))))
+  };;
+
+
+
+
+let _ = 
+  L.iter (fun x -> print_string @@ GT.show(Constant.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@ 
+  run q (fun q -> ocanren {ArrayAccess.rel c1 array1 q}) project;;
+
