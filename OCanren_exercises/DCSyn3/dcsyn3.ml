@@ -73,8 +73,14 @@ module Arr2Types = struct
   @type 'c t = 'c arr2 with show, gmap;;
   @type ground = Constant.ground t with show, gmap;;
   @type logic = Constant.logic t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;; 
+  type groundi = (ground, logic) injected;;
+  let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
+
+module FA2 = Fmap(Arr2Types);;
+
+let a2reify : VarEnv.t -> Arr2Types.groundi -> Arr2Types.logic = fun h x -> FA2.reify Constant.reify h x;;
+
 
 module Arr4Types = struct
   @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
@@ -82,7 +88,12 @@ module Arr4Types = struct
   @type ground = Arr2Types.ground t with show, gmap;;
   @type logic = Arr2Types.logic t logic' with show, gmap;;
   type groundi = (ground, logic) injected;;
+  let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
+
+module FA4 = Fmap(Arr4Types);;
+
+let a4reify : VarEnv.t -> Arr4Types.groundi -> Arr4Types.logic = fun h x -> FA4.reify a2reify h x;;
 
 module Arr8Types = struct
   @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
@@ -90,7 +101,12 @@ module Arr8Types = struct
   @type ground = Arr4Types.ground t with show, gmap;;
   @type logic = Arr4Types.logic t logic' with show, gmap;;
   type groundi = (ground, logic) injected;;
+  let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
+
+module FA8 = Fmap(Arr8Types);;
+
+let a8reify : VarEnv.t -> Arr8Types.groundi -> Arr8Types.logic = fun h x -> FA8.reify a4reify h x;;
 
 module Arr16Types = struct
   @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
@@ -103,8 +119,10 @@ end;;
 
 module FA16 = Fmap(Arr16Types);;
 
+let a16reify : VarEnv.t -> Arr16Types.groundi -> Arr16Types.logic = fun h x -> FA16.reify a8reify h x;;
+
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
-module Array = Arr16Types;;
+module Array = struct include Arr16Types;; let reify = fun h x -> a16reify h x;; end;; 
 
 module ArrayAccess = struct
   (* ArrayAccess implements a binary search tree *)
