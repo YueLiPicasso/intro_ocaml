@@ -9,7 +9,7 @@ as README files or as comments in the source code.
 
 
 
-## The OCanren exercises
+## I. The OCanren exercises
 
 The helpful expectation is not to understand OCanren in an axiomatic
 manner, but rather like collecting pieces of a jigsaw puzzle: you know
@@ -95,7 +95,7 @@ type, and there are boilerplate pieces for injecting and projecting data which
 sandwitches the actual relational programming in between. 
 
 
-## Learning OCaml
+## II. Learning OCaml
 
 OCanren is a unique implementation of miniKanren in OCaml. Its obvious
 prerequisites are miniKanren (Scheme-based) and OCaml. A good knowledge
