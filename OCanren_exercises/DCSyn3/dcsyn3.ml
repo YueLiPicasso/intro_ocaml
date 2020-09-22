@@ -222,36 +222,34 @@ module Inj = struct
   let conv = fun x -> inj @@ FValue.distrib (Conv x);;
   let arrv = fun x -> inj @@ FValue.distrib (Arrv x);;
   let undef = fun () -> inj @@ FValue.distrib Undef;;
-  
+
+  let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
 end;;
 
 
 (* args: state, expr, value *)
-let rec eval_imp : 'a -> Expr.groundi -> Value.groundi -> goal
+let rec eval_imp : 'state -> Expr.groundi -> Value.groundi -> goal
   = fun s e v ->
     let open Inj  in
-    let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
     let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
     { fresh c in e == Con c & v == Conv c }
-| {fresh va, r in e == Var va & List.assoco va s r & v == r}
-| {fresh va, ex, ar, idx, c in
-e == Arr (va, ex)
-& List.assoco va s (Arrv ar)
-& eval_imp s ex (Conv idx)
-& ArrayAccess.rel idx ar c
-& v == Conv c }
-| {fresh e1,e2,e3 in
-e == Brh (e1,e2,e3)
-& eval_imp s e1 (Conv (tup4 b0 b0 b0 b0))
-& eval_imp s e3 v
-}
+  | {fresh va, r in e == Var va & List.assoco va s r & v == r}
+  | {fresh va, ex, ar, idx, c in
+     e == Arr (va, ex)
+     & List.assoco va s (Arrv ar)
+     & eval_imp s ex (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
+     & ArrayAccess.rel idx ar c
+     & v == Conv c }
+  | {fresh e1,e2,e3 in
+     e == Brh (e1,e2,e3)
+     & eval_imp s e1 (Conv (tup4 b0 b0 b0 b0))
+     & eval_imp s e3 v }
   };;
 
-(* remaining cases: 
+(* 
 
-invalid array access: var nor 
-an array or index not a constant;
+
 branching on the first expression
 
 *)
