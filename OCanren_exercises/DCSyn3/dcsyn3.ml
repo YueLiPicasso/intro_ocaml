@@ -174,6 +174,29 @@ module ArrayAccess = struct
   
 end;;
 
+module Value = struct
+  @type ('c, 'a) value = Conv of 'c   (** constant value *)
+                       | Arrv of 'a   (** array value *)
+                       | Undef        (** undefined *)
+   with show, gmap;;
+  
+  @type ('a,'b) t = ('a,'b) value with show, gmap;;
+
+  @type ground = (Constant.ground, Array.ground) t with show, gmap;;
+
+  @type logic = (Constant.logic, Array.logic) t logic' with show, gmap;;
+
+  type groundi = (ground, logic) injected;;
+  
+  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
+end;;
+
+module State = struct
+  @type ground = (GT.string, Value.ground) Pair.ground List.ground with show, gmap;;
+  @type logic = (GT.string logic', Value.logic) Pair.logic List.logic with show, gmap;;
+  type groundi = (ground, logic) injected;;
+end;;
+
 module Expr = struct
   @type ('c,'v,'self) expr = Con of 'c
                            | Var of 'v  (** a variable is a character string *)
@@ -193,23 +216,6 @@ module Expr = struct
   let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
 end;;
 
-module Value = struct
-  @type ('c, 'a) value = Conv of 'c   (** constant value *)
-                       | Arrv of 'a   (** array value *)
-                       | Undef        (** undefined *)
-   with show, gmap;;
-  
-  @type ('a,'b) t = ('a,'b) value with show, gmap;;
-
-  @type ground = (Constant.ground, Array.ground) t with show, gmap;;
-
-  @type logic = (Constant.logic, Array.logic) t logic' with show, gmap;;
-
-  type groundi = (ground, logic) injected;;
-  
-  let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
-end;;
-
 module Inj = struct
   module FExpr = Fmap3(Expr);;
   module FValue = Fmap2(Value);;
@@ -223,17 +229,18 @@ module Inj = struct
   let arrv = fun x -> inj @@ FValue.distrib (Arrv x);;
   let undef = fun () -> inj @@ FValue.distrib Undef;;
 
-  let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
+  module Bool = struct
+    let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
+  end;;
 end;;
 
 
-(* args: state, expr, value *)
-let rec eval_imp : 'state -> Expr.groundi -> Value.groundi -> goal
+let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
   = fun s e v ->
-    let open Inj  in
+    let open Inj in let open Inj.Bool in 
     let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
-    { fresh c in e == Con c & v == Conv c }
+    {fresh c in e == Con c & v == Conv c }
   | {fresh va, r in e == Var va & List.assoco va s r & v == r}
   | {fresh va, ex, ar, idx, c in
      e == Arr (va, ex)
@@ -241,21 +248,14 @@ let rec eval_imp : 'state -> Expr.groundi -> Value.groundi -> goal
      & eval_imp s ex (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
      & ArrayAccess.rel idx ar c
      & v == Conv c }
-  | {fresh e1,e2,e3 in
+  | {fresh e1,e2,e3,v' in
      e == Brh (e1,e2,e3)
-     & eval_imp s e1 (Conv (tup4 b0 b0 b0 b0))
-     & eval_imp s e3 v }
+     & eval_imp s e1 v'
+     & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}
   };;
 
-(* 
-
-
-branching on the first expression
-
-*)
-
-let b0  : BooleanTypes.groundi = !!(BooleanTypes.O)
-and b1  : BooleanTypes.groundi = !!(BooleanTypes.I);;
+open Inj;;
+open Inj.Bool;;
 
 let c1 : Constant.groundi = ocanren { (b1,b0,b0,b1) };;
 
@@ -278,8 +278,9 @@ let array1 : Array.groundi = ocanren {
         (b1,b1,b1,b1)))))
   };;
 
+let state1 : State.groundi = ocanren { [("x", (Conv c1));("y",Arrv array1)] };;
 
-
+(* test array access *)
 
 let _ = 
   L.iter (fun x -> print_string @@ GT.show(Constant.ground) x;print_newline())
@@ -292,3 +293,49 @@ let _ =
     @@  Stream.take ~n:3 @@ 
   run q (fun q -> ocanren {ArrayAccess.rel c1 q c1}) (fun q -> q#reify(Array.reify));;
 
+(* test eval_imp *)
+
+(* eval constant *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp r (Con c1) q}) project;;
+
+(* eval variable *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Var "x") q}) project;;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Var "y") q}) project;;
+
+
+(* eval array *)
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Con c1)) q}) project;;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Var "x")) q}) project;;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Arr ("y", Var "x"))) q}) project;;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Arr ("y", Arr ("y", Var "x")))) q}) project;;
+(* potential optimization: store the value of "y" to avoid repeated lookup *)
