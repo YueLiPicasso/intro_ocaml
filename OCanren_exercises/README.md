@@ -16,45 +16,29 @@ manner, but rather like collecting pieces of a jigsaw puzzle: you know
 roughly what are there, but you are half-clear about them. Then with more
 experience  you would be  able to
 see the intricacies more and understand what previously puzzled you.
-Choose to dash ahead or to slow down, whichever helps you making progress ! 
+Choose to dash ahead or to slow down, whichever helps you making progress ! The
+following are my OCanren projects listed in reversed chronological order.
 
-### Tree
 
-The [tree](tree) sample served as my first exposure to OCanren programming.
-I dashed ahead through it to have a feel of the various language constructs,
-and I had to accept the fact that sometimes I was just
-typing the code without knowing for sure what they do. The impression was
-that there are some perculiarities related to how one should define a custom
-type, and there are boilerplate pieces for injecting and projecting data which
-sandwitches the actual relational programming in between. 
+### Digital Circuit Synthesis
 
-### Sorting
+Relational translation between a primitive imperative language and a
+minimal hardware  description language. To begin with we restrict
+the imperative language features to only variable assignment and branching, and
+sequencing of such statement is allowed only at the top level (See [DCSyn](DCSyn)). Then we allowed more freedom with sequencing ([DCSyn2](DCSyn2)). The translation so far, however, was direct and not in the I/O driven manner that was
+formulated and implemented in [DCSyn3](DCSyn3) later on (which is unfinished yet).
 
-OCanren inherits much terminology from miniKanren,
-such as reification (replacing logical variables by terms of the host language),
-goal (a function which takes one substitution and returns a stream of
-substitutions) etc. A major difference from miniKanren is that OCanren adopts
-a delicate type hierarchy for static typing purposes, and this hierarchy is
-best learnt using the [sorting](sorting) sample, accompanied by reading the
-simplest OCanren standard library interface files [LNat](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli) and [LList](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli), where the
-letter _L_ stands for _Logic_. This was my second exercise.
+### Rational number arithmetic
 
-### Jeep Problem 
+A [half-successful](ratexpr) treatment of relational arithmetic on (non-negative)
+rational numbers in OCanren.
 
-Next came the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
-encoding of the problem, however, is no more than stating the most immediate
-and straightforward facts. OCanren involves a syntactic extension to OCaml
-using the advanced camlp5 utility. This extension is signalled by the
-`ocanren { }` construct. Exploration of this was in the context of the Jeep
-problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library was
-be attempted.
 
-### Range of a Fleet of Aircraft
+### Stochatic Gold Mining
 
-All the above three exercises were based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
-was my first and original contribution to the collection of OCanren samples. It also served as a test of my skills with OCanren after several months of learning. I found the reference paper
-when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
-technicalities such as types to represent the states and the actions of the fleet, and I finished with the work in the following day.
+[This](Gold_Mining) uses a typical logic programming technique: generate-and-test. We also
+defined a simple library for positive rational numbers. The location
+of making recursive calls is shown to be important by this example.
 
 
 ### Robbers Problem
@@ -68,24 +52,47 @@ match injected pairs was not found until some surprise and observation. This
 was my second original contribution to the OCanren sample collection.
 
 
-### Stochatic Gold Mining
+### Range of a Fleet of Aircraft
 
-[This](Gold_Mining) uses a typical logic programming technique: generate-and-test. We also
-defined a simple library for positive rational numbers. The location
-of making recursive calls is shown to be important by this example.
+All the above three exercises were based on worked examples. [The fourth](aircraft_fleet), on the range of a fleet of aircraft,
+was my first and original contribution to the collection of OCanren samples. It also served as a test of my skills with OCanren after several months of learning. I found the reference paper
+when researching about the Jeep Problem, and read it for several times and thought about encoding it in OCanren. Then I discussed in a meeting with Dmitri Boulytchev about the
+technicalities such as types to represent the states and the actions of the fleet, and I finished with the work in the following day.
 
-### Rational number arithmetic
 
-A [half-successful](ratexpr) treatment of relational arithmetic on (non-negative)
-rational numbers in OCanren.
+### Jeep Problem 
 
-### Digital Circuit Synthesis
+Next came the [Jeep Problem](JeepProblem). Being itself mathematically complicated, a relational
+encoding of the problem, however, is no more than stating the most immediate
+and straightforward facts. OCanren involves a syntactic extension to OCaml
+using the advanced camlp5 utility. This extension is signalled by the
+`ocanren { }` construct. Exploration of this was in the context of the Jeep
+problem. Also at this point a better understanding of the [LPair](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LPair.mli) library was
+be attempted.
 
-Relational translation between a primitive imperative language and a
-minimal hardware  description language. To begin with we restrict
-the imperative language features to only variable assignment and branching, and
-sequencing of such statement is allowed only at the top level (See [DCSyn](DCSyn)). Then we allowed more freedom with sequencing ([DCSyn2](DCSyn2)). The translation so far, however, was direct and not in the I/O driven manner that was
-formulated and implemented in [DCSyn3](DCSyn3) later on (DCSyn3 is unfinished yet).
+
+### Sorting
+
+OCanren inherits much terminology from miniKanren,
+such as reification (replacing logical variables by terms of the host language),
+goal (a function which takes one substitution and returns a stream of
+substitutions) etc. A major difference from miniKanren is that OCanren adopts
+a delicate type hierarchy for static typing purposes, and this hierarchy is
+best learnt using the [sorting](sorting) sample, accompanied by reading the
+simplest OCanren standard library interface files [LNat](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli) and [LList](https://github.com/JetBrains-Research/OCanren/blob/master/src/std/LNat.mli), where the
+letter _L_ stands for _Logic_. This was my second exercise.
+
+
+### Tree
+
+The [tree](tree) sample served as my first exposure to OCanren programming.
+I dashed ahead through it to have a feel of the various language constructs,
+and I had to accept the fact that sometimes I was just
+typing the code without knowing for sure what they do. The impression was
+that there are some perculiarities related to how one should define a custom
+type, and there are boilerplate pieces for injecting and projecting data which
+sandwitches the actual relational programming in between. 
+
 
 ## Learning OCaml
 
