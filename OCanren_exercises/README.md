@@ -82,9 +82,10 @@ rational numbers in OCanren.
 ### Digital Circuit Synthesis
 
 Relational translation between a primitive imperative language and a
-minimal hardware  description language. [To begin with](DCSyn) we restrict
+minimal hardware  description language. To begin with we restrict
 the imperative language features to only variable assignment and branching, and
-sequencing of such statement is allowed only at the top level.
+sequencing of such statement is allowed only at the top level (See [DCSyn](DCSyn)). Then we allowed more freedom with sequencing ([DCSyn2](DCSyn2)). The translation so far, however, was direct and not in the I/O driven manner, which was
+formulated and implemented in [DCSyn3] later on (DCSyn3 is unfinished yet).
 
 ## Learning OCaml
 
