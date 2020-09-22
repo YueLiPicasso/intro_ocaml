@@ -257,7 +257,9 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
 open Inj;;
 open Inj.Bool;;
 
-let c1 : Constant.groundi = ocanren { (b1,b0,b0,b1) };;
+let c0 : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
+let c1 : Constant.groundi = ocanren { (b0,b0,b0,b1) };;
+let c9 : Constant.groundi = ocanren { (b1,b0,b0,b1) };;
 
 let array1 : Array.groundi = ocanren {
     (((((b0,b0,b0,b0),
@@ -296,12 +298,14 @@ let _ =
 (* test eval_imp *)
 
 (* eval constant *)
+
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
   @@ Stream.take ~n:3 @@
   run q (fun q -> ocanren {fresh r in eval_imp r (Con c1) q}) project;;
 
 (* eval variable *)
+
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
   @@ Stream.take ~n:3 @@
@@ -339,3 +343,39 @@ let _ =
   @@ Stream.take ~n:3 @@
   run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Arr ("y", Arr ("y", Var "x")))) q}) project;;
 (* potential optimization: store the value of "y" to avoid repeated lookup *)
+
+(* invalid array access gives an empty set of answers *)
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("x", Con c1)) q}) project;;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Arr ("y", Var "y")) q}) project;;
+
+
+(* eval branch *)
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Brh(Con c0, Con c0, Con c1)) q}) project;;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Brh(Con c1, Con c0, Con c1)) q}) project;;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Brh(Brh(Arr("y", Con c0),Con c1,Con c9), Con c0, Con c1)) q}) project;;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:3 @@
+  run q (fun q -> ocanren {fresh r in eval_imp state1 (Brh(Con c1,Brh(Arr("y", Con c0), Con c9, Con c1), Con c0)) q}) project;;
+
