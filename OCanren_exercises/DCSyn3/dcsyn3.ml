@@ -412,6 +412,8 @@ let _ =
   @@ Stream.take ~n:5 @@ (* as many as you want *)
   run q (fun q -> ocanren {eval_imp state1 q (Conv c1) & eval_imp state2 q (Conv c2)}) (fun q -> q#reify(Expr.reify));;
 
+
+(*
 (* given three  state-result pairs, synthesis programs : hard challenge, processs killed *)
 
 let _ =  print_newline();;
@@ -431,4 +433,4 @@ let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
   run q (fun q -> ocanren {eval_imp state1 q (Conv c5) & eval_imp state2 q (Conv c10) & eval_imp state3 q (Conv c15)}) (fun q -> q#reify(Expr.reify));;
-
+*)
