@@ -196,14 +196,43 @@ module Expr = struct
   let rec reify = fun h x -> FExpr.reify Constant.reify Logic.reify reify h x;;
 end;;
 
+module SignalTypes = struct
+  @type ('cons, 'string, 'self) signal =
+       Src of 'cons                     (** constant *)
+     | Port of 'string                  (** variable *)
+     | Fout of 'string * 'self * 'self  (** fan out  *)
+     | Mux of 'self * 'self * 'self
+     | Slice of 'self * 'self
+   with show, gmap;;
+  @type ('a,'b,'c) t = ('a,'b,'c) signal with show, gmap;;
+  @type ground = (Constant.ground, GT.string, ground) t with show, gmap;;
+  @type logic = (Constant.logic, GT.string logic', logic) t logic'
+   with show, gmap;;
+  type groundi = (ground, logic) injected;;
+  let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
+end;;
+
+module FSignal = Fmap3(SignalTypes);;
+
+module Signal = struct
+  include SignalTypes;;
+  let rec reify = fun h x ->
+    FSignal.reify Constant.reify Logic.reify reify h x;;
+end;;
+
 module Inj = struct
-  let con   = fun x     -> inj @@ FExpr.distrib  (Con x);;
-  let var   = fun x     -> inj @@ FExpr.distrib  (Var x);;
-  let arr   = fun x y   -> inj @@ FExpr.distrib  (Arr (x,y));;
-  let brh   = fun x y z -> inj @@ FExpr.distrib  (Brh (x,y,z));;
-  let conv  = fun x     -> inj @@ FValue.distrib (Conv x);;
-  let arrv  = fun x     -> inj @@ FValue.distrib (Arrv x);;
-  let undef = fun ()    -> inj @@ FValue.distrib Undef;;
+  let con   = fun x     -> inj @@ FExpr.distrib   (Con x)       ;;
+  let var   = fun x     -> inj @@ FExpr.distrib   (Var x)       ;;
+  let arr   = fun x y   -> inj @@ FExpr.distrib   (Arr (x,y))   ;;
+  let brh   = fun x y z -> inj @@ FExpr.distrib   (Brh (x,y,z)) ;;
+  let conv  = fun x     -> inj @@ FValue.distrib  (Conv x)      ;;
+  let arrv  = fun x     -> inj @@ FValue.distrib  (Arrv x)      ;;
+  let undef = fun ()    -> inj @@ FValue.distrib  (Undef)       ;;  (* not used so far *)
+  let src   = fun x     -> inj @@ FSignal.distrib (Src x)       ;;
+  let port  = fun x     -> inj @@ FSignal.distrib (Port x)      ;;
+  let fout  = fun x y z -> inj @@ FSignal.distrib (Fout (x,y,z));;
+  let mux   = fun x y z -> inj @@ FSignal.distrib (Mux (x,y,z)) ;;
+  let slice = fun x y   -> inj @@ FSignal.distrib (Slice (x,y)) ;;
   
   module Bool = struct
     let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
@@ -216,7 +245,7 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
     let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
     {fresh c in e == Con c & v == Conv c }
-  | {fresh va, r in e == Var va & List.assoco va s r & v == r}
+  | {fresh va, r in e == Var va & List.assoco va s v}
   | {fresh va, ex, ar, idx, c in
      e == Arr (va, ex)
      & List.assoco va s (Arrv ar)
@@ -228,6 +257,28 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
      & eval_imp s e1 v'
      & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}
   };;
+
+let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
+  = fun s e v ->
+    let open Inj in let open Inj.Bool in 
+    let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
+    ocanren {
+      {fresh c in e == Src c & v == Conv c }
+    | {fresh va, r in e == Port va & List.assoco va s v}
+    | {fresh e1,e2,e3,v' in
+       e == Mux (e1,e2,e3)
+       & eval_sig s e1 v'
+       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
+         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
+    | {fresh e1, e2, ar, idx, c in
+       e == Slice (e1, e2)
+       & eval_sig s e1 (Arrv ar)
+       & eval_sig s e2 (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
+       & ArrayAccess.rel idx ar c
+       & v == Conv c }
+    };;
+
+(* last case : fan out *)
 
 open Inj;;
 open Inj.Bool;;
@@ -422,8 +473,6 @@ let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
   run q (fun q -> ocanren {eval_imp state2 q (Conv c1) & eval_imp state2b q (Conv c2) & eval_imp state2c q (Conv c3)}) (fun q -> q#reify(Expr.reify));;
-
-
 
 (* given three  state-result pairs, synthesis programs : hard challenge, processs killed *)
 
