@@ -170,9 +170,15 @@ end;;
 
 module FValue = Fmap2(Value);;
 
+module StateUnit = struct
+  @type ground  = (GT.string, Value.ground) Pair.ground         with show, gmap;;
+  @type logic   = (GT.string logic', Value.logic) Pair.logic    with show, gmap;;
+   type groundi = (ground, logic) injected;;
+end;;
+
 module State = struct
-  @type ground  = (GT.string, Value.ground) Pair.ground List.ground         with show, gmap;;
-  @type logic   = (GT.string logic', Value.logic) Pair.logic List.logic     with show, gmap;;
+  @type ground  = StateUnit.ground List.ground         with show, gmap;;
+  @type logic   = StateUnit.logic List.logic           with show, gmap;;
    type groundi = (ground, logic) injected;;
 end;;
 
@@ -233,15 +239,13 @@ module Inj = struct
   let fout  = fun x y z -> inj @@ FSignal.distrib (Fout (x,y,z));;
   let mux   = fun x y z -> inj @@ FSignal.distrib (Mux (x,y,z)) ;;
   let slice = fun x y   -> inj @@ FSignal.distrib (Slice (x,y)) ;;
-  
-  module Bool = struct
-    let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
-  end;;
+  let b0 = !!(BooleanTypes.O)
+  and b1 = !!(BooleanTypes.I);;
 end;;
 
 let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
   = fun s e v ->
-    let open Inj in let open Inj.Bool in 
+    let open Inj in
     let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
     {fresh c in e == Con c & v == Conv c }
@@ -260,7 +264,7 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
 
 let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
   = fun s e v ->
-    let open Inj in let open Inj.Bool in 
+    let open Inj in
     let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
     ocanren {
       {fresh c in e == Src c & v == Conv c }
@@ -281,7 +285,6 @@ let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
 (* last case : fan out *)
 
 open Inj;;
-open Inj.Bool;;
 
 let c0  : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
 let c1  : Constant.groundi = ocanren { (b0,b0,b0,b1) };;
@@ -483,3 +486,20 @@ let _ =
   @@ Stream.take ~n:1 @@
   run q (fun q -> ocanren {eval_imp state1 q (Conv c5) & eval_imp state2 q (Conv c10) & eval_imp state3 q (Conv c15)}) (fun q -> q#reify(Expr.reify));;
 *)
+
+
+(* test filtero *)
+
+let sunit_test : StateUnit.groundi -> Bool.groundi -> goal =
+  fun st bl ->
+  ocanren {
+    {fresh v in st == ("x", v) & bl == Bool.falso}
+  | {fresh k,v in st == (k, v) & k =/= "x" & bl == Bool.truo}
+  };;
+
+let _ =  print_newline();;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(State.ground) x;print_newline())
+  @@  Stream.take ~n:3 @@
+  run q (fun q -> List.filtero sunit_test state1 q) project;;
