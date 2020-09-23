@@ -9,58 +9,47 @@ open OCanren.Std;;
    constnt1 is just boolean. *)
 
 module BooleanTypes = struct
-  @type boolean = O | I with show, gmap;;
-  @type t = boolean  with show, gmap;;
-  @type ground = t  with show, gmap;;
-  @type logic = t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type boolean = O | I                        with show, gmap;;
+  @type t       = boolean                      with show, gmap;;
+  @type ground  = t                            with show, gmap;;
+  @type logic   = t logic'                     with show, gmap;;
+   type groundi = (ground, logic) injected;;
 end;;
 
 module Constnt2Types = struct
-  @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t with show, gmap;;
-  @type 'b t = 'b constnt2 with show, gmap;;
-  @type ground = BooleanTypes.ground t with show, gmap;;
-  @type logic = BooleanTypes.logic t logic'
-   with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t      with show, gmap;;
+  @type 'b t              = 'b constnt2                      with show, gmap;;
+  @type ground            = BooleanTypes.ground t            with show, gmap;;
+  @type logic             = BooleanTypes.logic t logic'      with show, gmap;;
+   type groundi           = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
-module FC2 = Fmap(Constnt2Types);;
-
-let c2reify : VarEnv.t -> Constnt2Types.groundi -> Constnt2Types.logic = fun h x -> FC2.reify reify h x;;
-
 module Constnt3Types = struct
-  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t with show, gmap;;
-  @type ('b,'c2) t = ('b,'c2) constnt3 with show,gmap;;
-  @type ground = (BooleanTypes.ground, Constnt2Types.ground) Pair.ground
-   with show,gmap;;
-  @type logic = (BooleanTypes.logic, Constnt2Types.logic) Pair.logic
-   with show,gmap;;
-  type groundi = (ground, logic) injected;;
+  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t                                          with show, gmap;;
+  @type ('b,'c2) t        = ('b,'c2) constnt3                                         with show,gmap;;
+  @type ground            = (BooleanTypes.ground, Constnt2Types.ground) Pair.ground   with show,gmap;;
+  @type logic             = (BooleanTypes.logic, Constnt2Types.logic) Pair.logic      with show,gmap;;
+   type groundi           = (ground, logic) injected;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
-
-module FC3 = Fmap2(Constnt3Types);;
-
-let c3reify : VarEnv.t -> Constnt3Types.groundi -> Constnt3Types.logic = fun h x -> FC3.reify reify c2reify h x;;
-
 
 module Constnt4Types = struct
-  @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t with show, gmap;;
-  @type ('b,'c3) t = ('b,'c3) constnt4 with show, gmap;;
-  @type ground = (BooleanTypes.ground, Constnt3Types.ground) Pair.ground
-   with show, gmap;;
-  @type logic = (BooleanTypes.logic, Constnt3Types.logic) Pair.logic
-   with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t                                         with show, gmap;;
+  @type ('b,'c3) t        = ('b,'c3) constnt4                                        with show, gmap;;
+  @type ground            = (BooleanTypes.ground, Constnt3Types.ground) Pair.ground  with show, gmap;;
+  @type logic             = (BooleanTypes.logic, Constnt3Types.logic) Pair.logic     with show, gmap;;
+  type groundi            = (ground, logic) injected;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
+module FC2 = Fmap(Constnt2Types);;
+module FC3 = Fmap2(Constnt3Types);;
 module FC4 = Fmap2(Constnt4Types);;
 
+let c2reify : VarEnv.t -> Constnt2Types.groundi -> Constnt2Types.logic = fun h x -> FC2.reify reify h x;;
+let c3reify : VarEnv.t -> Constnt3Types.groundi -> Constnt3Types.logic = fun h x -> FC3.reify reify c2reify h x;;
 let c4reify : VarEnv.t -> Constnt4Types.groundi -> Constnt4Types.logic = fun h x -> FC4.reify reify c3reify h x;;
-
 
 (* use four-bit constant. Change here if wider constants are used *)
 module Constant = struct
@@ -72,56 +61,49 @@ end;;
    and each cell holds a constant *)
 
 module Arr2Types = struct
-  @type 'constnt arr2  = ('constnt, 'constnt) Pair.t with show, gmap;;
-  @type 'c t = 'c arr2 with show, gmap;;
-  @type ground = Constant.ground t with show, gmap;;
-  @type logic = Constant.logic t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type 'constnt arr2  = ('constnt, 'constnt) Pair.t       with show, gmap;;
+  @type 'c t           = 'c arr2                           with show, gmap;;
+  @type ground         = Constant.ground t                 with show, gmap;;
+  @type logic          = Constant.logic t logic'           with show, gmap;;
+  type groundi         = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
-
-module FA2 = Fmap(Arr2Types);;
-
-let a2reify : VarEnv.t -> Arr2Types.groundi -> Arr2Types.logic = fun h x -> FA2.reify Constant.reify h x;;
-
 
 module Arr4Types = struct
-  @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t with show, gmap;;
-  @type 'a t = 'a arr4 with show, gmap;;
-  @type ground = Arr2Types.ground t with show, gmap;;
-  @type logic = Arr2Types.logic t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t                with show, gmap;;
+  @type 'a t        = 'a arr4                              with show, gmap;;
+  @type ground      = Arr2Types.ground t                   with show, gmap;;
+  @type logic       = Arr2Types.logic t logic'             with show, gmap;;
+  type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
-
-module FA4 = Fmap(Arr4Types);;
-
-let a4reify : VarEnv.t -> Arr4Types.groundi -> Arr4Types.logic = fun h x -> FA4.reify a2reify h x;;
 
 module Arr8Types = struct
-  @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t with show, gmap;;
-  @type 'a t = 'a arr8 with show, gmap;;
-  @type ground = Arr4Types.ground t with show, gmap;;
-  @type logic = Arr4Types.logic t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t                with show, gmap;;
+  @type 'a t        = 'a arr8                              with show, gmap;;
+  @type ground      = Arr4Types.ground t                   with show, gmap;;
+  @type logic       = Arr4Types.logic t logic'             with show, gmap;;
+  type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
-
-module FA8 = Fmap(Arr8Types);;
-
-let a8reify : VarEnv.t -> Arr8Types.groundi -> Arr8Types.logic = fun h x -> FA8.reify a4reify h x;;
 
 module Arr16Types = struct
-  @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t with show, gmap;;
-  @type 'a t = 'a arr16  with show, gmap;;
-  @type ground = Arr8Types.ground t with show, gmap;;
-  @type logic = Arr8Types.logic t logic' with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t                with show, gmap;;
+  @type 'a t        = 'a arr16                             with show, gmap;;
+  @type ground      = Arr8Types.ground t                   with show, gmap;;
+  @type logic       = Arr8Types.logic t logic'             with show, gmap;;
+  type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
+module FA2  = Fmap(Arr2Types);;
+module FA4  = Fmap(Arr4Types);;
+module FA8  = Fmap(Arr8Types);;
 module FA16 = Fmap(Arr16Types);;
 
+let a2reify  : VarEnv.t -> Arr2Types.groundi -> Arr2Types.logic   = fun h x -> FA2.reify Constant.reify h x;;
+let a4reify  : VarEnv.t -> Arr4Types.groundi -> Arr4Types.logic   = fun h x -> FA4.reify a2reify h x;;
+let a8reify  : VarEnv.t -> Arr8Types.groundi -> Arr8Types.logic   = fun h x -> FA8.reify a4reify h x;;
 let a16reify : VarEnv.t -> Arr16Types.groundi -> Arr16Types.logic = fun h x -> FA16.reify a8reify h x;;
 
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
@@ -178,23 +160,18 @@ module Value = struct
   @type ('c, 'a) value = Conv of 'c   (** constant value *)
                        | Arrv of 'a   (** array value *)
                        | Undef        (** undefined *)
-   with show, gmap;;
-  
-  @type ('a,'b) t = ('a,'b) value with show, gmap;;
-
-  @type ground = (Constant.ground, Array.ground) t with show, gmap;;
-
-  @type logic = (Constant.logic, Array.logic) t logic' with show, gmap;;
-
-  type groundi = (ground, logic) injected;;
-  
+                                                                 with show, gmap;;  
+  @type ('a,'b) t       = ('a,'b) value                          with show, gmap;;
+  @type ground          = (Constant.ground, Array.ground) t      with show, gmap;;
+  @type logic           = (Constant.logic, Array.logic) t logic' with show, gmap;;
+   type groundi         = (ground, logic) injected;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
 module State = struct
-  @type ground = (GT.string, Value.ground) Pair.ground List.ground with show, gmap;;
-  @type logic = (GT.string logic', Value.logic) Pair.logic List.logic with show, gmap;;
-  type groundi = (ground, logic) injected;;
+  @type ground  = (GT.string, Value.ground) Pair.ground List.ground     with show, gmap;;
+  @type logic   = (GT.string logic', Value.logic) Pair.logic List.logic with show, gmap;;
+   type groundi = (ground, logic) injected;;
 end;;
 
 module Expr = struct
@@ -202,40 +179,32 @@ module Expr = struct
                            | Var of 'v  (** a variable is a character string *)
                            | Arr of 'v * 'self
                            | Brh of 'self * 'self * 'self
-   with show, gmap;;
-  
-  @type ('a,'b,'c) t = ('a,'b,'c) expr with show, gmap;;
-
-  @type ground = (Constant.ground, GT.string, ground) t with show, gmap;;
-  
-  @type logic = (Constant.logic, GT.string logic', logic) t logic'
-   with show, gmap;;
-  
+                                                                                   with show, gmap;;
+  @type ('a,'b,'c) t       = ('a,'b,'c) expr                                       with show, gmap;;
+  @type ground             = (Constant.ground, GT.string, ground) t                with show, gmap;;
+  @type logic              = (Constant.logic, GT.string logic', logic) t logic'    with show, gmap;;
   type groundi = (ground, logic) injected;;
-  
   let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
 end;;
 
 module FExpr = Fmap3(Expr);;
 module FValue = Fmap2(Value);;
 
-module Inj = struct
-  let con = fun x -> inj @@ FExpr.distrib (Con x);;
-  let var = fun x -> inj @@ FExpr.distrib (Var x);;
-  let arr = fun x y -> inj @@ FExpr.distrib (Arr (x,y));;
-  let brh = fun x y z -> inj @@ FExpr.distrib (Brh (x,y,z));;
+let rec expr_reify = fun h x -> FExpr.reify Constant.reify reify expr_reify h x;;
 
-  let conv = fun x -> inj @@ FValue.distrib (Conv x);;
-  let arrv = fun x -> inj @@ FValue.distrib (Arrv x);;
-  let undef = fun () -> inj @@ FValue.distrib Undef;;
+module Inj = struct
+  let con   = fun x     -> inj @@ FExpr.distrib  (Con x);;
+  let var   = fun x     -> inj @@ FExpr.distrib  (Var x);;
+  let arr   = fun x y   -> inj @@ FExpr.distrib  (Arr (x,y));;
+  let brh   = fun x y z -> inj @@ FExpr.distrib  (Brh (x,y,z));;
+  let conv  = fun x     -> inj @@ FValue.distrib (Conv x);;
+  let arrv  = fun x     -> inj @@ FValue.distrib (Arrv x);;
+  let undef = fun ()    -> inj @@ FValue.distrib  Undef;;
   
   module Bool = struct
     let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
   end;;
 end;;
-
-let rec expr_reify = fun h x -> FExpr.reify Constant.reify reify expr_reify h x;;
-
 
 let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
   = fun s e v ->
