@@ -168,13 +168,15 @@ module Value = struct
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
+module FValue = Fmap2(Value);;
+
 module State = struct
   @type ground  = (GT.string, Value.ground) Pair.ground List.ground     with show, gmap;;
   @type logic   = (GT.string logic', Value.logic) Pair.logic List.logic with show, gmap;;
    type groundi = (ground, logic) injected;;
 end;;
 
-module Expr = struct
+module ExprTypes = struct
   @type ('c,'v,'self) expr = Con of 'c
                            | Var of 'v  (** a variable is a character string *)
                            | Arr of 'v * 'self
@@ -187,10 +189,12 @@ module Expr = struct
   let fmap = fun f1 f2 f3 x -> GT.gmap(t) f1 f2 f3 x;;
 end;;
 
-module FExpr = Fmap3(Expr);;
-module FValue = Fmap2(Value);;
+module FExpr = Fmap3(ExprTypes);;
 
-let rec expr_reify = fun h x -> FExpr.reify Constant.reify reify expr_reify h x;;
+module Expr = struct
+  include ExprTypes;;
+  let rec reify = fun h x -> FExpr.reify Constant.reify Logic.reify reify h x;;
+end;;
 
 module Inj = struct
   let con   = fun x     -> inj @@ FExpr.distrib  (Con x);;
@@ -199,7 +203,7 @@ module Inj = struct
   let brh   = fun x y z -> inj @@ FExpr.distrib  (Brh (x,y,z));;
   let conv  = fun x     -> inj @@ FValue.distrib (Conv x);;
   let arrv  = fun x     -> inj @@ FValue.distrib (Arrv x);;
-  let undef = fun ()    -> inj @@ FValue.distrib  Undef;;
+  let undef = fun ()    -> inj @@ FValue.distrib Undef;;
   
   module Bool = struct
     let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I);;
@@ -397,7 +401,7 @@ let _ =
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:5 @@ (* as many as you want *)
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c1)}) (fun q -> q#reify(expr_reify));;
+  run q (fun q -> ocanren {eval_imp state1 q (Conv c1)}) (fun q -> q#reify(Expr.reify));;
 
 (* given two  state-result pairs, synthesis programs *)
 
@@ -406,7 +410,7 @@ let _ =  print_newline();;
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:5 @@ (* as many as you want *)
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c1) & eval_imp state2 q (Conv c2)}) (fun q -> q#reify(expr_reify));;
+  run q (fun q -> ocanren {eval_imp state1 q (Conv c1) & eval_imp state2 q (Conv c2)}) (fun q -> q#reify(Expr.reify));;
 
 (* given three  state-result pairs, synthesis programs : hard challenge, processs killed *)
 
@@ -415,7 +419,7 @@ let _ =  print_newline();;
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {eval_imp state2 q (Conv c1) & eval_imp state2b q (Conv c2) & eval_imp state2c q (Conv c3)}) (fun q -> q#reify(expr_reify));;
+  run q (fun q -> ocanren {eval_imp state2 q (Conv c1) & eval_imp state2b q (Conv c2) & eval_imp state2c q (Conv c3)}) (fun q -> q#reify(Expr.reify));;
 
 
 
@@ -426,5 +430,5 @@ let _ =  print_newline();;
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c5) & eval_imp state2 q (Conv c10) & eval_imp state3 q (Conv c15)}) (fun q -> q#reify(expr_reify));;
+  run q (fun q -> ocanren {eval_imp state1 q (Conv c5) & eval_imp state2 q (Conv c10) & eval_imp state3 q (Conv c15)}) (fun q -> q#reify(Expr.reify));;
 
