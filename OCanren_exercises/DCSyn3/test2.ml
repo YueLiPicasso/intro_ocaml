@@ -116,7 +116,7 @@ let _ =
 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-  @@ Stream.take ~n:5 @@ (* as many as you want *)
+  @@ Stream.take ~n:5 @@ 
   run q (fun q -> ocanren {eval_sig state1 q (Conv c1)}) (fun q -> q#reify(Signal.reify));;
 
 
@@ -131,7 +131,7 @@ let _ =  print_newline();;
 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-  @@ Stream.take ~n:5 @@ (* as many as you want, try 500 *)
+  @@ Stream.take ~n:5 @@ 
   run q (fun q -> ocanren { eval_sig state1 q (Conv c1)
                           & eval_sig state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
 
@@ -143,7 +143,7 @@ let _ =  print_newline();;
 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-  @@ Stream.take ~n:1 @@
+  @@ Stream.take ~n:5 @@
   run q (fun q -> ocanren {eval_sig state2 q (Conv c7)
                            & eval_sig state2b q (Conv c6)
                            & eval_sig state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
@@ -155,7 +155,7 @@ let _ =
 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-  @@ Stream.take ~n:5 @@ (* as many as you want *)
+  @@ Stream.take ~n:5 @@
   run q (fun q -> ocanren {
       q == Mux (Slice (Port "y", Src c0),Slice (Port "y", Src c2), Src c1)
       & eval_sig state1 q (Conv c1)
