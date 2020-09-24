@@ -3,6 +3,7 @@
 open OCanren;;
 open OCanren.Std;;
 open Dcsyn3;;
+open Dcsyn3.InterpB;;
 
 (* test that the standard List.assoco only finds the first match *)
 let _ =
@@ -87,3 +88,4 @@ let _ =
   @@ Stream.take ~n:5 @@
   run q (fun q ->
       ocanren {eval_sig state2 (Slice (Port "y", Mux(Src c0, Src c1, Port "y"))) q}) project;;
+ 

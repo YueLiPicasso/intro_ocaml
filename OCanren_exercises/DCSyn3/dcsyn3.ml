@@ -233,7 +233,7 @@ module Inj = struct
   let brh   = fun x y z -> inj @@ FExpr.distrib   (Brh (x,y,z)) ;;
   let conv  = fun x     -> inj @@ FValue.distrib  (Conv x)      ;;
   let arrv  = fun x     -> inj @@ FValue.distrib  (Arrv x)      ;;
-  let undef = fun ()    -> inj @@ FValue.distrib  (Undef)       ;;  (* not used so far *)
+  let undef = fun ()    -> inj @@ FValue.distrib  (Undef)       ;;  
   let src   = fun x     -> inj @@ FSignal.distrib (Src x)       ;;
   let port  = fun x     -> inj @@ FSignal.distrib (Port x)      ;;
   let fout  = fun x y z -> inj @@ FSignal.distrib (Fout (x,y,z));;
@@ -247,27 +247,31 @@ include Inj;;
 
 let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d));;
 
-let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
-  = fun s e v ->
+(** interpreters that may produce the value [undefined]. Allowing 
+    the [unndefined] value slows down synthesis. Try [test.ml].*)
+module InterpA = struct
+  let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
+    = fun s e v ->
   ocanren {
     {fresh c in e == Con c & v == Conv c }
   | {fresh va, r in e == Var va & List.assoco va s v}
-  | {fresh va, ex, ar, idx, c in
+  | {fresh va, ex, ar, idx,  ar',idx', ar'',idx'', c in
      e == Arr (va, ex)
-     & List.assoco va s (Arrv ar)
-     & eval_imp s ex (Conv idx)   
-     & ArrayAccess.rel idx ar c
-     & v == Conv c }
+     & List.assoco va s ar
+     & eval_imp s ex idx    
+     & {ar == Arrv ar' & idx == Conv idx' & ArrayAccess.rel idx' ar' c & v == Conv c
+       | { ar == Arrv ar'  & idx == Arrv ar''
+         | ar == Conv idx' & idx == Arrv ar'
+         | ar == Conv idx' & idx == Conv idx''}
+         & v == Undef}}
   | {fresh e1,e2,e3,v' in
      e == Brh (e1,e2,e3)
      & eval_imp s e1 v'
-     & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}
-};;
+     & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v
+      | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}};;
 
-(* add undef cases for eval_imp *)
-
-let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
-  = fun s e v ->
+  let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
+    = fun s e v ->
     ocanren {
       {fresh c in e == Src c & v == Conv c }
     | {fresh va, r in e == Port va & List.assoco va s v}
@@ -289,11 +293,53 @@ let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
        e == Fout (va, e1, e2)
        & eval_sig s e1 ve1
        & s' == (va, ve1) :: s
-       & eval_sig s' e2 v}
-};;
+       & eval_sig s' e2 v}};;
 
-(** invalid array access (var not an array or index not a constant) fails the goal. Therefore
-    the constructor Undef is not actually used. *)
+end;;
+
+(** interpreters that do not produce the value [undefined] *)
+module InterpB = struct
+  let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
+    = fun s e v ->
+      ocanren {
+        {fresh c in e == Con c & v == Conv c }
+      | {fresh va, r in e == Var va & List.assoco va s v}
+      | {fresh va, ex, ar, idx, c in
+         e == Arr (va, ex)
+         & List.assoco va s (Arrv ar)
+         & eval_imp s ex (Conv idx)    
+         & ArrayAccess.rel idx ar c
+         & v == Conv c}
+      | {fresh e1,e2,e3,v' in
+         e == Brh (e1,e2,e3)
+         & eval_imp s e1 v'
+         & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v
+          | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}};;
+
+  let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
+    = fun s e v ->
+      ocanren {
+      {fresh c in e == Src c & v == Conv c }
+    | {fresh va, r in e == Port va & List.assoco va s v}
+    | {fresh e1,e2,e3,v' in
+       e == Mux (e1,e2,e3)
+       & eval_sig s e1 v'
+       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
+         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
+    | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
+       e == Slice (e1, e2)
+       & eval_sig s e1 (Arrv ar)
+       & eval_sig s e2 (Conv idx)    
+       & ArrayAccess.rel idx ar c
+       & v == Conv c}
+    | {fresh va,e1,e2,ve1,s' in
+       e == Fout (va, e1, e2)
+       & eval_sig s e1 ve1
+       & s' == (va, ve1) :: s
+       & eval_sig s' e2 v}};;
+
+end;;
+
 
 let c0  : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
 let c1  : Constant.groundi = ocanren { (b0,b0,b0,b1) };;

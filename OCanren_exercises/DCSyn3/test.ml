@@ -5,6 +5,9 @@
 open OCanren;;
 open OCanren.Std;;
 open Dcsyn3;;
+open Dcsyn3.InterpB;;
+(* alterntively , try:*)
+(* open Dcsyn3.InterpA;; *)
 
 (* test array access *)
 
@@ -68,7 +71,7 @@ let _ =
   run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Arr ("y", Arr ("y", Var "x")))) q}) project;;
 (* potential optimization: store the value of "y" to avoid repeated lookup *)
 
-(* invalid array access gives an empty set of answers *)
+(* invalid array access *)
 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
@@ -102,6 +105,7 @@ let _ =
   L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
   @@ Stream.take ~n:3 @@
   run q (fun q -> ocanren {eval_imp state1 (Brh(Con c1,Brh(Arr("y", Con c0), Con c9, Con c1), Con c0)) q}) project;;
+
 
 (* given a state and a result, synthesis programs *)
 
