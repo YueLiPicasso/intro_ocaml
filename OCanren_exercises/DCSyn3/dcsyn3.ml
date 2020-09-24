@@ -243,10 +243,12 @@ module Inj = struct
   and b1 = !!(BooleanTypes.I);;
 end;;
 
+include Inj;;
+
+let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d));;
+
 let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
   = fun s e v ->
-    let open Inj in
-    let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
   ocanren {
     {fresh c in e == Con c & v == Conv c }
   | {fresh va, r in e == Var va & List.assoco va s v}
@@ -260,12 +262,10 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
      e == Brh (e1,e2,e3)
      & eval_imp s e1 v'
      & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}
-  };;
+};;
 
 let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
   = fun s e v ->
-    let open Inj in
-    let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d)) in 
     ocanren {
       {fresh c in e == Src c & v == Conv c }
     | {fresh va, r in e == Port va & List.assoco va s v}
@@ -280,11 +280,9 @@ let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
        & eval_sig s e2 (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
        & ArrayAccess.rel idx ar c
        & v == Conv c }
-    };;
+};;
 
 (* last case : fan out *)
-
-open Inj;;
 
 let c0  : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
 let c1  : Constant.groundi = ocanren { (b0,b0,b0,b1) };;
@@ -345,161 +343,15 @@ let array2 : Array.groundi = ocanren {
   };;
 
 
-let array3 :  Array.groundi = ocanren {((((c0,c2),(c4,c6)),((c8,c10),(c12,c14))),(((c1,c3),(c5,c7)),((c9,c11),(c13,c15))))};;
+let array3 :  Array.groundi =
+  ocanren {((((c0,c2),(c4,c6)),((c8,c10),(c12,c14))),
+            (((c1,c3),(c5,c7)),((c9,c11),(c13,c15))))};;
 
 let state1  : State.groundi = ocanren { [("x", (Conv c1));("y",Arrv array1)] };;
 let state2  : State.groundi = ocanren { [("x", (Conv c9));("y",Arrv array2)] };;
 let state2b : State.groundi = ocanren { [("x", (Conv c5));("y",Arrv array2)] };;
 let state2c : State.groundi = ocanren { [("x", (Conv c1));("y",Arrv array2)] };;
 let state3  : State.groundi = ocanren { [("x", (Conv c3));("y",Arrv array3)] };;
+let state4  : State.groundi =
+  ocanren { [("x", (Conv c3));("x", (Conv c4));("x", (Conv c5));("y",Arrv array3)] };;
 
-(* test array access *)
-
-let _ = 
-  L.iter (fun x -> print_string @@ GT.show(Constant.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@ 
-  run q (fun q -> ocanren {ArrayAccess.rel c1 array1 q}) project;;
-
-
-let _ = 
-  L.iter (fun x -> print_string @@ GT.show(Array.logic) x;print_newline())
-    @@  Stream.take ~n:3 @@ 
-  run q (fun q -> ocanren {ArrayAccess.rel c1 q c1}) (fun q -> q#reify(Array.reify));;
-
-(* test eval_imp *)
-
-(* eval constant *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {fresh r in eval_imp r (Con c1) q}) project;;
-
-(* eval variable *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Var "x") q}) project;;
-
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Var "y") q}) project;;
-
-
-(* eval array *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Con c1)) q}) project;;
-
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Var "x")) q}) project;;
-
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Arr ("y", Var "x"))) q}) project;;
-
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Arr ("y", Arr ("y", Var "x")))) q}) project;;
-(* potential optimization: store the value of "y" to avoid repeated lookup *)
-
-(* invalid array access gives an empty set of answers *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("x", Con c1)) q}) project;;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Arr ("y", Var "y")) q}) project;;
-
-
-(* eval branch *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Brh(Con c0, Con c0, Con c1)) q}) project;;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Brh(Con c1, Con c0, Con c1)) q}) project;;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Brh(Brh(Arr("y", Con c0),Con c1,Con c9), Con c0, Con c1)) q}) project;;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
-  @@ Stream.take ~n:3 @@
-  run q (fun q -> ocanren {eval_imp state1 (Brh(Con c1,Brh(Arr("y", Con c0), Con c9, Con c1), Con c0)) q}) project;;
-
-(* given a state and a result, synthesis programs *)
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
-  @@ Stream.take ~n:5 @@ (* as many as you want *)
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c1)}) (fun q -> q#reify(Expr.reify));;
-
-(* given two  state-result pairs, synthesis programs *)
-
-let _ =  print_newline();;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
-  @@ Stream.take ~n:5 @@ (* as many as you want *)
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c1) & eval_imp state2 q (Conv c2)}) (fun q -> q#reify(Expr.reify));;
-
-
-(*
-(* given three  state-result pairs, synthesis programs : hard challenge, processs killed *)
-
-let _ =  print_newline();;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
-  @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {eval_imp state2 q (Conv c1) & eval_imp state2b q (Conv c2) & eval_imp state2c q (Conv c3)}) (fun q -> q#reify(Expr.reify));;
-
-(* given three  state-result pairs, synthesis programs : hard challenge, processs killed *)
-
-let _ =  print_newline();;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
-  @@ Stream.take ~n:1 @@
-  run q (fun q -> ocanren {eval_imp state1 q (Conv c5) & eval_imp state2 q (Conv c10) & eval_imp state3 q (Conv c15)}) (fun q -> q#reify(Expr.reify));;
-*)
-
-
-(* test filtero *)
-
-let sunit_test : StateUnit.groundi -> Bool.groundi -> goal =
-  fun st bl ->
-  ocanren {
-    {fresh v in st == ("x", v) & bl == Bool.falso}
-  | {fresh k,v in st == (k, v) & k =/= "x" & bl == Bool.truo}
-  };;
-
-let _ =  print_newline();;
-
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(State.ground) x;print_newline())
-  @@  Stream.take ~n:3 @@
-  run q (fun q -> List.filtero sunit_test state1 q) project;;
