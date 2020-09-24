@@ -1,4 +1,4 @@
-(** This file tests ... *)
+(** This file tests eval_sig including forward run and preliminary synthesis *)
 
 open OCanren;;
 open OCanren.Std;;
