@@ -137,14 +137,26 @@ let _ =
 
 let _ =  print_newline();;
 
-(* This is interesting: eval_imp can find but eval_sig cannot *)
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:5 @@ (* as many as you want *)
+  run q (fun q -> ocanren {
+      q == Mux (Slice (Port "y", Src c0),Slice (Port "y", Src c2), Src c1)
+      & eval_sig state1 q (Conv c1)
+      & eval_sig state2 q (Conv c2)})
+    (fun q -> q#reify(Signal.reify));;
+
+
+(* This is interesting: eval_imp can find but eval_sig cannot. If we remove the Fout
+   branch of eval_sig then it can.  *)
+(*
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
   @@ Stream.take ~n:5 @@ (* as many as you want *)
   run q (fun q -> ocanren {eval_sig state1 q (Conv c1) & eval_sig state2 q (Conv c2)})
-    (fun q -> q#reify(Signal.reify));;
+    (fun q -> q#reify(Signal.reify));; *)
 
-(* Brh (Arr ("y", Con ((O, (O, (O, O))))), 
-Arr ("y", Con ((O, (O, (I, O))))), 
-Con ((O, (O, (O, I)))))
-*)
+
+
+
