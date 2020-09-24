@@ -128,11 +128,11 @@ let _ =
 let _ =  print_newline();;
 
 let _ =
-  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  L.iter (fun x -> print_string @@ GT.show(Expr.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
   run q (fun q -> ocanren {eval_imp state2 q (Conv c7)
                            & eval_imp state2b q (Conv c6)
-                           & eval_imp state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
+                           & eval_imp state2c q (Conv c4)}) (fun q -> q#reify(Expr.reify));;
 
 (*
 (* given three  state-result pairs, synthesis programs : hard challenge, processs killed; answer
