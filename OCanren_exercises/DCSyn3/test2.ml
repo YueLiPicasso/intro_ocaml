@@ -157,6 +157,14 @@ let _ =
   run q (fun q -> ocanren {eval_sig state1 q (Conv c1) & eval_sig state2 q (Conv c2)})
     (fun q -> q#reify(Signal.reify));; *)
 
+(* given three  state-result pairs, synthesis programs *)
 
+let _ =  print_newline();;
 
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:1 @@
+  run q (fun q -> ocanren {eval_sig state2 q (Conv c7)
+                           & eval_sig state2b q (Conv c6)
+                           & eval_sig state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
 
