@@ -129,4 +129,22 @@ let _ =
 
 let _ =  print_newline();;
 
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:5 @@ (* as many as you want, try 500 *)
+  run q (fun q -> ocanren { eval_sig state1 q (Conv c1)
+                          & eval_sig state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
 
+let _ =  print_newline();;
+
+(* This is interesting: eval_imp can find but eval_sig cannot *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:5 @@ (* as many as you want *)
+  run q (fun q -> ocanren {eval_sig state1 q (Conv c1) & eval_sig state2 q (Conv c2)})
+    (fun q -> q#reify(Signal.reify));;
+
+(* Brh (Arr ("y", Con ((O, (O, (O, O))))), 
+Arr ("y", Con ((O, (O, (I, O))))), 
+Con ((O, (O, (O, I)))))
+*)

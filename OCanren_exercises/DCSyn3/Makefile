@@ -1,4 +1,4 @@
-TOPFILE = test2
+TOPFILE = test
 SOURCES = dcsyn3.ml test2.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
