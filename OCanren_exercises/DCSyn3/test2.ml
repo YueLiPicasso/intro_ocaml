@@ -89,3 +89,44 @@ let _ =
   run q (fun q ->
       ocanren {eval_sig state2 (Slice (Port "y", Mux(Src c0, Src c1, Port "y"))) q}) project;;
  
+(* eval_sig on Fout *)
+let _ =  print_newline();;
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:5 @@
+  run q (fun q ->
+      ocanren {eval_sig state2 (Fout("x",Slice(Port "y", Port "x"), Port "x")) q})
+    project;;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Value.ground) x;print_newline())
+  @@ Stream.take ~n:5 @@
+  run q (fun q ->
+      ocanren {eval_sig state2 (Fout("x",Slice(Port "y", Src c15),
+                                     Fout("y", Port "x",
+                                          Mux(Port "y",
+                                              Src c15,
+                                              Fout("z", Src c14, Port "z"))))) q})
+    project;;
+
+
+(* given a state and a result, synthesis programs *)
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:5 @@ (* as many as you want *)
+  run q (fun q -> ocanren {eval_sig state1 q (Conv c1)}) (fun q -> q#reify(Signal.reify));;
+
+
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
+  @@ Stream.take ~n:5 @@ (* as many as you want, try 500 *)
+  run q (fun q -> ocanren { eval_sig state2 q (Conv c2)}) (fun q -> q#reify(Signal.reify));;
+
+(* given two  state-result pairs, synthesis programs *)
+
+let _ =  print_newline();;
+
+
