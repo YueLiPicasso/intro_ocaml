@@ -206,9 +206,9 @@ module SignalTypes = struct
   @type ('cons, 'string, 'self) signal =
        Src of 'cons                     (** constant *)
      | Port of 'string                  (** variable *)
-     | Fout of 'string * 'self * 'self  (** fan out  *)
      | Mux of 'self * 'self * 'self
      | Slice of 'self * 'self
+     | Fout of 'string * 'self * 'self  (** fan out  *)
    with show, gmap;;
   @type ('a,'b,'c) t = ('a,'b,'c) signal with show, gmap;;
   @type ground = (Constant.ground, GT.string, ground) t with show, gmap;;
@@ -255,7 +255,7 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
   | {fresh va, ex, ar, idx, c in
      e == Arr (va, ex)
      & List.assoco va s (Arrv ar)
-     & eval_imp s ex (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
+     & eval_imp s ex (Conv idx)   
      & ArrayAccess.rel idx ar c
      & v == Conv c }
   | {fresh e1,e2,e3,v' in
@@ -263,6 +263,8 @@ let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
      & eval_imp s e1 v'
      & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}
 };;
+
+(* add undef cases for eval_imp *)
 
 let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
   = fun s e v ->
@@ -274,15 +276,24 @@ let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
        & eval_sig s e1 v'
        & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
          | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
-    | {fresh e1, e2, ar, idx, c in
+    | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
        e == Slice (e1, e2)
-       & eval_sig s e1 (Arrv ar)
-       & eval_sig s e2 (Conv idx)   (** invalid array access (var not an array or index not a constant) fails the goal *)
-       & ArrayAccess.rel idx ar c
-       & v == Conv c }
+       & eval_sig s e1 ar
+       & eval_sig s e2 idx    
+       & {ar == Arrv ar' & idx == Conv idx' & ArrayAccess.rel idx' ar' c & v == Conv c
+         | { ar == Arrv ar'  & idx == Arrv ar''
+           | ar == Conv idx' & idx == Arrv ar'
+           | ar == Conv idx' & idx == Conv idx''}
+           & v == Undef}}
+    | {fresh va,e1,e2,ve1,s' in
+       e == Fout (va, e1, e2)
+       & eval_sig s e1 ve1
+       & s' == (va, ve1) :: s
+       & eval_sig s' e2 v}
 };;
 
-(* last case : fan out *)
+(** invalid array access (var not an array or index not a constant) fails the goal. Therefore
+    the constructor Undef is not actually used. *)
 
 let c0  : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
 let c1  : Constant.groundi = ocanren { (b0,b0,b0,b1) };;
