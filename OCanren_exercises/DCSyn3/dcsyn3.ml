@@ -21,7 +21,7 @@ module Bool = struct
   module Inj = struct let b0 = !!(O) and b1 = !!(I);; end;;
   open Inj;;
   (** test or generate *)
-  let tog = fun x -> ocanren { x == b0 | x == b1 };;
+  let tog : groundi -> goal = fun x -> ocanren { x == b0 | x == b1 };;
 end;;
 
 module Constnt2Types = struct
@@ -39,7 +39,7 @@ module Constnt2 = struct
   include Constnt2Types;;
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FC2.reify Bool.reify h x;;
-  let tog = fun c -> ocanren {fresh d0, d1 in c == (d1, d0) & Bool.tog d1 & Bool.tog d0};;
+  let tog : groundi -> goal = fun c -> ocanren {fresh d0, d1 in c == (d1, d0) & Bool.tog d1 & Bool.tog d0};;
 end;;
 
 module Constnt3Types = struct
@@ -57,7 +57,7 @@ module Constnt3 = struct
   include Constnt3Types;;
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FC3.reify Bool.reify Constnt2.reify h x;;
-  let tog = fun c3 -> ocanren {fresh d, c2 in c3 == (d, c2) & Bool.tog d & Constnt2.tog c2};;
+  let tog : groundi -> goal = fun c3 -> ocanren {fresh d, c2 in c3 == (d, c2) & Bool.tog d & Constnt2.tog c2};;
 end;;
 
 module Constnt4Types = struct
@@ -75,7 +75,8 @@ module Constnt4 = struct
   include Constnt4Types;;
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FC4.reify Bool.reify Constnt3.reify h x;;
-  let tog = fun c4 -> ocanren {fresh d, c3 in c4 == (d, c3) & Bool.tog d & Constnt3.tog c3};;
+  let tog : groundi -> goal =
+    fun c4 -> ocanren {fresh d, c3 in c4 == (d, c3) & Bool.tog d & Constnt3.tog c3};;
 end;;
 
 (* use four-bit constant. Change here if wider constants are used *)
@@ -99,7 +100,8 @@ module Arr2 = struct
   include Arr2Types;;
   let reify  : VarEnv.t -> groundi -> logic
     = fun h x -> FA2.reify Constant.reify h x;;
-  let tog = fun a2 -> ocanren {fresh c, c' in a2 == (c, c') & Constant.tog c & Constant.tog c'};;
+  let tog : groundi -> goal =
+    fun a2 -> ocanren {fresh c, c' in a2 == (c, c') & Constant.tog c & Constant.tog c'};;
 end;;
 
 module Arr4Types = struct
@@ -117,7 +119,8 @@ module Arr4 = struct
   include Arr4Types;;
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FA4.reify Arr2.reify h x;;
-  let tog = fun a4 -> ocanren {fresh a2, a2' in a4 == (a2, a2') & Arr2.tog a2 & Arr2.tog a2'};;
+  let tog : groundi -> goal =
+    fun a4 -> ocanren {fresh a2, a2' in a4 == (a2, a2') & Arr2.tog a2 & Arr2.tog a2'};;
 end;;
 
 module Arr8Types = struct
@@ -135,7 +138,8 @@ module Arr8 = struct
   include Arr8Types;;
   let reify  : VarEnv.t -> groundi -> logic
     = fun h x -> FA8.reify Arr4.reify h x;;
-  let tog = fun a8 -> ocanren {fresh a4, a4' in a8 == (a4, a4') & Arr4.tog a4 & Arr4.tog a4'};;
+  let tog : groundi -> goal =
+    fun a8 -> ocanren {fresh a4, a4' in a8 == (a4, a4') & Arr4.tog a4 & Arr4.tog a4'};;
 end;;
 
 module Arr16Types = struct
@@ -152,8 +156,9 @@ module FA16 = Fmap(Arr16Types);;
 module Arr16 = struct
   include Arr16Types;;
   let reify  : VarEnv.t -> groundi -> logic
-    = fun h x -> FA8.reify Arr8.reify h x;;
-  let tog = fun a16 -> ocanren {fresh a8, a8' in a16 == (a8, a8') & Arr8.tog a8 & Arr8.tog a8'};;
+    = fun h x -> FA16.reify Arr8.reify h x;;
+  let tog : groundi -> goal =
+    fun a16 -> ocanren {fresh a8, a8' in a16 == (a8, a8') & Arr8.tog a8 & Arr8.tog a8'};;
 end;;
 
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
