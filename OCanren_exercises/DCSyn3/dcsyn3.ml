@@ -43,7 +43,7 @@ module Constnt2 = struct
 end;;
 
 module Constnt3Types = struct
-  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t                             with show, gmap;;
+  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t                             with show,gmap;;
   @type ('b,'c2) t        = ('b,'c2) constnt3                            with show,gmap;;
   @type ground            = (Bool.ground, Constnt2.ground) Pair.ground   with show,gmap;;
   @type logic             = (Bool.logic, Constnt2.logic) Pair.logic      with show,gmap;;
@@ -103,8 +103,8 @@ module Arr2 = struct
 end;;
 
 module Arr4Types = struct
-  @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t                with show, gmap;;
-  @type 'a t        = 'a arr4                              with show, gmap;;
+  @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t           with show, gmap;;
+  @type 'a t        = 'a arr4                         with show, gmap;;
   @type ground      = Arr2.ground t                   with show, gmap;;
   @type logic       = Arr2.logic t logic'             with show, gmap;;
    type groundi      = (ground, logic) injected;;
@@ -121,10 +121,10 @@ module Arr4 = struct
 end;;
 
 module Arr8Types = struct
-  @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t                with show, gmap;;
-  @type 'a t        = 'a arr8                              with show, gmap;;
-  @type ground      = Arr4Types.ground t                   with show, gmap;;
-  @type logic       = Arr4Types.logic t logic'             with show, gmap;;
+  @type 'arr4 arr8  = ('arr4, 'arr4) Pair.t           with show, gmap;;
+  @type 'a t        = 'a arr8                         with show, gmap;;
+  @type ground      = Arr4.ground t                   with show, gmap;;
+  @type logic       = Arr4.logic t logic'             with show, gmap;;
    type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
@@ -139,10 +139,10 @@ module Arr8 = struct
 end;;
 
 module Arr16Types = struct
-  @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t                with show, gmap;;
-  @type 'a t        = 'a arr16                             with show, gmap;;
-  @type ground      = Arr8Types.ground t                   with show, gmap;;
-  @type logic       = Arr8Types.logic t logic'             with show, gmap;;
+  @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t           with show, gmap;;
+  @type 'a t        = 'a arr16                        with show, gmap;;
+  @type ground      = Arr8.ground t                   with show, gmap;;
+  @type logic       = Arr8.logic t logic'             with show, gmap;;
    type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
