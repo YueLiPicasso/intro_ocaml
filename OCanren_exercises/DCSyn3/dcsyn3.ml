@@ -1,5 +1,4 @@
 open OCanren;;
-module L = List ;;
 open OCanren.Std;;
 
 (* aliasing the standard OCanren type constructor [logic] *)
@@ -13,49 +12,74 @@ module BooleanTypes = struct
   @type t       = boolean                      with show, gmap;;
   @type ground  = t                            with show, gmap;;
   @type logic   = t logic'                     with show, gmap;;
-   type groundi = (ground, logic) injected;;
+  type groundi = (ground, logic) injected;;
+end;;
+
+module Bool = struct
+  include BooleanTypes;;
+  let reify = fun h x -> reify h x;; (* the shallow reifier from [Logic] *)
+  module Inj = struct let b0 = !!(O) and b1 = !!(I);; end;;
+  open Inj;;
+  (** test or generate *)
+  let tog = fun x -> ocanren { x == b0 | x == b1 };;
 end;;
 
 module Constnt2Types = struct
-  @type 'boolean constnt2 = ('boolean, 'boolean) Pair.t      with show, gmap;;
-  @type 'b t              = 'b constnt2                      with show, gmap;;
-  @type ground            = BooleanTypes.ground t            with show, gmap;;
-  @type logic             = BooleanTypes.logic t logic'      with show, gmap;;
-   type groundi           = (ground, logic) injected;;
+  @type 'bool constnt2 = ('bool, 'bool) Pair.t       with show, gmap;;
+  @type 'b t              = 'b constnt2              with show, gmap;;
+  @type ground            = Bool.ground t            with show, gmap;;
+  @type logic             = Bool.logic t logic'      with show, gmap;;
+  type groundi           = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
+module FC2 = Fmap(Constnt2Types);;
+
+module Constnt2 = struct
+  include Constnt2Types;;
+  let reify : VarEnv.t -> groundi -> logic
+    = fun h x -> FC2.reify Bool.reify h x;;
+  let tog = fun c -> ocanren {fresh d0, d1 in c == (d1, d0) & Bool.tog d1 & Bool.tog d0};;
+end;;
+
 module Constnt3Types = struct
-  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t                                          with show, gmap;;
-  @type ('b,'c2) t        = ('b,'c2) constnt3                                         with show,gmap;;
-  @type ground            = (BooleanTypes.ground, Constnt2Types.ground) Pair.ground   with show,gmap;;
-  @type logic             = (BooleanTypes.logic, Constnt2Types.logic) Pair.logic      with show,gmap;;
-   type groundi           = (ground, logic) injected;;
+  @type ('b,'c2) constnt3 = ('b, 'c2) Pair.t                             with show, gmap;;
+  @type ('b,'c2) t        = ('b,'c2) constnt3                            with show,gmap;;
+  @type ground            = (Bool.ground, Constnt2.ground) Pair.ground   with show,gmap;;
+  @type logic             = (Bool.logic, Constnt2.logic) Pair.logic      with show,gmap;;
+  type groundi           = (ground, logic) injected;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
+end;;
+
+module FC3 = Fmap2(Constnt3Types);;
+
+module Constnt3 = struct
+  include Constnt3Types;;
+  let reify : VarEnv.t -> groundi -> logic
+    = fun h x -> FC3.reify Bool.reify Constnt2.reify h x;;
+  let tog = fun c3 -> ocanren {fresh d, c2 in c3 == (d, c2) & Bool.tog d & Constnt2.tog c2};;
 end;;
 
 module Constnt4Types = struct
-  @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t                                         with show, gmap;;
-  @type ('b,'c3) t        = ('b,'c3) constnt4                                        with show, gmap;;
-  @type ground            = (BooleanTypes.ground, Constnt3Types.ground) Pair.ground  with show, gmap;;
-  @type logic             = (BooleanTypes.logic, Constnt3Types.logic) Pair.logic     with show, gmap;;
-   type groundi            = (ground, logic) injected;;
+  @type ('b,'c3) constnt4 = ('b, 'c3) Pair.t                            with show, gmap;;
+  @type ('b,'c3) t        = ('b,'c3) constnt4                           with show, gmap;;
+  @type ground            = (Bool.ground, Constnt3.ground) Pair.ground  with show, gmap;;
+  @type logic             = (Bool.logic, Constnt3.logic) Pair.logic     with show, gmap;;
+  type groundi            = (ground, logic) injected;;
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-module FC2 = Fmap(Constnt2Types);;
-module FC3 = Fmap2(Constnt3Types);;
 module FC4 = Fmap2(Constnt4Types);;
 
-let c2reify : VarEnv.t -> Constnt2Types.groundi -> Constnt2Types.logic = fun h x -> FC2.reify reify h x;;
-let c3reify : VarEnv.t -> Constnt3Types.groundi -> Constnt3Types.logic = fun h x -> FC3.reify reify c2reify h x;;
-let c4reify : VarEnv.t -> Constnt4Types.groundi -> Constnt4Types.logic = fun h x -> FC4.reify reify c3reify h x;;
+module Constnt4 = struct
+  include Constnt4Types;;
+  let reify : VarEnv.t -> groundi -> logic
+    = fun h x -> FC4.reify Bool.reify Constnt3.reify h x;;
+  let tog = fun c4 -> ocanren {fresh d, c3 in c4 == (d, c3) & Bool.tog d & Constnt3.tog c3};;
+end;;
 
 (* use four-bit constant. Change here if wider constants are used *)
-module Constant = struct
-  include Constnt4Types;;
-  let reify = fun h x -> c4reify h x;;
-end;;
+module Constant = Constnt4;;
 
 (* arrays in different sizes: arrN is an N-cell array, 
    and each cell holds a constant *)
@@ -69,13 +93,31 @@ module Arr2Types = struct
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
+module FA2  = Fmap(Arr2Types);;
+
+module Arr2 = struct
+  include Arr2Types;;
+  let reify  : VarEnv.t -> groundi -> logic
+    = fun h x -> FA2.reify Constant.reify h x;;
+  let tog = fun a2 -> ocanren {fresh c, c' in a2 == (c, c') & Constant.tog c & Constant.tog c'};;
+end;;
+
 module Arr4Types = struct
   @type 'arr2 arr4  = ('arr2, 'arr2) Pair.t                with show, gmap;;
   @type 'a t        = 'a arr4                              with show, gmap;;
-  @type ground      = Arr2Types.ground t                   with show, gmap;;
-  @type logic       = Arr2Types.logic t logic'             with show, gmap;;
+  @type ground      = Arr2.ground t                   with show, gmap;;
+  @type logic       = Arr2.logic t logic'             with show, gmap;;
    type groundi      = (ground, logic) injected;;
   let fmap = fun f x -> GT.gmap(t) f x;;
+end;;
+
+module FA4  = Fmap(Arr4Types);;
+
+module Arr4 = struct
+  include Arr4Types;;
+  let reify : VarEnv.t -> groundi -> logic
+    = fun h x -> FA4.reify Arr2.reify h x;;
+  let tog = fun a4 -> ocanren {fresh a2, a2' in a4 == (a2, a2') & Arr2.tog a2 & Arr2.tog a2'};;
 end;;
 
 module Arr8Types = struct
@@ -87,6 +129,15 @@ module Arr8Types = struct
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
+module FA8  = Fmap(Arr8Types);;
+
+module Arr8 = struct
+  include Arr8Types;;
+  let reify  : VarEnv.t -> groundi -> logic
+    = fun h x -> FA8.reify Arr4.reify h x;;
+  let tog = fun a8 -> ocanren {fresh a4, a4' in a8 == (a4, a4') & Arr4.tog a4 & Arr4.tog a4'};;
+end;;
+
 module Arr16Types = struct
   @type 'arr8 arr16 = ('arr8, 'arr8) Pair.t                with show, gmap;;
   @type 'a t        = 'a arr16                             with show, gmap;;
@@ -96,37 +147,32 @@ module Arr16Types = struct
   let fmap = fun f x -> GT.gmap(t) f x;;
 end;;
 
-module FA2  = Fmap(Arr2Types);;
-module FA4  = Fmap(Arr4Types);;
-module FA8  = Fmap(Arr8Types);;
 module FA16 = Fmap(Arr16Types);;
 
-let a2reify  : VarEnv.t -> Arr2Types.groundi -> Arr2Types.logic   = fun h x -> FA2.reify Constant.reify h x;;
-let a4reify  : VarEnv.t -> Arr4Types.groundi -> Arr4Types.logic   = fun h x -> FA4.reify a2reify h x;;
-let a8reify  : VarEnv.t -> Arr8Types.groundi -> Arr8Types.logic   = fun h x -> FA8.reify a4reify h x;;
-let a16reify : VarEnv.t -> Arr16Types.groundi -> Arr16Types.logic = fun h x -> FA16.reify a8reify h x;;
+module Arr16 = struct
+  include Arr16Types;;
+  let reify  : VarEnv.t -> groundi -> logic
+    = fun h x -> FA8.reify Arr8.reify h x;;
+  let tog = fun a16 -> ocanren {fresh a8, a8' in a16 == (a8, a8') & Arr8.tog a8 & Arr8.tog a8'};;
+end;;
 
 (* Use 16-cell arrays. Change here iff larger arrays are used  *)
-module Array = struct
-  include Arr16Types;;
-  let reify = fun h x -> a16reify h x;;
-end;; 
+module Array = Arr16;;
 
 module ArrayAccess = struct
   (* ArrayAccess implements a binary search tree *)
   let branch :
-    BooleanTypes.groundi ->
-    ('a,'b,'a,'b) Pair.groundi -> ('a, 'b) injected -> goal
-    = fun b ar c -> let b0 = !!(BooleanTypes.O) and b1 = !!(BooleanTypes.I) in
+    Bool.groundi -> ('a,'b,'a,'b) Pair.groundi -> ('a, 'b) injected -> goal
+    = fun b ar c -> let open Bool.Inj in
       ocanren{ { b == b0 & fresh c' in ar == (c, c') }
              | { b == b1 & fresh c' in ar == (c', c) }};;
 
   let acc_arr2 :
-    BooleanTypes.groundi -> Arr2Types.groundi -> Constant.groundi -> goal
+    Bool.groundi -> Arr2.groundi -> Constant.groundi -> goal
     = fun b ar c -> branch b ar c;;
 
   let acc_arr4 :
-    Constnt2Types.groundi -> Arr4Types.groundi -> Constant.groundi -> goal
+    Constnt2.groundi -> Arr4.groundi -> Constant.groundi -> goal
     = fun c ar c' -> 
       ocanren{ fresh b1,b2,arr2 in
         c == (b1, b2)
@@ -134,7 +180,7 @@ module ArrayAccess = struct
         & acc_arr2 b2 arr2 c' };;
 
   let acc_arr8 :
-    Constnt3Types.groundi -> Arr8Types.groundi -> Constant.groundi -> goal
+    Constnt3.groundi -> Arr8.groundi -> Constant.groundi -> goal
     = fun c ar c' -> 
       ocanren{ fresh b,c2,arr4 in
         c == (b, c2)
@@ -142,7 +188,7 @@ module ArrayAccess = struct
         & acc_arr4 c2 arr4 c' };;
 
   let acc_arr16 :
-    Constnt4Types.groundi -> Arr16Types.groundi -> Constant.groundi -> goal
+    Constnt4.groundi -> Arr16.groundi -> Constant.groundi -> goal
     = fun c ar c' -> 
       ocanren{ fresh b,c3,arr8 in
         c == (b, c3)
@@ -239,8 +285,7 @@ module Inj = struct
   let fout  = fun x y z -> inj @@ FSignal.distrib (Fout (x,y,z));;
   let mux   = fun x y z -> inj @@ FSignal.distrib (Mux (x,y,z)) ;;
   let slice = fun x y   -> inj @@ FSignal.distrib (Slice (x,y)) ;;
-  let b0 = !!(BooleanTypes.O)
-  and b1 = !!(BooleanTypes.I);;
+  include Bool.Inj;;
 end;;
 
 include Inj;;
@@ -248,22 +293,21 @@ include Inj;;
 let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d));;
 
 (** interpreters that may produce the value [undefined]. Allowing 
-    the [unndefined] value slows down synthesis. Try [test.ml].*)
+      the [unndefined] value hinders synthesis. Try [test.ml].*)
 module InterpA = struct
   let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
     = fun s e v ->
   ocanren {
     {fresh c in e == Con c & v == Conv c }
   | {fresh va, r in e == Var va & List.assoco va s v}
-  | {fresh va, ex, ar, idx,  ar',idx', ar'',idx'', c in
+  | {fresh va, ex, ar, idx,  ar',idx', c in
      e == Arr (va, ex)
-     & List.assoco va s ar
-     & eval_imp s ex idx    
-     & {ar == Arrv ar' & idx == Conv idx' & ArrayAccess.rel idx' ar' c & v == Conv c
-       | { ar == Arrv ar'  & idx == Arrv ar''
-         | ar == Conv idx' & idx == Arrv ar'
-         | ar == Conv idx' & idx == Conv idx''}
-         & v == Undef}}
+     &
+     { List.assoco va s (Arrv ar) & eval_imp s ex (Conv idx)
+                                  & ArrayAccess.rel idx ar c & v == Conv c
+     | List.assoco va s (Arrv ar)  & eval_imp s ex (Arrv ar')  & v == Undef
+     | List.assoco va s (Conv idx) & eval_imp s ex (Arrv ar)   & v == Undef 
+     | List.assoco va s (Conv idx) & eval_imp s ex (Conv idx') & v == Undef }}
   | {fresh e1,e2,e3,v' in
      e == Brh (e1,e2,e3)
      & eval_imp s e1 v'
@@ -294,10 +338,9 @@ module InterpA = struct
        & eval_sig s e1 ve1
        & s' == (va, ve1) :: s
        & eval_sig s' e2 v}};;
-
 end;;
 
-(** interpreters that do not produce the value [undefined] *)
+(** interpreters that do not produce the value [undefined]: taking undefined as failure  *)
 module InterpB = struct
   let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
     = fun s e v ->
@@ -338,6 +381,24 @@ module InterpB = struct
        & s' == (va, ve1) :: s
        & eval_sig s' e2 v}};;
 
+  module NoLet = struct
+    let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
+      = fun s e v ->
+      ocanren {
+      {fresh c in e == Src c & v == Conv c }
+    | {fresh va, r in e == Port va & List.assoco va s v}
+    | {fresh e1,e2,e3,v' in
+       e == Mux (e1,e2,e3)
+       & eval_sig s e1 v'
+       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
+         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
+    | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
+       e == Slice (e1, e2)
+       & eval_sig s e1 (Arrv ar)
+       & eval_sig s e2 (Conv idx)    
+       & ArrayAccess.rel idx ar c
+       & v == Conv c}};;
+  end;;
 end;;
 
 

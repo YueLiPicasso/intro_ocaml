@@ -1,6 +1,7 @@
 (** This file tests eval_sig including forward run and preliminary synthesis *)
 
 open OCanren;;
+module L = List ;;
 open OCanren.Std;;
 open Dcsyn3;;
 open Dcsyn3.InterpB;;
@@ -135,8 +136,6 @@ let _ =
   run q (fun q -> ocanren { eval_sig state1 q (Conv c1)
                           & eval_sig state2c q (Conv c4)}) (fun q -> q#reify(Signal.reify));;
 
-let _ =  print_newline();;
-
 
 (* given three  state-result pairs, synthesis programs *)
 let _ =  print_newline();;
@@ -161,11 +160,13 @@ let _ =
       & eval_sig state1 q (Conv c1)
       & eval_sig state2 q (Conv c2)})
     (fun q -> q#reify(Signal.reify));;
-(*
-let _ =
+
+let _ =  print_newline();;
+
+let _ = let open NoLet in
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-  @@ Stream.take ~n:1 @@ 
+  @@ Stream.take ~n:7 @@ 
   run q (fun q -> ocanren {
       eval_sig state1 q (Conv c1)
       & eval_sig state2 q (Conv c2)})
-    (fun q -> q#reify(Signal.reify));; *)
+    (fun q -> q#reify(Signal.reify));; 

@@ -3,6 +3,7 @@
     the filtero utility from OCanren's LList library *)
 
 open OCanren;;
+module L = List ;;
 open OCanren.Std;;
 open Dcsyn3;;
 open Dcsyn3.InterpB;;
@@ -154,11 +155,11 @@ let _ =
 
 (* test filtero *)
 
-let sunit_test : StateUnit.groundi -> Bool.groundi -> goal =
+let sunit_test : StateUnit.groundi -> LBool.groundi -> goal =
   fun st bl ->
   ocanren {
-    {fresh v in st == ("x", v) & bl == Bool.falso}
-  | {fresh k,v in st == (k, v) & k =/= "x" & bl == Bool.truo}
+    {fresh v in st == ("x", v) & bl == LBool.falso}
+  | {fresh k,v in st == (k, v) & k =/= "x" & bl == LBool.truo}
   };;
 
 let _ =  print_newline();;
