@@ -1,6 +1,17 @@
 open OCanren;;
 open OCanren.Std;;
 
+(** extend the OCanren standard List (LLIst) module *)
+module List  = struct
+  include List;;
+  (** An element [e] is [xinsert]ed to a list [l] only if [e] is not in the list [l] *)
+  let rec xinserto : ('a,'b) injected -> ('a,'b) groundi -> ('a,'b) groundi -> goal =
+    fun e l l'-> ocanren {
+        l == [] & l' == [e]
+      | {fresh t in l == e :: t & l' == l }
+      | {fresh h,t,t' in l == h :: t & h =/= e & l' == h :: t' & xinserto e t t'}};; 
+end;;
+
 (* aliasing the standard OCanren type constructor [logic] *)
 @type 'a logic' = 'a logic with show, gmap;;
 
