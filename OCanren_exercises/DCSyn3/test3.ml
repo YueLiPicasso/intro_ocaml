@@ -31,7 +31,6 @@ let _ =
   run q (fun q -> ocanren {Expr.free_var q ["x";"y";"z"]}) (fun q -> q#reify(Expr.reify))
 
 
-
 (* xinsert *)
 
 let _ =
@@ -103,13 +102,13 @@ let _ =
 (* Arr8.tog *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Arr8.ground) x;print_newline())
-  @@ Stream.take (*~n:100*) @@ 
+  @@ Stream.take ~n:100 @@ 
   run q (fun q -> ocanren {Arr8.tog q}) project
 
 (* Arr16.tog *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Arr16.ground) x;print_newline())
-  @@ Stream.take (*~n:100*) @@ 
+  @@ Stream.take ~n:100 @@ 
   run q (fun q -> ocanren {Arr16.tog q}) project
 
 
