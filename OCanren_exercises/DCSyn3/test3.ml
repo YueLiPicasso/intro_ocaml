@@ -8,8 +8,31 @@ open Dcsyn3.InterpB;;
 open Dcsyn3.InterpB.NoLet;;
 
 
-(* xinsert *)
 @type strl = GT.string List.ground with show;;
+
+(* xappendo *)
+let _ =
+  L.iter (fun x -> print_string @@  GT.show(strl) x;print_newline())
+  @@ Stream.take ~n:10 @@ 
+  run q (fun q -> ocanren {List.xappendo ["a";"x";"b";"y"] ["x";"y";"z"] q}) project
+
+(* free_var *)
+let _ =
+  L.iter (fun x -> print_string @@  GT.show(strl) x;print_newline())
+  @@ Stream.take ~n:10 @@ 
+  run q (fun q -> ocanren {Expr.free_var
+                             (Brh (Arr("x",Var "y"),
+                                   Brh(Con c1,Var "y", Arr("x",Var "z")),
+                                   Arr("x",Var "x"))) q}) project
+
+let _ =
+  L.iter (fun x -> print_string @@  GT.show(Expr.logic) x;print_newline())
+  @@ Stream.take ~n:100 @@ 
+  run q (fun q -> ocanren {Expr.free_var q ["x";"y";"z"]}) (fun q -> q#reify(Expr.reify))
+
+
+(*
+(* xinsert *)
 
 let _ =
   L.iter (fun x -> print_string @@  GT.show(strl) x;print_newline())
@@ -41,8 +64,6 @@ let _ =
   @@ Stream.take ~n:10 @@ 
   run q (fun q -> ocanren {List.xinserto "z" ["x";"x";"z"] q}) project
 
-
-(*
 (* Bool.tog *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Bool.ground) x;print_newline())

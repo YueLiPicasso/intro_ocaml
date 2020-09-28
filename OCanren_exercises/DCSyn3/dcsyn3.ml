@@ -4,12 +4,19 @@ open OCanren.Std;;
 (** extend the OCanren standard List (LLIst) module *)
 module List  = struct
   include List;;
+  
   (** An element [e] is [xinsert]ed to a list [l] only if [e] is not in the list [l] *)
   let rec xinserto : ('a,'b) injected -> ('a,'b) groundi -> ('a,'b) groundi -> goal =
     fun e l l'-> ocanren {
         l == [] & l' == [e]
       | {fresh t in l == e :: t & l' == l }
-      | {fresh h,t,t' in l == h :: t & h =/= e & l' == h :: t' & xinserto e t t'}};; 
+      | {fresh h,t,t' in l == h :: t & h =/= e & l' == h :: t' & xinserto e t t'}};;
+
+  (** [xinsert] elements of [l1] to [l2] gettinng [l3] *)
+  let rec xappendo = fun l1 l2 l3 -> ocanren {
+    l1 == [] & l2 == l3
+  | fresh h,t,l in l1 == h :: t & xinserto h l2 l & xappendo t l l3};;
+
 end;;
 
 (* aliasing the standard OCanren type constructor [logic] *)
@@ -262,6 +269,25 @@ module FExpr = Fmap3(ExprTypes);;
 module Expr = struct
   include ExprTypes;;
   let rec reify = fun h x -> FExpr.reify Constant.reify Logic.reify reify h x;;
+  module Inj = struct
+    let con   = fun x     -> inj @@ FExpr.distrib   (Con x)       ;;
+    let var   = fun x     -> inj @@ FExpr.distrib   (Var x)       ;;
+    let arr   = fun x y   -> inj @@ FExpr.distrib   (Arr (x,y))   ;;
+    let brh   = fun x y z -> inj @@ FExpr.distrib   (Brh (x,y,z)) ;;
+  end;;
+  open Inj;;
+  (** find the set of all free variables *)
+  let rec free_var : groundi -> 'fvar -> goal = fun p vs -> ocanren {
+        {fresh c in p == Con c & vs == []}
+      | {fresh v in p == Var v & vs == [v]}
+      | {fresh v,e,vs' in p == Arr (v,e) & free_var e vs' & List.xinserto v vs' vs}
+      | {fresh e1,e2,e3,v1,v2,v3,vs' in
+            p == Brh (e1,e2,e3)
+            & free_var e1 v1
+            & free_var e2 v2
+            & free_var e3 v3
+            & List.xappendo v1 v2 vs'
+            & List.xappendo vs' v3 vs}};; 
 end;;
 
 module SignalTypes = struct
@@ -289,10 +315,7 @@ module Signal = struct
 end;;
 
 module Inj = struct
-  let con   = fun x     -> inj @@ FExpr.distrib   (Con x)       ;;
-  let var   = fun x     -> inj @@ FExpr.distrib   (Var x)       ;;
-  let arr   = fun x y   -> inj @@ FExpr.distrib   (Arr (x,y))   ;;
-  let brh   = fun x y z -> inj @@ FExpr.distrib   (Brh (x,y,z)) ;;
+  include Expr.Inj;;
   let conv  = fun x     -> inj @@ FValue.distrib  (Conv x)      ;;
   let arrv  = fun x     -> inj @@ FValue.distrib  (Arrv x)      ;;
   let undef = fun ()    -> inj @@ FValue.distrib  (Undef)       ;;  
