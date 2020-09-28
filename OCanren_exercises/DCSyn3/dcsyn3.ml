@@ -415,7 +415,7 @@ module InterpB = struct
        & ArrayAccess.rel idx ar c
        & v == Conv c}
     | {fresh va,e1,e2,ve1,s' in
-       e == Fout (va, e1, e2)
+       e == Fout (va, e1, e2) 
        & eval_sig s e1 ve1
        & s' == (va, ve1) :: s
        & eval_sig s' e2 v}};;
