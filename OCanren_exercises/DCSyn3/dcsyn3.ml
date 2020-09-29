@@ -225,10 +225,9 @@ module ArrayAccess = struct
   
 end;;
 
-module Value = struct
+module ValueTypes = struct
   @type ('c, 'a) value = Conv of 'c   (** constant value *)
                        | Arrv of 'a   (** array value *)
-                       | Undef        (** undefined *)
                                                                 with show, gmap;;  
   @type ('a,'b) t      = ('a,'b) value                          with show, gmap;;
   @type ground         = (Constant.ground, Array.ground) t      with show, gmap;;
@@ -237,7 +236,15 @@ module Value = struct
   let fmap = fun f1 f2 x -> GT.gmap(t) f1 f2 x;;
 end;;
 
-module FValue = Fmap2(Value);;
+module FValue = Fmap2(ValueTypes);;
+
+module Value = struct
+  include ValueTypes;;
+  module Inj = struct
+    let conv  = fun x -> inj @@ FValue.distrib  (Conv x);;
+    let arrv  = fun x -> inj @@ FValue.distrib  (Arrv x);;
+  end;;
+end;;
 
 module StateUnit = struct
   @type ground  = (GT.string, Value.ground) Pair.ground         with show, gmap;;
@@ -275,19 +282,29 @@ module Expr = struct
     let arr   = fun x y   -> inj @@ FExpr.distrib   (Arr (x,y))   ;;
     let brh   = fun x y z -> inj @@ FExpr.distrib   (Brh (x,y,z)) ;;
   end;;
-  open Inj;;
+  open Bool.Inj;;  open Value.Inj;; open Inj;;
   (** find the set of all free variables *)
   let rec free_var : groundi -> 'fvar -> goal = fun p vs -> ocanren {
         {fresh c in p == Con c & vs == []}
-      | {fresh v in p == Var v & vs == [v]}
-      | {fresh v,e,vs' in p == Arr (v,e) & free_var e vs' & List.xinserto v vs' vs}
+      | {fresh v in p == Var v & vs == [(b0, v)]}      (** give informal types for vars *)
+      | {fresh v,e,vs' in p == Arr (v,e) & free_var e vs' & List.xinserto (b1,v) vs' vs}
       | {fresh e1,e2,e3,v1,v2,v3,vs' in
             p == Brh (e1,e2,e3)
             & free_var e1 v1
             & free_var e2 v2
             & free_var e3 v3
             & List.xappendo v1 v2 vs'
-            & List.xappendo vs' v3 vs}};; 
+            & List.xappendo vs' v3 vs}};;
+
+  (** find all possible states for a given set of free variables *)
+  (*let rec var_state : 'fvar -> State.groundi -> goal = fun vs sts -> ocanren {
+    vs == [] & sts == []
+  | fresh b,h,t,v,st,c,a in
+      vs == h :: t
+      & sts == (h,v) :: st
+      & {v == Conv c & Constant.tog c
+        | v == Arrv a & Array.tog a }
+           & var_state t st};; *)
 end;;
 
 module SignalTypes = struct
@@ -315,72 +332,21 @@ module Signal = struct
 end;;
 
 module Inj = struct
+  include Bool.Inj;;
+  include Value.Inj;;
   include Expr.Inj;;
-  let conv  = fun x     -> inj @@ FValue.distrib  (Conv x)      ;;
-  let arrv  = fun x     -> inj @@ FValue.distrib  (Arrv x)      ;;
-  let undef = fun ()    -> inj @@ FValue.distrib  (Undef)       ;;  
   let src   = fun x     -> inj @@ FSignal.distrib (Src x)       ;;
   let port  = fun x     -> inj @@ FSignal.distrib (Port x)      ;;
   let fout  = fun x y z -> inj @@ FSignal.distrib (Fout (x,y,z));;
   let mux   = fun x y z -> inj @@ FSignal.distrib (Mux (x,y,z)) ;;
   let slice = fun x y   -> inj @@ FSignal.distrib (Slice (x,y)) ;;
-  include Bool.Inj;;
 end;;
 
 include Inj;;
 
 let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d));;
 
-(** interpreters that may produce the value [undefined]. Allowing 
-      the [unndefined] value hinders synthesis. Try [test.ml].*)
-module InterpA = struct
-  let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
-    = fun s e v ->
-  ocanren {
-    {fresh c in e == Con c & v == Conv c }
-  | {fresh va, r in e == Var va & List.assoco va s v}
-  | {fresh va, ex, ar, idx,  ar',idx', c in
-     e == Arr (va, ex)
-     &
-     { List.assoco va s (Arrv ar) & eval_imp s ex (Conv idx)
-                                  & ArrayAccess.rel idx ar c & v == Conv c
-     | List.assoco va s (Arrv ar)  & eval_imp s ex (Arrv ar')  & v == Undef
-     | List.assoco va s (Conv idx) & eval_imp s ex (Arrv ar)   & v == Undef 
-     | List.assoco va s (Conv idx) & eval_imp s ex (Conv idx') & v == Undef }}
-  | {fresh e1,e2,e3,v' in
-     e == Brh (e1,e2,e3)
-     & eval_imp s e1 v'
-     & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v
-      | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}};;
-
-  let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
-    = fun s e v ->
-    ocanren {
-      {fresh c in e == Src c & v == Conv c }
-    | {fresh va, r in e == Port va & List.assoco va s v}
-    | {fresh e1,e2,e3,v' in
-       e == Mux (e1,e2,e3)
-       & eval_sig s e1 v'
-       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
-         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
-    | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
-       e == Slice (e1, e2)
-       & eval_sig s e1 ar
-       & eval_sig s e2 idx    
-       & {ar == Arrv ar' & idx == Conv idx' & ArrayAccess.rel idx' ar' c & v == Conv c
-         | { ar == Arrv ar'  & idx == Arrv ar''
-           | ar == Conv idx' & idx == Arrv ar'
-           | ar == Conv idx' & idx == Conv idx''}
-           & v == Undef}}
-    | {fresh va,e1,e2,ve1,s' in
-       e == Fout (va, e1, e2)
-       & eval_sig s e1 ve1
-       & s' == (va, ve1) :: s
-       & eval_sig s' e2 v}};;
-end;;
-
-(** interpreters that do not produce the value [undefined]: taking undefined as failure  *)
-module InterpB = struct
+module Interp = struct
   let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
     = fun s e v ->
       ocanren {

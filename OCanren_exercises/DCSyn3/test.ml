@@ -6,9 +6,7 @@ open OCanren;;
 module L = List ;;
 open OCanren.Std;;
 open Dcsyn3;;
-open Dcsyn3.InterpB;;
-(* alterntively , try:*)
-(* open Dcsyn3.InterpA;; *)
+open Dcsyn3.Interp;;
 
 (* test array access *)
 

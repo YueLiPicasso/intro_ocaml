@@ -4,7 +4,7 @@ open OCanren;;
 module L = List ;;
 open OCanren.Std;;
 open Dcsyn3;;
-open Dcsyn3.InterpB;;
+open Dcsyn3.Interp;;
 
 (* test that the standard List.assoco only finds the first match *)
 let _ =
