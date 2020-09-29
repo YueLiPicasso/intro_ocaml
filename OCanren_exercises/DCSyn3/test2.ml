@@ -1,4 +1,6 @@
 (** This file tests eval_sig including forward run and preliminary synthesis *)
+(** IMPORTANT: make sure that the four bit version of constant and 16-cell version
+    of array is used, otherwise the code won't type check.  *)
 
 open OCanren;;
 module L = List ;;

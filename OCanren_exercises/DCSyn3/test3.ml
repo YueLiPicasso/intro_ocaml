@@ -1,4 +1,8 @@
-(** This file tests the constant and array generators and ... *)
+(** This file tests the constant and array generators, the free variable finder and
+    the state generator *)
+(** IMPORTANT: make sure that the four bit version of constant and 16-cell version
+    of array is used, otherwise the code won't type check.  *)
+
 
 open OCanren;;
 module L = List ;;
@@ -77,27 +81,21 @@ let _ =
   run q (fun q -> ocanren {Expr.free_var q [(b1,"x");(b0,"y");(b0,"z")]}) (fun q -> q#reify(Expr.reify))
 
 (* var_state *)
-(*let _ =
+let _ =
   L.iter (fun x -> print_string @@  GT.show(State.ground) x;print_newline())
-  @@ Stream.take ~n:500 @@ 
-  run q (fun q -> ocanren {Expr.var_state ["x";"y"] q}) project
+  @@ Stream.take ~n:100 @@ 
+  run q (fun q -> ocanren {Expr.var_state [(b0,"x");(b1,"y")] q}) project
 
 let _ =
-  L.iter (fun x -> print_string @@  GT.show(strl) x;print_newline())
+  L.iter (fun x -> print_string @@  GT.show(State.ground) x;print_newline())
+  @@ Stream.take ~n:100 @@ 
+  run q (fun q -> ocanren {Expr.var_state [(b0,"x");(b1,"x");(b1,"y")] q}) project
+
+let _ =
+  L.iter (fun x -> print_string @@  GT.show(strl') x;print_newline())
   @@ Stream.take ~n:100 @@ 
   run q (fun q -> ocanren {Expr.var_state q [("x",Conv c1);("y", Arrv array1)] }) project
 
-
-
-
-
-*)
-
-
-
-
-
-(*
 (* Bool.tog *)
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Bool.ground) x;print_newline())
@@ -147,6 +145,6 @@ let _ =
   run q (fun q -> ocanren {Arr16.tog q}) project
 
 
-*)
+
 
 

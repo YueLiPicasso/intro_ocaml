@@ -1,7 +1,8 @@
 (** This file tests the array accessor, 
     the imperative language interpreter and 
     the filtero utility from OCanren's LList library *)
-
+(** IMPORTANT: make sure that the four bit version of constant and 16-cell version
+    of array is used, otherwise the code won't type check.  *)
 open OCanren;;
 module L = List ;;
 open OCanren.Std;;

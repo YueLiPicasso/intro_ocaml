@@ -1,6 +1,12 @@
 open OCanren;;
 open OCanren.Std;;
 
+(** Three places to change to use wider/short constant: 
+- module Constant
+- module Array 
+- module ArrayAccess.rel *)
+
+
 (** extend the OCanren standard List (LLIst) module *)
 module List  = struct
   include List;;
@@ -58,6 +64,8 @@ module Constnt2 = struct
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FC2.reify Bool.reify h x;;
   let tog : groundi -> goal = fun c -> ocanren {fresh d0, d1 in c == (d1, d0) & Bool.tog d1 & Bool.tog d0};;
+  open Bool.Inj;;
+  let zero = ocanren { (b0,b0) };;
 end;;
 
 module Constnt3Types = struct
@@ -76,6 +84,8 @@ module Constnt3 = struct
   let reify : VarEnv.t -> groundi -> logic
     = fun h x -> FC3.reify Bool.reify Constnt2.reify h x;;
   let tog : groundi -> goal = fun c3 -> ocanren {fresh d, c2 in c3 == (d, c2) & Bool.tog d & Constnt2.tog c2};;
+  open Bool.Inj;;
+  let zero = ocanren { (b0,b0,b0) };;
 end;;
 
 module Constnt4Types = struct
@@ -95,10 +105,12 @@ module Constnt4 = struct
     = fun h x -> FC4.reify Bool.reify Constnt3.reify h x;;
   let tog : groundi -> goal =
     fun c4 -> ocanren {fresh d, c3 in c4 == (d, c3) & Bool.tog d & Constnt3.tog c3};;
+  open Bool.Inj;;
+  let zero = ocanren { (b0,b0,b0,b0) };;
 end;;
 
-(* use four-bit constant. Change here if wider constants are used *)
-module Constant = Constnt4;;
+(* use four-bit constant. Change here if wider/shorter constants are used *)
+module Constant = Constnt2;;
 
 (* arrays in different sizes: arrN is an N-cell array, 
    and each cell holds a constant *)
@@ -179,8 +191,8 @@ module Arr16 = struct
     fun a16 -> ocanren {fresh a8, a8' in a16 == (a8, a8') & Arr8.tog a8 & Arr8.tog a8'};;
 end;;
 
-(* Use 16-cell arrays. Change here iff larger arrays are used  *)
-module Array = Arr16;;
+(* Use 16-cell arrays. Change here iff larger/smaller arrays are used  *)
+module Array = Arr4;;
 
 module ArrayAccess = struct
   (* ArrayAccess implements a binary search tree *)
@@ -221,7 +233,7 @@ module ArrayAccess = struct
   (* The default access method *)
   let rel :
     Constant.groundi -> Array.groundi -> Constant.groundi -> goal
-    = fun a b c -> acc_arr16 a b c;;
+    = fun a b c -> acc_arr4 a b c;;
   
 end;;
 
@@ -295,16 +307,17 @@ module Expr = struct
             & free_var e3 v3
             & List.xappendo v1 v2 vs'
             & List.xappendo vs' v3 vs}};;
+  (* In an imperative program the same string should not appear for the Var and Arr, but this is
+  not enforced and the consequence is that they will be distinguished by free_var *)
 
   (** find all possible states for a given set of free variables *)
-  (*let rec var_state : 'fvar -> State.groundi -> goal = fun vs sts -> ocanren {
+  let rec var_state : 'fvar -> State.groundi -> goal = fun vs sts -> ocanren {
     vs == [] & sts == []
-  | fresh b,h,t,v,st,c,a in
-      vs == h :: t
-      & sts == (h,v) :: st
-      & {v == Conv c & Constant.tog c
-        | v == Arrv a & Array.tog a }
-           & var_state t st};; *)
+  | fresh n,v,sts',vs',c,a in
+       sts == (n,v) :: sts'
+       & { vs == (b0, n) :: vs' & v == Conv c & Constant.tog c
+         | vs == (b1, n) :: vs' & v == Arrv a & Array.tog a  }
+       & var_state vs' sts'};; 
 end;;
 
 module SignalTypes = struct
@@ -344,8 +357,6 @@ end;;
 
 include Inj;;
 
-let tup4 a b c d = Pair.pair a (Pair.pair b ( Pair.pair c d));;
-
 module Interp = struct
   let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> goal
     = fun s e v ->
@@ -361,8 +372,8 @@ module Interp = struct
       | {fresh e1,e2,e3,v' in
          e == Brh (e1,e2,e3)
          & eval_imp s e1 v'
-         & {v' == Conv (tup4 b0 b0 b0 b0) & eval_imp s e3 v
-          | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_imp s e2 v}}};;
+         & {v' == Conv Constant.zero & eval_imp s e3 v
+          | v'=/= Conv Constant.zero & eval_imp s e2 v}}};;
 
   let rec eval_sig : State.groundi -> Signal.groundi -> Value.groundi -> goal
     = fun s e v ->
@@ -372,8 +383,8 @@ module Interp = struct
     | {fresh e1,e2,e3,v' in
        e == Mux (e1,e2,e3)
        & eval_sig s e1 v'
-       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
-         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
+       & { v' == Conv Constant.zero & eval_sig s e3 v
+         | v'=/= Conv Constant.zero & eval_sig s e2 v }}
     | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
        e == Slice (e1, e2)
        & eval_sig s e1 (Arrv ar)
@@ -395,8 +406,8 @@ module Interp = struct
     | {fresh e1,e2,e3,v' in
        e == Mux (e1,e2,e3)
        & eval_sig s e1 v'
-       & { v' == Conv (tup4 b0 b0 b0 b0) & eval_sig s e3 v
-         | v'=/= Conv (tup4 b0 b0 b0 b0) & eval_sig s e2 v }}
+       & { v' == Conv Constant.zero & eval_sig s e3 v
+         | v'=/= Conv Constant.zero & eval_sig s e2 v }}
     | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'' in
        e == Slice (e1, e2)
        & eval_sig s e1 (Arrv ar)
@@ -406,27 +417,46 @@ module Interp = struct
   end;;
 end;;
 
-
-let c0  : Constant.groundi = ocanren { (b0,b0,b0,b0) };;
-let c1  : Constant.groundi = ocanren { (b0,b0,b0,b1) };;
-let c2  : Constant.groundi = ocanren { (b0,b0,b1,b0) };;
-let c3  : Constant.groundi = ocanren { (b0,b0,b1,b1) };;
-let c4  : Constant.groundi = ocanren { (b0,b1,b0,b0) };;
-let c5  : Constant.groundi = ocanren { (b0,b1,b0,b1) };;
-let c6  : Constant.groundi = ocanren { (b0,b1,b1,b0) };;
-let c7  : Constant.groundi = ocanren { (b0,b1,b1,b1) };;
-let c8  : Constant.groundi = ocanren { (b1,b0,b0,b0) };;
-let c9  : Constant.groundi = ocanren { (b1,b0,b0,b1) };;
-let c10 : Constant.groundi = ocanren { (b1,b0,b1,b0) };;
-let c11 : Constant.groundi = ocanren { (b1,b0,b1,b1) };;
-let c12 : Constant.groundi = ocanren { (b1,b1,b0,b0) };;
-let c13 : Constant.groundi = ocanren { (b1,b1,b0,b1) };;
-let c14 : Constant.groundi = ocanren { (b1,b1,b1,b0) };;
-let c15 : Constant.groundi = ocanren { (b1,b1,b1,b1) };;
+module TwoBit = struct
+  let c0  : Constnt2.groundi = ocanren { (b0,b0) };;
+  let c1  : Constnt2.groundi = ocanren { (b0,b1) };;
+  let c2  : Constnt2.groundi = ocanren { (b1,b0) };;
+  let c3  : Constnt2.groundi = ocanren { (b1,b1) };;
+end;;
 
 
 
-let array1 : Array.groundi = ocanren {
+module ThreeBit = struct
+  let c0  : Constnt3.groundi = ocanren { (b0,b0,b0) };;
+  let c1  : Constnt3.groundi = ocanren { (b0,b0,b1) };;
+  let c2  : Constnt3.groundi = ocanren { (b0,b1,b0) };;
+  let c3  : Constnt3.groundi = ocanren { (b0,b1,b1) };;
+  let c4  : Constnt3.groundi = ocanren { (b1,b0,b0) };;
+  let c5  : Constnt3.groundi = ocanren { (b1,b0,b1) };;
+  let c6  : Constnt3.groundi = ocanren { (b1,b1,b0) };;
+  let c7  : Constnt3.groundi = ocanren { (b1,b1,b1) };;
+end;;
+
+
+module FourBit = struct
+  let c0  : Constnt4.groundi = ocanren { (b0,b0,b0,b0) };;
+  let c1  : Constnt4.groundi = ocanren { (b0,b0,b0,b1) };;
+  let c2  : Constnt4.groundi = ocanren { (b0,b0,b1,b0) };;
+  let c3  : Constnt4.groundi = ocanren { (b0,b0,b1,b1) };;
+  let c4  : Constnt4.groundi = ocanren { (b0,b1,b0,b0) };;
+  let c5  : Constnt4.groundi = ocanren { (b0,b1,b0,b1) };;
+  let c6  : Constnt4.groundi = ocanren { (b0,b1,b1,b0) };;
+  let c7  : Constnt4.groundi = ocanren { (b0,b1,b1,b1) };;
+  let c8  : Constnt4.groundi = ocanren { (b1,b0,b0,b0) };;
+  let c9  : Constnt4.groundi = ocanren { (b1,b0,b0,b1) };;
+  let c10 : Constnt4.groundi = ocanren { (b1,b0,b1,b0) };;
+  let c11 : Constnt4.groundi = ocanren { (b1,b0,b1,b1) };;
+  let c12 : Constnt4.groundi = ocanren { (b1,b1,b0,b0) };;
+  let c13 : Constnt4.groundi = ocanren { (b1,b1,b0,b1) };;
+  let c14 : Constnt4.groundi = ocanren { (b1,b1,b1,b0) };;
+  let c15 : Constnt4.groundi = ocanren { (b1,b1,b1,b1) };;
+
+  let array1  = ocanren {
     (((((b0,b0,b0,b0),
         (b0,b0,b0,b1)),
        ((b0,b0,b1,b0),
@@ -445,8 +475,7 @@ let array1 : Array.groundi = ocanren {
         (b1,b1,b1,b1)))))
   };;
 
-
-let array2 : Array.groundi = ocanren {
+  let array2 = ocanren {
     (((((b1,b0,b0,b0),
         (b0,b1,b0,b0)),
        ((b0,b0,b1,b0),
@@ -465,16 +494,15 @@ let array2 : Array.groundi = ocanren {
         (b0,b0,b0,b0)))))
   };;
 
-
-let array3 :  Array.groundi =
+  let array3  =
   ocanren {((((c0,c2),(c4,c6)),((c8,c10),(c12,c14))),
             (((c1,c3),(c5,c7)),((c9,c11),(c13,c15))))};;
 
-let state1  : State.groundi = ocanren { [("x", (Conv c1));("y",Arrv array1)] };;
-let state2  : State.groundi = ocanren { [("x", (Conv c9));("y",Arrv array2)] };;
-let state2b : State.groundi = ocanren { [("x", (Conv c5));("y",Arrv array2)] };;
-let state2c : State.groundi = ocanren { [("x", (Conv c1));("y",Arrv array2)] };;
-let state3  : State.groundi = ocanren { [("x", (Conv c3));("y",Arrv array3)] };;
-let state4  : State.groundi =
+  let state1   = ocanren { [("x", (Conv c1));("y",Arrv array1)] };;
+  let state2   = ocanren { [("x", (Conv c9));("y",Arrv array2)] };;
+  let state2b  = ocanren { [("x", (Conv c5));("y",Arrv array2)] };;
+  let state2c  = ocanren { [("x", (Conv c1));("y",Arrv array2)] };;
+  let state3   = ocanren { [("x", (Conv c3));("y",Arrv array3)] };;
+  let state4   =
   ocanren { [("x", (Conv c3));("x", (Conv c4));("x", (Conv c5));("y",Arrv array3)] };;
-
+end;;
