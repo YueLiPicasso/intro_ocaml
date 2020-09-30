@@ -46,6 +46,7 @@ module Bool = struct
   open Inj;;
   (** test or generate *)
   let tog : groundi -> goal = fun x -> ocanren { x == b0 | x == b1 };;
+  let grd2ijd : ground -> groundi = fun b -> !!(b);;
 end;;
 
 module Constnt2Types = struct
@@ -66,6 +67,7 @@ module Constnt2 = struct
   let tog : groundi -> goal = fun c -> ocanren {fresh d0, d1 in c == (d1, d0) & Bool.tog d1 & Bool.tog d0};;
   open Bool.Inj;;
   let zero = ocanren { (b0,b0) };;
+  let grd2ijd : ground -> groundi = fun (b,b') -> Pair.pair (Bool.grd2ijd b) (Bool.grd2ijd b');;
 end;;
 
 module Constnt3Types = struct
@@ -86,6 +88,7 @@ module Constnt3 = struct
   let tog : groundi -> goal = fun c3 -> ocanren {fresh d, c2 in c3 == (d, c2) & Bool.tog d & Constnt2.tog c2};;
   open Bool.Inj;;
   let zero = ocanren { (b0,b0,b0) };;
+  let grd2ijd : ground -> groundi = fun (b,c) -> Pair.pair (Bool.grd2ijd b) (Constnt2.grd2ijd c);;
 end;;
 
 module Constnt4Types = struct
@@ -107,6 +110,7 @@ module Constnt4 = struct
     fun c4 -> ocanren {fresh d, c3 in c4 == (d, c3) & Bool.tog d & Constnt3.tog c3};;
   open Bool.Inj;;
   let zero = ocanren { (b0,b0,b0,b0) };;
+  let grd2ijd : ground -> groundi = fun (b,c) -> Pair.pair (Bool.grd2ijd b) (Constnt3.grd2ijd c);;
 end;;
 
 (* use four-bit constant. Change here if wider/shorter constants are used *)
@@ -132,6 +136,7 @@ module Arr2 = struct
     = fun h x -> FA2.reify Constant.reify h x;;
   let tog : groundi -> goal =
     fun a2 -> ocanren {fresh c, c' in a2 == (c, c') & Constant.tog c & Constant.tog c'};;
+  let grd2ijd : ground -> groundi = fun (c,c') -> Pair.pair (Constant.grd2ijd c) (Constant.grd2ijd c');;
 end;;
 
 module Arr4Types = struct
@@ -151,6 +156,7 @@ module Arr4 = struct
     = fun h x -> FA4.reify Arr2.reify h x;;
   let tog : groundi -> goal =
     fun a4 -> ocanren {fresh a2, a2' in a4 == (a2, a2') & Arr2.tog a2 & Arr2.tog a2'};;
+  let grd2ijd : ground -> groundi = fun (a,a') -> Pair.pair (Arr2.grd2ijd a) (Arr2.grd2ijd a');;
 end;;
 
 module Arr8Types = struct
@@ -170,6 +176,7 @@ module Arr8 = struct
     = fun h x -> FA8.reify Arr4.reify h x;;
   let tog : groundi -> goal =
     fun a8 -> ocanren {fresh a4, a4' in a8 == (a4, a4') & Arr4.tog a4 & Arr4.tog a4'};;
+  let grd2ijd : ground -> groundi = fun (a,a') -> Pair.pair (Arr4.grd2ijd a) (Arr4.grd2ijd a');;
 end;;
 
 module Arr16Types = struct
@@ -189,6 +196,7 @@ module Arr16 = struct
     = fun h x -> FA16.reify Arr8.reify h x;;
   let tog : groundi -> goal =
     fun a16 -> ocanren {fresh a8, a8' in a16 == (a8, a8') & Arr8.tog a8 & Arr8.tog a8'};;
+  let grd2ijd : ground -> groundi = fun (a,a') -> Pair.pair (Arr8.grd2ijd a) (Arr8.grd2ijd a');;
 end;;
 
 (* Use 16-cell arrays. Change here iff larger/smaller arrays are used  *)
@@ -256,19 +264,32 @@ module Value = struct
     let conv  = fun x -> inj @@ FValue.distrib  (Conv x);;
     let arrv  = fun x -> inj @@ FValue.distrib  (Arrv x);;
   end;;
+  open Inj;;
+  let grd2ijd : ground -> groundi = function
+      Conv c -> conv (Constant.grd2ijd c)
+    | Arrv a -> arrv (Array.grd2ijd a);;
 end;;
 
 module StateUnit = struct
   @type ground  = (GT.string, Value.ground) Pair.ground         with show, gmap;;
   @type logic   = (GT.string logic', Value.logic) Pair.logic    with show, gmap;;
-   type groundi = (ground, logic) injected;;
+  type groundi = (ground, logic) injected;;
+  let grd2ijd : ground -> groundi = fun (s,v) -> Pair.pair !!(s) (Value.grd2ijd v);;
 end;;
 
 module State = struct
   @type ground  = StateUnit.ground List.ground         with show, gmap;;
   @type logic   = StateUnit.logic List.logic           with show, gmap;;
-   type groundi = (ground, logic) injected;;
+  type groundi = (ground, logic) injected;;
+  let grd2ijd : ground -> groundi = fun l ->
+    List.list @@ Stdlib.List.map StateUnit.grd2ijd @@ List.to_list id l;;
 end;;
+
+module Spec = struct
+  @type ground = (State.ground, Value.ground) Pair.ground with show, gmap;;
+  @type logic = (State.logic, Value.logic) Pair.logic with show, gmap;;
+end;;
+
 
 module ExprTypes = struct
   @type ('c,'v,'self) expr = Con of 'c
