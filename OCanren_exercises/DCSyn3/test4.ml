@@ -20,12 +20,3 @@ let _ =
     & q == (sts, res)}) project;;
 
 
-
-let aaaa =
-   Stream.take  @@ 
-  run q (fun q -> ocanren {fresh prog, vs, sts,res in
-    prog == Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)
-    & Expr.free_var prog vs
-    & Expr.var_state vs sts
-    & eval_imp sts prog res
-    & q == (sts, res)}) id;;
