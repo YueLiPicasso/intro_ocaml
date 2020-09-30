@@ -288,8 +288,17 @@ end;;
 module Spec = struct
   @type ground = (State.ground, Value.ground) Pair.ground with show, gmap;;
   @type logic = (State.logic, Value.logic) Pair.logic with show, gmap;;
+  type groundi = (ground, logic) injected;;
+  let grd2ijd : ground -> groundi = fun (s,v) -> Pair.pair (State.grd2ijd s) (Value.grd2ijd v);;
 end;;
 
+module Specs = struct
+  @type ground = Spec.ground List.ground with show,gmap;;
+  @type logic = Spec.logic List.logic with show,gmap;;
+  type groundi = (ground, logic) injected;;
+  let grd2ijd : Spec.ground GT.list -> groundi =
+    fun l -> List.list @@ Stdlib.List.map Spec.grd2ijd l;;
+end;;
 
 module ExprTypes = struct
   @type ('c,'v,'self) expr = Con of 'c
@@ -435,6 +444,10 @@ module Interp = struct
        & eval_sig s e2 (Conv idx)    
        & ArrayAccess.rel idx ar c
        & v == Conv c}};;
+
+    let rec syn : Specs.groundi -> Signal.groundi -> goal = fun ss p -> ocanren {
+        ss == []
+      | fresh st,va,ss' in ss == (st, va) :: ss' & eval_sig st p va & syn ss' p };; 
   end;;
 end;;
 
