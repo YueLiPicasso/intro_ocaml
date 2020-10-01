@@ -32,13 +32,12 @@ let _ = Printf.printf "Synthesizing from %d input-output pairs...\n" (L.length s
 
 let specsi : Specs.groundi = Specs.grd2ijd specs;;
 
+(* the code below does the synthesis *) 
 
-(* the code below does the synthesis *)
-(*
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
   run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
-*)
+
 
 
