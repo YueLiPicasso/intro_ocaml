@@ -21,7 +21,6 @@ all:.depend $(OUTO)
 	$(OCAMLDEP) $(PXFLAGS) *.ml > .depend
 
 $(OUTO): $(SOURCES:.ml=.cmx)
-	export OCAMLRUNPARAM=b=1
 	$(OCAMLOPT) -o $(OUTO) $(OFLAGS) $(LIBS:.cma=.cmxa) -linkpkg -package GT,ocanren $(SOURCES:.ml=.cmx) 
 
 $(OUTB): $(SOURCES:.ml=.cmo)

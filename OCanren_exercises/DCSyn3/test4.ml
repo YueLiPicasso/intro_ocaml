@@ -7,18 +7,7 @@ open Interp;;
 open Interp.NoLet;;
 open TwoBit;;
 
-@type svp = State.ground * Value.ground with show;;
-(* produce all I/O pairs for a given imperative program *)
-let _ =
-  L.iter (fun x -> print_string @@ GT.show(svp) x;print_newline())
-  @@ Stream.take  @@ 
-  run q (fun q -> ocanren {fresh prog, vs, sts,res in
-    prog == Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)
-    & Expr.free_var prog vs
-    & Expr.var_state vs sts
-    & eval_imp sts prog res
-    & q == (sts, res)}) project;;
-
+(** compute all possible input/output combinations, viz., I/O pairs, of the given imperative program *)
 let specs : Spec.ground GT.list =  
   Stream.take  @@ 
   run q (fun q -> ocanren {fresh prog, vs, sts,res in
@@ -28,12 +17,17 @@ let specs : Spec.ground GT.list =
     & eval_imp sts prog res
     & q == (sts, res)}) project;;
 
+(** Print all the I/O pairs *)
+let _ =
+  L.iter (fun x -> print_string @@ GT.show(Spec.ground) x;print_newline()) specs;;
+
+(** count the number of the I/O pairs *)
 let _ = Printf.printf "Synthesizing from %d input-output pairs...\n" (L.length specs) ;;
 
+(** convert the I/O pairs from ground to groundi *)
 let specsi : Specs.groundi = Specs.grd2ijd specs;;
 
-(* the code below does the synthesis *) 
-
+(** synthesize a flowchart program that satisfies all the I/O pairs *) 
 let _ =
   L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
   @@ Stream.take ~n:1 @@
