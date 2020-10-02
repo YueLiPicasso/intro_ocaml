@@ -451,6 +451,34 @@ module Interp = struct
   end;;
 end;;
 
+(* interpreters with size bound *)
+module InterpSZ = struct
+  (** Given state [s], the program [e] evaluates to [v], where [e] has [n] constructors *)
+   let rec eval_imp : State.groundi -> Expr.groundi -> Value.groundi -> Nat.groundi-> goal
+    = fun s e v n ->
+      ocanren {
+        {fresh c in e == Con c & v == Conv c & n == Nat.one}
+      | {fresh va, r in e == Var va & List.assoco va s v & n == Nat.one}
+      | {fresh va, ex, ar, idx, c, n' in
+         e == Arr (va, ex)
+         & List.assoco va s (Arrv ar)
+         & eval_imp s ex (Conv idx) n'   
+         & ArrayAccess.rel idx ar c
+         & v == Conv c
+         & n == Nat.S n' }
+      | {fresh e1,e2,e3,v1,v2,v3,n1,n2,n3,n',n'' in
+         e == Brh (e1,e2,e3)
+         & eval_imp s e1 v1 n1
+         & eval_imp s e2 v2 n2
+         & eval_imp s e3 v3 n3
+         & {v1 == Conv Constant.zero & v == v3
+           | v'=/= Conv Constant.zero & v == v2}
+         & Nat.addo n1 n2 n'
+         & Nat.addo n3 n' n''
+         & n == Nat.S n''}};;
+end;;
+
+
 module TwoBit = struct
   let c0  : Constnt2.groundi = ocanren { (b0,b0) };;
   let c1  : Constnt2.groundi = ocanren { (b0,b1) };;
