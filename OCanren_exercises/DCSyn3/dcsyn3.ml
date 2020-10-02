@@ -533,8 +533,8 @@ module InterpSZ = struct
        & ArrayAccess.rel idx ar c
        & Nat.addo n1 n2 n'}};;
 
-let rec syn : Specs.groundi -> Signal.groundi -> Nat.groundi -> goal =
-  fun ss p n -> ocanren {
+    let rec syn : Specs.groundi -> Signal.groundi -> Nat.groundi -> goal =
+      fun ss p n -> ocanren {
         ss == []
       | fresh st,va,ss' in ss == (st, va) :: ss' & eval_sig st p va n & syn ss' p n};; 
   end;;
