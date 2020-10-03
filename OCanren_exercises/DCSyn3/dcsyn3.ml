@@ -347,7 +347,26 @@ module Expr = struct
        sts == (n,v) :: sts'
        & { vs == (b0, n) :: vs' & v == Conv c & Constant.tog c
          | vs == (b1, n) :: vs' & v == Arrv a & Array.tog a  }
-       & var_state vs' sts'};; 
+       & var_state vs' sts'};;
+
+(** relate a program [e] with the number [n] of its constructors *)
+   let rec size : groundi -> Nat.groundi-> goal
+    = fun e n ->
+      ocanren {
+        {fresh c in e == Con c & n == Nat.one}
+      | {fresh va in e == Var va & n == Nat.one}
+      | {fresh va, ex, n' in
+         e == Arr (va, ex)
+         & n == Nat.S n'
+         & size ex n'}
+      | {fresh e1,e2,e3,n1,n2,n3,n',n'' in
+         e == Brh (e1,e2,e3)
+         & n == Nat.S n''
+         & size e1 n1
+         & size e2 n2
+         & size e3 n3
+         & Nat.addo n1 n2 n'
+         & Nat.addo n3 n' n''}};;
 end;;
 
 module SignalTypes = struct
@@ -422,7 +441,7 @@ module Interp = struct
     = fun s e v ->
       ocanren {
         {fresh c in e == Con c & v == Conv c }
-      | {fresh va, r in e == Var va & List.assoco va s v}
+      | {fresh va in e == Var va & List.assoco va s v}
       | {fresh va, ex, ar, idx, c in
          e == Arr (va, ex)
          & List.assoco va s (Arrv ar)
@@ -439,7 +458,7 @@ module Interp = struct
     = fun s e v ->
       ocanren {
       {fresh c in e == Src c & v == Conv c }
-    | {fresh va, r in e == Port va & List.assoco va s v}
+    | {fresh va in e == Port va & List.assoco va s v}
     | {fresh e1,e2,e3,v' in
        e == Mux (e1,e2,e3)
        & eval_sig s e1 v'
@@ -462,7 +481,7 @@ module Interp = struct
       = fun s e v ->
       ocanren {
       {fresh c in e == Src c & v == Conv c }
-    | {fresh va, r in e == Port va & List.assoco va s v}
+    | {fresh va in e == Port va & List.assoco va s v}
     | {fresh e1,e2,e3,v' in
        e == Mux (e1,e2,e3)
        & eval_sig s e1 v'
@@ -488,7 +507,7 @@ module InterpSZ = struct
     = fun s e v n ->
       ocanren {
         {fresh c in e == Con c & v == Conv c & n == Nat.one}
-      | {fresh va, r in e == Var va & List.assoco va s v & n == Nat.one}
+      | {fresh va in e == Var va & List.assoco va s v & n == Nat.one}
       | {fresh va, ex, ar, idx, c, n' in
          e == Arr (va, ex)
          & v == Conv c
@@ -513,7 +532,7 @@ module InterpSZ = struct
       = fun s e v n ->
       ocanren {
       {fresh c in e == Src c & v == Conv c & n == Nat.one}
-    | {fresh va, r in e == Port va & List.assoco va s v & n == Nat.one}
+    | {fresh va in e == Port va & List.assoco va s v & n == Nat.one}
     | {fresh e1,e2,e3,v1,v2,v3,n1,n2,n3,n',n'' in
        e == Mux (e1,e2,e3)
        & { v1 == Conv Constant.zero & v == v3
