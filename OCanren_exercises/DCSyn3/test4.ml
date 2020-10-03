@@ -52,6 +52,7 @@ which causes the killed process. This means that the search was along a wrong di
 
 end;;
 
+(*
 module TestB = struct
   (** compute all possible input/output combinations, viz., I/O pairs, of the given imperative program, 
       but take the first [n] of them; the default is to take all *)
@@ -83,3 +84,4 @@ module TestB = struct
   (*  For n = 8, the synthesizer can give very involved answer *)
 end;;
 
+*)
