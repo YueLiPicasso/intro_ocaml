@@ -541,16 +541,16 @@ module InterpSZ = struct
        & eval_sig s e1 v1 n1
        & eval_sig s e2 v2 n2
        & eval_sig s e3 v3 n3
-       & Nat.addo n1 n2 n'
-       & Nat.addo n3 n' n''}
+       & Nat.addo n3 n' n''
+       & Nat.addo n1 n2 n'}
     | {fresh e1, e2, c, ar, idx, ar',idx', ar'',idx'',n1,n2,n' in
        e == Slice (e1, e2)
        & v == Conv c
        & n == Nat.S n'
        & eval_sig s e1 (Arrv ar) n1
-       & eval_sig s e2 (Conv idx) n2  
-       & ArrayAccess.rel idx ar c
-       & Nat.addo n1 n2 n'}};;
+       & eval_sig s e2 (Conv idx) n2
+       & Nat.addo n1 n2 n'
+       & ArrayAccess.rel idx ar c}};;
 
     let rec syn : Specs.groundi -> Signal.groundi -> Nat.groundi -> goal =
       fun ss p n -> ocanren {
