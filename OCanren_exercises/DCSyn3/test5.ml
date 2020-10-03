@@ -58,5 +58,7 @@ module Test3 = struct
   let specsi : Specs.groundi = Specs.grd2ijd specs;;
 
   (** Third, compute the size of the imperative program *)
-  let sz = L.hd @@ Stream.take @@ run q (fun q -> Expr.size prog q) project
+let sz = L.hd @@ Stream.take @@ run q (fun q -> Expr.size prog q) project
+
+(* synthesize now ... *)
 end;;
