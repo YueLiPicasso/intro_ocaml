@@ -94,7 +94,7 @@ module TestB = struct
   (** Now synthsize ... *)
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-    @@ Stream.take ~n:270 (* record high : 270 *)
+    @@ Stream.take ~n:200 (* record high : 200 *)
     @@ run q (fun q -> syn specsi q Nat.(succ @@ succ @@ succ szi))
                                                        (* expected size of the flowchart*)
      (fun q -> q#reify(Signal.reify));;
