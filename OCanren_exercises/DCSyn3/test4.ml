@@ -10,28 +10,28 @@ open Twobit;;
 
 
 module TestA = struct
-  (** compute all possible input/output combinations, viz., I/O pairs, of the given imperative program, 
-      but take the first [n] of them; the default is to take all 1024 *)
+  let prog = ocanren {Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)};;
+  
+  (** compute some/all input-output combinations, viz., IO pairs,  *)
   let specs : Spec.ground GT.list =  
-    Stream.take ~n:41  @@ 
-    run q (fun q -> ocanren {fresh prog, vs, sts,res in
-       prog == Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)
-       & Expr.free_var prog vs
+    Stream.take ~n:41  @@ (* record high: 41 *)
+    run q (fun q -> ocanren {fresh vs, sts,res in
+       Expr.free_var prog vs
        & Expr.var_state vs sts
        & eval_imp sts prog res
        & q == (sts, res)}) project;;
 
-  (** Print the I/O pairs *)
+  (** Print the IO pairs to synthesize against *)
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Spec.ground) x;print_newline()) specs;;
 
-  (** count the number of the I/O pairs *)
+  (** count the number of the IO pairs *)
   let _ = Printf.printf "Synthesizing from %d input-output pairs...\n" (L.length specs) ;;
 
-  (** convert the I/O pairs from ground to groundi *)
+  (** convert the IO pairs from ground to groundi *)
   let specsi : Specs.groundi = Specs.grd2ijd specs;;
 
-  (** synthesize a flowchart program that satisfies the I/O pairs *) 
+  (** synthesize a flowchart program that satisfies the IO pairs *) 
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
     @@ Stream.take ~n:1 @@
@@ -53,36 +53,37 @@ which causes the killed process. This means that the search was along a wrong di
 
 end;;
 
-(*
+
 module TestB = struct
-  (** compute all possible input/output combinations, viz., I/O pairs, of the given imperative program, 
-      but take the first [n] of them; the default is to take all *)
+  let prog = ocanren{
+      Brh(Var "x", Brh(Arr("y", Var "x"), Arr("y", Var "x"), Var "x"), Arr("y", Con c0))
+    };;
+  
+  (** compute some/all IO pairs *)
   let specs : Spec.ground GT.list =  
-    Stream.take ~n:8  @@ 
-    run q (fun q -> ocanren {fresh prog, vs, sts,res in
-       prog == Brh(Var "x", Brh(Arr("y", Var "x"), Arr("y", Var "x"), Var "x"), Arr("y", Con c0))
-       & Expr.free_var prog vs
+    Stream.take ~n:216 @@ (* record high: 216 *)
+    run q (fun q -> ocanren {fresh vs, sts,res in
+       Expr.free_var prog vs
        & Expr.var_state vs sts
        & eval_imp sts prog res
        & q == (sts, res)}) project;;
 
-  (** Print the I/O pairs *)
+  (** Print the IO pairs to synthesize against *)
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Spec.ground) x;print_newline()) specs;;
 
-  (** count the number of the I/O pairs *)
+  (** count the number of the IO pairs *)
   let _ = Printf.printf "Synthesizing from %d input-output pairs...\n" (L.length specs) ;;
 
-  (** convert the I/O pairs from ground to groundi *)
+  (** convert the IO pairs from ground to groundi *)
   let specsi : Specs.groundi = Specs.grd2ijd specs;;
 
-  (** synthesize a flowchart program that satisfies the I/O pairs *) 
+  (** synthesize a flowchart program that satisfies the IO pairs *) 
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
     @@ Stream.take ~n:1 @@
     run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
 
-  (*  For n = 8, the synthesizer can give very involved answer *)
 end;;
 
-*)
+
