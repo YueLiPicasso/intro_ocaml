@@ -81,7 +81,7 @@ module TestB = struct
   (** synthesize a flowchart program that satisfies the IO pairs *) 
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-    @@ Stream.take ~n:40 @@ (* record high *)
+    @@ Stream.take ~n:40 @@ (* record high: 40 *)
     run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
 
 end;;
