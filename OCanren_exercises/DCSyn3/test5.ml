@@ -2,6 +2,7 @@
 open OCanren;;
 module L = Stdlib.List;;
 open OCanren.Std;;
+open Coar;;
 open Dcsyn3;;
 open InterpSZ;;
 open InterpSZ.NoLet;;
@@ -34,7 +35,7 @@ module Test3 = struct
   (** Third, compute the size of the imperative program *)
   let sz = L.hd @@ Stream.take @@ run q (fun q -> Expr.size prog q) project;;
 
-  let _  = Printf.printf "The imperative proggram has %d cnnstructors.\n " @@
+  let _  = Printf.printf "The imperative program has %d cnnstructors.\n " @@
     Nat.to_int sz;; 
 
   let szi = Nat.nat sz;;

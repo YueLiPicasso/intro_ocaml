@@ -230,15 +230,17 @@ values. Given an imperative program, we would like to find an equal flowchart
 program sharing the same input/output characteristics. This could be solved
 using relational/logic programming techniques described above: we first
 define relational interpreters for both languages, and then use the
-generate-and-test style to find the result.
+generate-and-test style to find the result.  Example (2) is one of several possible equals
+of example (1).
+
 
 ## III. Related work
 
-Relational synthesis for pattern matching. [2] There are two languages involved:
+Relational synthesis for pattern matching [2]. There are two languages involved:
 a pattern match language as the source and a switch language as the target. We
 try to find an equivalent program in the switch language, given a program in
-the pattern matching language. Example (2) is one of several possible equals
-of example (1).
+the pattern matching language.
+
 
 ## Reference
 
