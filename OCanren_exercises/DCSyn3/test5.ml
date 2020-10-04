@@ -66,7 +66,7 @@ module TestB = struct
   
   (** compute some/all IO pairs *)
   let specs : Spec.ground GT.list =  
-    Stream.take ~n:216 @@ (* record high: 216 *)
+    Stream.take ~n:7 @@ (* record high: 7 *)
     run q (fun q -> ocanren {fresh vs, sts,res,sz in
        Expr.free_var prog vs
        & Expr.var_state vs sts
@@ -94,7 +94,7 @@ module TestB = struct
   (** Now synthsize ... *)
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-    @@ Stream.take ~n:1 (* killed even for 1  *)
+    @@ Stream.take ~n:270 (* record high : 270 *)
     @@ run q (fun q -> syn specsi q Nat.(succ @@ succ @@ succ szi))
                                                        (* expected size of the flowchart*)
      (fun q -> q#reify(Signal.reify));;
