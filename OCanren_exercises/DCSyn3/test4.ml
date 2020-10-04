@@ -34,8 +34,8 @@ module TestA = struct
   (** synthesize a flowchart program that satisfies the IO pairs *) 
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-    @@ Stream.take ~n:1 @@
-    run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
+    @@ Stream.take ~n:3200 (* record high: 3200 *)
+    @@ run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
 
 (*
 The result of synthesizing from 41 input-output pairs:
@@ -81,7 +81,7 @@ module TestB = struct
   (** synthesize a flowchart program that satisfies the IO pairs *) 
   let _ =
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
-    @@ Stream.take ~n:1 @@
+    @@ Stream.take ~n:40 @@ (* record high *)
     run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
 
 end;;
