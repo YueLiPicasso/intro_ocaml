@@ -1,4 +1,4 @@
-(** This file tests interpreters with bound *)
+(** This file tests flowchart sythesis with naive interpreters + size bound *)
 open OCanren;;
 module L = Stdlib.List;;
 open OCanren.Std;;
