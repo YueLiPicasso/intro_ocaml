@@ -1,11 +1,12 @@
-(** This file tests flowchart sythesis *)
+(** This file tests flowchart sythesis with naive interpreters  *)
 open OCanren;;
 module L = List ;;
 open OCanren.Std;;
-open Dcsyn3;;
+open Coar;;
+open Syntax;;
 open Interp;;
 open Interp.NoLet;;
-open TwoBit;;
+open Twobit;;
 
 
 module TestA = struct

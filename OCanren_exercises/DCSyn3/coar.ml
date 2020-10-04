@@ -299,3 +299,6 @@ module Specs = struct
   let grd2ijd : Spec.ground GT.list -> groundi =
     fun l -> List.list @@ Stdlib.List.map Spec.grd2ijd l;;
 end;;
+
+include Bool.Inj;;
+include Value.Inj;;

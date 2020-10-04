@@ -3,10 +3,10 @@ open OCanren;;
 module L = Stdlib.List;;
 open OCanren.Std;;
 open Coar;;
-open Dcsyn3;;
+open Syntax;;
 open InterpSZ;;
 open InterpSZ.NoLet;;
-open TwoBit;;
+open Twobit;;
 
 
 module Test3 = struct
