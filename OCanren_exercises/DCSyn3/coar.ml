@@ -268,6 +268,8 @@ module Value = struct
   let grd2ijd : ground -> groundi = function
       Conv c -> conv (Constant.grd2ijd c)
     | Arrv a -> arrv (Array.grd2ijd a);;
+  let reify : VarEnv.t -> groundi -> logic 
+    = fun h x -> FValue.reify Constant.reify Array.reify h x;;
 end;;
 
 module StateUnit = struct
@@ -275,6 +277,7 @@ module StateUnit = struct
   @type logic   = (GT.string logic', Value.logic) Pair.logic    with show, gmap;;
   type groundi = (ground, logic) injected;;
   let grd2ijd : ground -> groundi = fun (s,v) -> Pair.pair !!(s) (Value.grd2ijd v);;
+  let reify : VarEnv.t -> groundi -> logic = fun h x -> Pair.reify reify Value.reify h x;;
 end;;
 
 module State = struct
@@ -283,6 +286,8 @@ module State = struct
   type groundi = (ground, logic) injected;;
   let grd2ijd : ground -> groundi = fun l ->
     List.list @@ Stdlib.List.map StateUnit.grd2ijd @@ List.to_list id l;;
+  let reify : VarEnv.t -> groundi -> logic = fun h x ->
+    List.reify StateUnit.reify h x ;; 
 end;;
 
 module Spec = struct
@@ -290,6 +295,7 @@ module Spec = struct
   @type logic = (State.logic, Value.logic) Pair.logic with show, gmap;;
   type groundi = (ground, logic) injected;;
   let grd2ijd : ground -> groundi = fun (s,v) -> Pair.pair (State.grd2ijd s) (Value.grd2ijd v);;
+  let reify : VarEnv.t -> groundi -> logic = fun h x -> Pair.reify State.reify Value.reify h x;;
 end;;
 
 module Specs = struct
@@ -298,6 +304,8 @@ module Specs = struct
   type groundi = (ground, logic) injected;;
   let grd2ijd : Spec.ground GT.list -> groundi =
     fun l -> List.list @@ Stdlib.List.map Spec.grd2ijd l;;
+   let reify : VarEnv.t -> groundi -> logic = fun h x ->
+    List.reify Spec.reify h x ;; 
 end;;
 
 include Bool.Inj;;
