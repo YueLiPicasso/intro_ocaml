@@ -8,6 +8,7 @@ open Interp;;
 open Interp.NoLet;;
 open Twobit;;
 
+let _ = Printf.printf "\n\n Test A \n\n";;
 
 module TestA = struct
   let prog = ocanren {Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)};;
@@ -39,26 +40,25 @@ module TestA = struct
 
 end;;
 
+let _ = Printf.printf "\n\n Test B \n\n";;
 
-(*
+
 module TestB = struct
   let prog = ocanren{
       Brh(Var "x", Brh(Arr("y", Var "x"), Arr("y", Var "x"), Var "x"), Arr("y", Con c0))
     };;
   
   (** compute some/all IO pairs *)
-  let specs : Spec.ground GT.list =  
-    Stream.take ~n:216 @@ (* record high: 216 *)
-    run q (fun q -> ocanren {fresh vs, sts,res in
-       Expr.free_var prog vs
-       & Expr.var_state vs sts
-       & eval_imp sts prog res
-       & q == (sts, res)}) project;;
+  let specs : Spec.logic GT.list =  
+    Stream.take ~n:100 @@ 
+    run q (fun q -> ocanren {fresh sts,res in
+       eval_imp sts prog res
+       & q == (sts, res)}) (fun q -> q#reify(Spec.reify));;
 
   (** Print the IO pairs to synthesize against *)
   let _ =
-    L.iter (fun x -> print_string @@ GT.show(Spec.ground) x;print_newline()) specs;;
-
+    L.iter (fun x -> print_string @@ GT.show(Spec.logic) x;Printf.printf "\n\n") specs;;
+(*
   (** count the number of the IO pairs *)
   let _ = Printf.printf "Synthesizing from %d input-output pairs...\n" (L.length specs) ;;
 
@@ -70,10 +70,10 @@ module TestB = struct
     L.iter (fun x -> print_string @@ GT.show(Signal.logic) x;print_newline())
     @@ Stream.take ~n:40 @@ (* record high: 40 *)
     run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify))
-
+*)
 end;;
 
-*)
+
 
 
 
