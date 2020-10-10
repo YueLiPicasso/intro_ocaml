@@ -15,7 +15,9 @@ module Expo = struct
   type ('a,'b) groundi = ('a,'b,'a,'b) LPair.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
-      = fun r h x -> LPair.reify r r h x;;
+    = fun r h x -> LPair.reify r r h x;;
+
+  let expo : ('a,'b) injected -> ('a,'b) groundi = fun x -> LPair.pair x x;; 
 end;;
 
 (** tuple of the form ((_,_),(_,_)) *)
@@ -33,7 +35,9 @@ module Expo1 = struct
       ('a Expo.ground, 'b Expo.logic) Expo.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
-      = fun r h x -> Expo.reify (Expo.reify r) h x;;
+    = fun r h x -> Expo.reify (Expo.reify r) h x;;
+
+  let expo1 : ('a,'b) injected -> ('a,'b) groundi = fun x -> Expo.expo @@ Expo.expo x ;; 
 end;;
 
 (** tuple of the form ((((_,_),(_,_)),((_,_),(_,_))),(((_,_),(_,_)),((_,_),(_,_)))) *)
@@ -51,10 +55,8 @@ module Expo2 = struct
       ('a Expo1.ground, 'b Expo1.logic) Expo1.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
-      = fun r h x -> Expo1.reify (Expo1.reify r) h x;;
+    = fun r h x -> Expo1.reify (Expo1.reify r) h x;;
+
+  let expo2 : ('a,'b) injected -> ('a,'b) groundi = fun x -> Expo1.expo1 @@ Expo1.expo1 x ;; 
 end;;
 
-
-
-
-  

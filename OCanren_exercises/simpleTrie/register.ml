@@ -23,3 +23,6 @@ type groundi =
 
 let reify : VarEnv.t -> groundi -> logic = fun h x ->
   Tup5.reify Cell.reify Cell.reify Cell.reify Cell.reify Cell.reify h x;;
+
+let inito : groundi =
+  ocanren {Tup5.tuple Cell.inito Cell.inito Cell.inito Cell.inito Cell.inito};;

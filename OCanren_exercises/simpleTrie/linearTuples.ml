@@ -20,7 +20,10 @@ module Tup3 = struct
     (VarEnv.t -> ('e,'f) injected -> 'f) ->
     VarEnv.t -> ('a,'b,'c,'d,'e,'f) groundi -> ('b,'d,'f) logic
     = fun r1 r2 r3 h x -> LPair.reify r1 (LPair.reify r2 r3) h x;;
-  
+
+  let tuple :
+    ('a,'b) injected -> ('c,'d) injected -> ('e,'f) injected -> ('a,'b,'c,'d,'e,'f) groundi
+      = fun x y z -> LPair.pair x (LPair.pair y z);;
 end;;
 
 (** types for linear 4-tuples *)
@@ -42,6 +45,11 @@ module Tup4 = struct
     (VarEnv.t -> ('g,'h) injected -> 'h) ->
     VarEnv.t -> ('a,'b,'c,'d,'e,'f,'g,'h) groundi -> ('b,'d,'f,'h) logic
     = fun r1 r2 r3 r4 h x -> LPair.reify r1 (Tup3.reify r2 r3 r4) h x;;
+
+   let tuple :
+     ('a,'b) injected -> ('c,'d) injected -> ('e,'f) injected -> ('g,'h) injected ->
+     ('a,'b,'c,'d,'e,'f,'g,'h) groundi
+      = fun x y z u -> LPair.pair x (Tup3.tuple y z u);;
 end;;
 
 (** types for linear 5-tuples *)
@@ -64,6 +72,12 @@ module Tup5 = struct
     (VarEnv.t -> ('i,'j) injected -> 'j) ->
     VarEnv.t -> ('a,'b,'c,'d,'e,'f,'g,'h,'i,'j) groundi -> ('b,'d,'f,'h,'j) logic
     = fun r1 r2 r3 r4 r5 h x -> LPair.reify r1 (Tup4.reify r2 r3 r4 r5) h x;;
+
+  let tuple :
+    ('a,'b) injected -> ('c,'d) injected -> ('e,'f) injected ->
+    ('g,'h) injected -> ('i,'j) injected -> 
+     ('a,'b,'c,'d,'e,'f,'g,'h,'i,'j) groundi
+      = fun x y z u v -> LPair.pair x (Tup4.tuple y z u v);;
 end;;
 
 

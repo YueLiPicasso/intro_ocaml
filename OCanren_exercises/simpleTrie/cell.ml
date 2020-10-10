@@ -20,3 +20,6 @@ type groundi =
 
 let reify : VarEnv.t -> groundi -> logic = fun h x ->
   LOption.reify (Tup4.reify LBool.reify LBool.reify LBool.reify LBool.reify) h x;;
+
+
+let inito : groundi = ocanren { LOption.None };;
