@@ -1,8 +1,7 @@
-(** exponential tuples: 
-    An Expo-N tuple is a 2^(2^N) tuple; The Expo-O tuple is simply called the Expo tuple *)
+(** exponential tuples: An Expo-N tuple is a 2^(2^N) tuple*)
 open Logic;;
 
-
+(** Expo0 is shortly Expo: (_,_) *)
 module Expo = struct
   @type 'a t = ('a,'a) LPair.t
    with show, gmap;;
@@ -18,7 +17,8 @@ module Expo = struct
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
       = fun r h x -> LPair.reify r r h x;;
 end;;
-(*
+
+(** tuple of the form ((_,_),(_,_)) *)
 module Expo1 = struct
    @type 'a t = 'a Expo.t Expo.t
    with show, gmap;;
@@ -30,13 +30,13 @@ module Expo1 = struct
    with show, gmap;;
 
   type ('a,'b) groundi =
-      ('a ground, 'b logic) Expo.groundi;;
+      ('a Expo.ground, 'b Expo.logic) Expo.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
-      = fun r h x -> LPair.reify (LPair.reify r r) (LPair.reify r r) h x;;
+      = fun r h x -> Expo.reify (Expo.reify r) h x;;
 end;;
 
-
+(** tuple of the form ((((_,_),(_,_)),((_,_),(_,_))),(((_,_),(_,_)),((_,_),(_,_)))) *)
 module Expo2 = struct
   @type 'a t = 'a Expo1.t Expo1.t
    with show, gmap;;
@@ -48,10 +48,13 @@ module Expo2 = struct
    with show, gmap;;
 
   type ('a,'b) groundi =
-      ('a ground, 'b logic) Expo1.groundi;;
+      ('a Expo1.ground, 'b Expo1.logic) Expo1.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic
       = fun r h x -> Expo1.reify (Expo1.reify r) h x;;
 end;;
 
-*)
+
+
+
+  
