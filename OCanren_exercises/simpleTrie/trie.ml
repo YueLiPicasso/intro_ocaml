@@ -37,3 +37,11 @@ sig
 end
   = Fmap2(T);;
 
+let reify : VarEnv.t -> groundi -> logic = fun h x ->
+  FT.reify (Expo2.reify Register.reify) (Cell.reify) h x;;
+
+let trie : ((Register.ground, Register.logic) Expo2.groundi, Cell.groundi) T.t -> groundi
+  = fun x -> inj @@ FT.distrib x;;
+
+
+
