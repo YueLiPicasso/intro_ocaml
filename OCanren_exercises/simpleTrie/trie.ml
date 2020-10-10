@@ -18,25 +18,7 @@ include T;;
 
 type groundi = (ground, logic) injected;;
 
-module FT :
-sig
-  val distrib :
-    (('a, 'c) Logic.injected, ('b, 'd) Logic.injected) T.t ->
-    (('a, 'b) T.t, ('c, 'd) T.t) Logic.injected
-  val reify :
-    (VarEnv.t -> ('a, 'b) Logic.injected -> 'b) ->
-    (VarEnv.t -> ('c, 'd) Logic.injected -> 'd) ->
-    VarEnv.t ->
-    (('a, 'c) T.t, ('b, 'd) T.t Logic.logic) Logic.injected ->
-    ('b, 'd) T.t Logic.logic
-  val prjc :
-    (VarEnv.t -> ('a, 'b) Logic.injected -> 'a) ->
-    (VarEnv.t -> ('c, 'd) Logic.injected -> 'c) ->
-    (int -> ('a, 'c) T.t list -> ('a, 'c) T.t) ->
-    VarEnv.t ->
-    (('a, 'c) T.t, ('b, 'd) T.t Logic.logic) Logic.injected -> ('a, 'c) T.t
-end
-  = Fmap2(T);;
+module FT = Fmap2(T);;
 
 let reify : VarEnv.t -> groundi -> logic = fun h x ->
   FT.reify (Expo2.reify Register.reify) (Cell.reify) h x;;
