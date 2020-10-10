@@ -32,6 +32,6 @@ let inito : groundi =
     trie {table = Expo2.expo2 Register.inito ;
           alpha = some (Tup4.tuple falso falso falso truo)};;
 
-let _ = print_string @@ (GT.show(ground) @@ prj inito) ^ "\n";;
+
 
 

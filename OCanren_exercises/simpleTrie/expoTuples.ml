@@ -21,6 +21,15 @@ module Expo = struct
   @type 'a logic = ('a,'a) LPair.logic
    with show, gmap;;
 
+   let logic = {
+    logic with
+    GT.plugins =
+      object(this)
+        method gmap  = logic.GT.plugins#gmap
+        method show  = fun s v -> GT.show(LPair.logic) (fun x -> "\n" ^ s x ^ "\n")
+            (fun x -> "\n" ^ s x ^ "\n") v
+      end };;
+
   type ('a,'b) groundi = ('a,'b,'a,'b) LPair.groundi;;
 
   let reify : (VarEnv.t -> ('a,'b) injected -> 'b) -> VarEnv.t -> ('a,'b) groundi -> 'b logic

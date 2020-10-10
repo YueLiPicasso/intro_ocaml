@@ -1,5 +1,5 @@
 TOPFILE = test
-SOURCES = linearTuples.ml expoTuples.ml cell.ml register.ml trie.ml
+SOURCES = linearTuples.ml expoTuples.ml cell.ml register.ml trie.ml test.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep
