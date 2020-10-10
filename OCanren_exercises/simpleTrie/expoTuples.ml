@@ -9,6 +9,15 @@ module Expo = struct
   @type 'a ground = ('a,'a) LPair.ground
    with show, gmap;;
 
+  let ground = {
+    ground with
+    GT.plugins =
+      object(this)
+        method gmap  = ground.GT.plugins#gmap
+        method show  = fun s v -> GT.show(LPair.ground) (fun x -> "\n" ^ s x ^ "\n")
+            (fun x -> "\n" ^ s x ^ "\n") v
+      end };;
+
   @type 'a logic = ('a,'a) LPair.logic
    with show, gmap;;
 
