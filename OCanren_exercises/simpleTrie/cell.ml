@@ -1,5 +1,4 @@
 (** The type of a cell in a register *)
-open Logic;;
 open LinearTuples;;
 
 @type t =

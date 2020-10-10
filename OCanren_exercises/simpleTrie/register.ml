@@ -1,5 +1,4 @@
 (** The type of a register *)
-open Logic;;
 open LinearTuples;;
 
 
