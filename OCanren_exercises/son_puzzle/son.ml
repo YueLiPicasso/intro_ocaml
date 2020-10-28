@@ -1,5 +1,3 @@
-
-
 open OCanren;;
 
 @type 'a logic' = 'a logic with show;;
