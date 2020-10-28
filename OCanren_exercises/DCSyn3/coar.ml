@@ -270,6 +270,10 @@ module Value = struct
     | Arrv a -> arrv (Array.grd2ijd a);;
   let reify : VarEnv.t -> groundi -> logic 
     = fun h x -> FValue.reify Constant.reify Array.reify h x;;
+
+  let tog : groundi -> goal = fun x ->
+    ocanren { {fresh c in x == Conv c & Constant.tog c}
+            | {fresh a in x == Arrv a & Array.tog a}};;
 end;;
 
 module StateUnit = struct
@@ -278,6 +282,8 @@ module StateUnit = struct
   type groundi = (ground, logic) injected;;
   let grd2ijd : ground -> groundi = fun (s,v) -> Pair.pair !!(s) (Value.grd2ijd v);;
   let reify : VarEnv.t -> groundi -> logic = fun h x -> Pair.reify reify Value.reify h x;;
+  let tog : groundi -> goal =
+    fun x -> structural x reify (function Var _ -> false | _ -> true) ;;
 end;;
 
 module State = struct
@@ -287,7 +293,12 @@ module State = struct
   let grd2ijd : ground -> groundi = fun l ->
     List.list @@ Stdlib.List.map StateUnit.grd2ijd @@ List.to_list id l;;
   let reify : VarEnv.t -> groundi -> logic = fun h x ->
-    List.reify StateUnit.reify h x ;; 
+    List.reify StateUnit.reify h x ;;
+
+  let rec tog : groundi -> goal = fun l -> ocanren {
+      l == []
+    | fresh h ,t in l == h :: t & StateUnit.tog h & tog t };;
+  
 end;;
 
 module Spec = struct

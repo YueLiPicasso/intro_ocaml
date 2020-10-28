@@ -1,7 +1,5 @@
-TOPFILE = test
-# use coar.ml twobit.ml interp.ml test4.ml for naive interpreters without size bound
-# use coar.ml twobit.ml interpSZ.ml test5.ml for naive interpreters with size bound
-SOURCES =  coar.ml twobit.ml syntax.ml interp.ml test4.ml
+TOPFILE = son
+SOURCES = son.ml
 OCAMLC = ocamlfind c
 OCAMLOPT = ocamlfind opt
 OCAMLDEP = ocamlfind dep

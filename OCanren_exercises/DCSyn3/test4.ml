@@ -9,7 +9,7 @@ open Interp.NoLet;;
 open Twobit;;
 
 let _ = Printf.printf "\n\n Test A \n\n";;
-
+(*
 module TestA = struct
   let prog = ocanren {Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)};;
   (* if x then if y[x] then 01 else 10 fi else 00 fi *)
@@ -38,8 +38,26 @@ module TestA = struct
     @@ run q (fun q -> ocanren {syn specsi q}) (fun q -> q#reify(Signal.reify)) 
 *)
 
+end;;*)
+
+module TestA2 = struct
+
+  let prog = ocanren {Brh(Var "x", Brh(Arr("y", Var "x"), Con c1, Con c2), Con c0)};;
+  (* if x then if y[x] then 01 else 10 fi else 00 fi *)
+  
+  let specs : Spec.logic GT.list =  
+    Stream.take  ~n: 100 @@ (* the answer contains associations for irrelevant variable names *)
+    run q (fun q -> ocanren {fresh sts,res in
+       eval_imp sts prog res & State.tog sts 
+       & q == (sts, res)}) (fun q -> q#reify(Spec.reify));;
+
+  (** Print the IO pairs to synthesize against *)
+  let _ =
+    L.iter (fun x -> print_string @@ GT.show(Spec.logic) x;Printf.printf "\n\n") specs;;
 end;;
 
+
+(*
 let _ = Printf.printf "\n\n Test B \n\n";;
 
 
@@ -74,7 +92,7 @@ module TestB = struct
 end;;
 
 
-
+*)
 
 
 
