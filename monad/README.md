@@ -78,5 +78,5 @@ provides a specialized `return` function.
 ## 4.
 
 The interesting conclusion is that if a Haskell function has a higher-kinded polymorphic
-type, and we want to implement the function in OCaml, it is inevitable that we can only
-have a family of type-specific versions of the function defined by means of modules and module functors.
+type, and we want to implement the function in OCaml, it is inevitable that we end up with
+ a family of type-specific versions of the function defined by means of modules and module functors.
