@@ -32,4 +32,17 @@ end;;
 module M1 = When(Maybe);;
 module M2 = When(List);;
 
+(* Not work : *)
+(* let myWhen (module M : Monad) b m =
+  if b then m else M.return ();; *)
 
+(* whenf can be factored to become the When functor *) 
+(* 
+module type Monadw = sig
+  type 'a t;;
+  val return  : 'a -> 'a t;;
+  val error   : 'a t;;
+  val ( >>= ) : 'a t -> ('a -> 'b t) -> 'b t;;
+  val whenf   :  bool -> unit t -> unit t
+end;;
+*)
