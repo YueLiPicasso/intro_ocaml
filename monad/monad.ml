@@ -1,3 +1,5 @@
+(* textbook definition *)
+
 module type Monad = sig
   type 'a t;;
   val return : 'a -> 'a t;;
@@ -6,7 +8,7 @@ module type Monad = sig
 end;;
 
 
-(*
+(* experimental definition *)
 module type TC1 =
   sig
     type 'a t;;
@@ -18,8 +20,9 @@ module type Monad =
     val (>>=)  : 'a M.t -> ('a -> 'b M.t) -> 'b M.t;;
   end;;
 
-module Maybe (M : TC1 with type 'a t = 'a option) : Monad =
+module Maybe (M : TC1) : Monad =
   struct
+    type 'a M.t = 'a option;;
     let return x = Some x;;
     let (>>=) = fun x f ->
       match x with
@@ -27,4 +30,9 @@ module Maybe (M : TC1 with type 'a t = 'a option) : Monad =
       | Some x' -> f x';;
   end;;
 
- *)
+
+module Int = struct
+  type 'a t = 
+  end;;
+mpdule M1 = Maybe(Int);
+mpdule M1 = Maybe(Bool);

@@ -32,6 +32,13 @@ end;;
 module M1 = When(Maybe);;
 module M2 = When(List);;
 
+
+module Unless(M : Monad) = struct
+  module W = When(M);;
+  let f b m = W.f (not b) m;;
+end;;
+
+module U1 = Unless(Maybe);;
 (* Not work : *)
 (* let myWhen (module M : Monad) b m =
   if b then m else M.return ();; *)

@@ -1,6 +1,6 @@
 # Comparing Monads in Haskell and in OCaml 
 
-_Updated on: 25 Feb 2021_ 
+_25 Feb 2021_ 
 
 ## 1.
 
@@ -80,3 +80,48 @@ provides a specialized `return` function.
 The interesting conclusion is that if a Haskell function has a higher-kinded polymorphic
 type, and we want to implement the function in OCaml, it is inevitable that we end up with
  a family of type-specific versions of the function defined by means of modules and module functors.
+ 
+<hr>
+
+## Retrospective Comments
+
+Below are some retrospective comments on some points asserted in the blog.
+
+### The monadic `return` is  overloaded, or (higher-kinded) parametric polymorphic ?
+
+_03 March 2021_
+ 
+ In Section 1 of the blog, I wrote that the monadic `return` function
+ is higher-kinded polymorphic. I later noticed that the authors of the
+ _Lightweight Higher-kinded Polymorphism_ paper do not consider `return` in 
+ Haskell as being (higher-kinded) parametric polymorphic; instead, they 
+ call it overloaded. Here I clarify the concepts and explain about the 
+ mistake I made in the blog. 
+ 
+ 
+ Overloading and parametric polymorphism are two distinct 
+ concepts: for a parametric polymorphic function its different type-specific
+ instances share exactly the same function definition, e.g., reversal of
+ a list is irrelevant to the list member type and the function definition
+ is the same for lists of characters, strings, integers, booleans or floats 
+ etc.; for an overloaded function its different type-specific instances 
+ definitely have different function definitions, e.g., the definition 
+ of `return` for a Maybe Monad is a "Maybe" wrapper, while for a List Monad
+ the definition of `return` becomes a singleton-list wrapper. In other words, 
+ an overloaded Haskell function and a parametric polymorphic function may have
+ type signatures that look similar: in both cases there are type variabes 
+ that can be instantiated to obtain signatures of  type-specific instances 
+ of the function; however, a parametric polymorphic function has only one 
+ concrete definition or embodiment, but an overloaded function has as many 
+ concrete definitions or embodiments as the types for which the function 
+ is overloaded. 
+ 
+ Assigning a type to an overloaded function by means of a constructor class
+ (such as the `Monad` class in Haskell) results in occurrences of 
+ type variables in the signatures of certain functions; but occurrence of 
+ instantiable type variables in the type signature does not imply that a 
+ function so typed is necessarily parametric polymorphic.   
+ 
+ 
+<hr>
+<em>This blog post is also on <a href="https://github.com/YueLiPicasso/intro_ocaml/tree/master/monad">GitHub</a> with some extra code examples.</em>
