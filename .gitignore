@@ -34,8 +34,6 @@ setup.log
 _opam/
 
 # back up files 
-*.ml~
-*.mli~
-*.pro~
-Makefile~
-*.md~
+*~
+.#*
+#*
