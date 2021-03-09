@@ -1,0 +1,8 @@
+module Stack ( StkType , push ) where
+  type StkType a = [a]
+  push :: a -> StkType a -> StkType a
+  push x xs = x : xs
+  pop :: StkType a -> StkType a
+  pop (_:xs) = xs
+  empty :: StkType a
+  empty = []
