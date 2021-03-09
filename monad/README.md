@@ -138,7 +138,7 @@ comes directly from the lack of overloading in the language; but more deeply (or
 generally) the reason is the lack of higher-kinded polymorphism. 
 
 I understand that `return` is higher-kinded ad-hoc polymorphic. To have higher-kinded 
-ad-hoc polymorphism in OCaml,  which is a special form of higher-kinded polymorphism,  
+ad-hoc polymorphism in OCaml,  which is a special form of higher-kinded polymorphism, 
 we must provide what is required by _any_ form of higher-kinded polymorphism, be it ad-hoc 
 or parametric; we must allow type variables of higher-kinds, 
 or some other way of abstracting over higher-kinded type constructors. 
