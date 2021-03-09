@@ -164,11 +164,6 @@ effect on what the type checker can see about the argument modules.  A functor c
 about an argument module no more than what is given in the argument signature but outside
 the functor, the type checker could see the full picture of the argument module which is 
 given by the module's own signature. 
-
-
- 
- 
- 
  
 <hr>
 <em>This blog post is also on <a href="https://github.com/YueLiPicasso/intro_ocaml/tree/master/monad">GitHub</a> with some extra code examples.</em>
