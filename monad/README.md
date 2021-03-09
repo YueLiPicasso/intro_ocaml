@@ -143,8 +143,25 @@ we must provide what is required by _any_ form of higher-kinded polymorphism, be
 or parametric; we must allow type variables of higher-kinds, 
 or some other way of abstracting over higher-kinded type constructors. 
 
+Then the authors move on to discuss the _alias problem_. They begin with the 
+arguement that checking type equality is easier in Haskell than in OCaml. I have some 
+comments here. 
 
-The authors then move on to discuss the alias problem. 
+I understand that in Haskell there is no way to hide a type equation (aka. type synonym); only 
+data constructors can be hidden and the programmer can choose to hide all or only
+some of the data constructors of an algebraic data type. But in OCaml, a
+type equation can be hidden; data constructors are exported in an all-or-nothing
+manner. In the above sense (and compared with Haskell) OCaml offers more flexibility 
+concerning hiding type equations, but less flexibility conceriing hiding data constructors.   
+It is the hiding of type equations that is relevant to the discussion of the alias problem. 
+The authors say that an OCaml module  signature may only temporarily abstract a type in the
+case of applying a module functor. This is true and this is indeed a subtle technical point
+of OCaml modules. 
+
+
+ 
+ 
+ 
  
 <hr>
 <em>This blog post is also on <a href="https://github.com/YueLiPicasso/intro_ocaml/tree/master/monad">GitHub</a> with some extra code examples.</em>
