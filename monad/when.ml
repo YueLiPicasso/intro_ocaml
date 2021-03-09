@@ -9,7 +9,7 @@ module When (M : Monad) = struct
   let f = fun b m -> if b then m else M.return ();;
 end;;
 
-module Maybe : Monad = struct
+module Maybe = struct
   type 'a t = 'a option;;
   let return x = Some x;;
   let error = None;;
@@ -19,7 +19,7 @@ module Maybe : Monad = struct
     | Some x' -> f x';;
 end;;
 
-module List : Monad = struct
+module List  = struct
   type 'a t = 'a list;;
   let return x = [x];;
   let error = [];;

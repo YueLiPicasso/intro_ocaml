@@ -20,6 +20,7 @@ module type Monad =
     val (>>=)  : 'a M.t -> ('a -> 'b M.t) -> 'b M.t;;
   end;;
 
+(*
 module Maybe (M : TC1) : Monad =
   struct
     type 'a M.t = 'a option;;
@@ -29,10 +30,20 @@ module Maybe (M : TC1) : Monad =
       | None -> None
       | Some x' -> f x';;
   end;;
-
+ *)
 
 module Int = struct
-  type 'a t = 
-  end;;
-mpdule M1 = Maybe(Int);
+  type 'a t = int
+end;;
+
+module Fun (M : TC1 with type 'a t = int) = struct
+  let (x : int M.t) = 5;;
+end;;
+
+module FI = Fun(Int);;
+
+FI.x;;
+
+(*mpdule M1 = Maybe(Int);
 mpdule M1 = Maybe(Bool);
+ *)

@@ -83,20 +83,19 @@ type, and we want to implement the function in OCaml, it is inevitable that we e
  
 <hr>
 
-## Retrospective Comments
+## Follow-up Comments 
 
-Below are some retrospective comments on some points asserted in the blog.
+Below are some follow-up comments on the blog.
 
 ### The monadic `return` is  overloaded, or (higher-kinded) parametric polymorphic ?
 
-_03 March 2021_
+_03 March 2021; edited on 09 March 2021_ 
  
  In Section 1 of the blog, I wrote that the monadic `return` function
  is higher-kinded polymorphic. I later noticed that the authors of the
  _Lightweight Higher-kinded Polymorphism_ paper do not consider `return` in 
  Haskell as being (higher-kinded) parametric polymorphic; instead, they 
- call it overloaded. Here I clarify the concepts and explain about the 
- mistake I made in the blog. 
+ call it overloaded. Here I clarify the concepts. 
  
  
  Overloading and parametric polymorphism are two distinct 
@@ -120,8 +119,32 @@ _03 March 2021_
  (such as the `Monad` class in Haskell) results in occurrences of 
  type variables in the signatures of certain functions; but occurrence of 
  instantiable type variables in the type signature does not imply that a 
- function so typed is necessarily parametric polymorphic.   
+ function so typed is necessarily parametric polymorphic.  
  
+ To be more precise, the monadic `return` function is a (higher-kinded) 
+ _ad-hoc_ polymorphic function (overloading = ad-hoc polymorphism), but 
+ not a _parametric_ polymorphic function.
+ It is therefore correct to say (albeit less precisely) that it is a 
+ higher-kinded polymorphic function (as I say in Section 1). 
+ 
+ 
+### The subtlety of checking type equality in OCaml
+ 
+_09 March 2021_ 
+ 
+Following a comparison of the `when` function in Haskell with that in
+OCaml, the authors comment that the extra heaviness of writing `when` in OCaml
+comes directly from the lack of overloading in the language; but more deeply (or more
+generally) the reason is the lack of higher-kinded polymorphism. 
+
+I understand that `return` is higher-kinded ad-hoc polymorphic. To have higher-kinded 
+ad-hoc polymorphism in OCaml,  which is a special form of higher-kinded polymorphism,  
+we must provide what is required by _any_ form of higher-kinded polymorphism, be it ad-hoc 
+or parametric; we must allow type variables of higher-kinds, 
+or some other way of abstracting over higher-kinded type constructors. 
+
+
+The authors then move on to discuss the alias problem. 
  
 <hr>
 <em>This blog post is also on <a href="https://github.com/YueLiPicasso/intro_ocaml/tree/master/monad">GitHub</a> with some extra code examples.</em>
