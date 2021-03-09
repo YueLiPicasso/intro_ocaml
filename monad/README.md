@@ -144,19 +144,26 @@ or parametric; we must allow type variables of higher-kinds,
 or some other way of abstracting over higher-kinded type constructors. 
 
 Then the authors move on to discuss the _alias problem_. They begin with the 
-arguement that checking type equality is easier in Haskell than in OCaml. I have some 
+argument that checking type equality is easier in Haskell than in OCaml. I have some 
 comments here. 
 
-I understand that in Haskell there is no way to hide a type equation (aka. type synonym); only 
+I understand that in Haskell there is no way to hide a type equation (aka. a type synonym); only 
 data constructors can be hidden and the programmer can choose to hide all or only
 some of the data constructors of an algebraic data type. But in OCaml, a
 type equation can be hidden; data constructors are exported in an all-or-nothing
 manner. In the above sense (and compared with Haskell) OCaml offers more flexibility 
-concerning hiding type equations, but less flexibility conceriing hiding data constructors.   
-It is the hiding of type equations that is relevant to the discussion of the alias problem. 
-The authors say that an OCaml module  signature may only temporarily abstract a type in the
-case of applying a module functor. This is true and this is indeed a subtle technical point
-of OCaml modules. 
+for hiding type equations, but less flexibility for hiding data constructors. 
+
+The authors say that an OCaml module signature (aka. module type) _may_ temporarily
+abstract a type in the case of applying a module functor. This is true and this is indeed 
+a subtle technical point of OCaml modules. OCaml functors require that their argument 
+modules must match the module types specified in the functor definitions. Explicit argument 
+module types in a functor definition tells what the functor assumes about 
+its argument modules, but these module types as functor argument specifications have no 
+effect on what the type checker can see about the argument modules.  A functor can assume 
+about an argument module no more than what is given in the argument signature but outside
+the functor, the type checker could see the full picture of the argument module which is 
+given by the module's own signature. 
 
 
  
