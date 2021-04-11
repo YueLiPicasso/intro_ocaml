@@ -37,3 +37,8 @@ _opam/
 *~
 .#*
 #*
+
+# SML compiled files
+
+*.ui
+*.uo
