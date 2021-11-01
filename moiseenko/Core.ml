@@ -49,7 +49,7 @@ end = struct
     if (tx = var_tag) && (sx = var_size) then
       let v = (Obj.obj x : Var.t) in
       let a = v.Var.anchor in
-      if (Obj.(is_block @@ repr a)) && (Anchor.is_valid a) then
+      if (Obj.is_block x) && (Anchor.is_valid a) then
         (if env = v.Var.env then true else raise (Var_scope_violation v))
       else false
     else false
