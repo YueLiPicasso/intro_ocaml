@@ -7,6 +7,7 @@
 *.cmx
 *.cmxs
 *.cmxa
+*.cmt
 
 # ocanren dependency tracking file
 .depend

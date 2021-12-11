@@ -1,14 +1,14 @@
 # topological order of modules
 MODTOPO = anchor.mli var.mli term.mli core.mli            
 MODIMP  = $(MODTOPO:.mli=.ml)
-TEST=test
+TEST=test.byte
 LIB=moc.cma
 
 # make lib 
 # make
 
 all : 
-	ocamlc -o $(TEST) $(LIB) $(TEST).ml 
+	ocamlc -o $(TEST) $(LIB) $(TEST:.byte=.ml) 
 
 # compile interface
 
@@ -33,4 +33,4 @@ lib : interf
 	ocamlc -c $<
 
 clean :
-	rm -rf *.cm* *.o *~ *.cma
+	rm -rf *.cm*  *~  *.byte
