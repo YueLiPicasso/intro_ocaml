@@ -7,11 +7,11 @@ type t =
     env    : env;
     index  : index; }
 
-let anchor { anchor } = anchor
+let anchor { anchor; _ } = anchor
                       
-let env { env } = env
+let env { env; _ } = env
                 
-let index { index } = index
+let index { index; _ } = index
 
 let make ~env index = {env; index; anchor = Anchor.v}
 

@@ -36,7 +36,7 @@ module Reifier = struct
   let prj_exn env t =
     match reify env t with
     | Value x -> x
-    | Var v -> raise Not_a_value
+    | Var _ -> raise Not_a_value
   let apply r (env, a) = r env a
   let compose r r' env a = r' env (r env a)
   let fmap f r env a = f (r env a)

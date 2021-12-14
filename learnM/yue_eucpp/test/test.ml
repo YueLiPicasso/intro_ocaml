@@ -1,5 +1,6 @@
 open Printf
-open Core
+open Eucpp    
+open Eucpp.Core
 
 let _ = match Reifier.(apply reify @@ runrt ()) with
   | Value _ -> printf "failed\n"
@@ -9,14 +10,14 @@ let _ = match Reifier.(apply reify @@ runfr ()) with
   | Value _ -> printf "failed\n"
   | Var _ -> printf "PASSED\n"
 
-let _ = match Reifier.(apply reify @@ run (fun v -> Env.return @@ inj 44)) with
+let _ = match Reifier.(apply reify @@ run (fun _ -> Env.return @@ inj 44)) with
   | Value 44 -> printf "PASSED\n"
   | _ ->  printf "failed\n"
 
 let _ =        
   let runaway : int ilogic ref = ref (Obj.magic ()) in  
   let state_ok = run (fun v -> runaway := v; Env.return v) in
-  try Reifier.(apply reify @@ run (fun v -> Env.return !runaway))   
+  try Reifier.(apply reify @@ run (fun _ -> Env.return !runaway))   
                with
                | Var.Scope_violation _ -> printf "PASSED\n";
                                           Reifier.(apply reify state_ok)

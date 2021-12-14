@@ -4,6 +4,9 @@ MODIMP  = $(MODTOPO:.mli=.ml)
 TEST=test.byte
 LIB=moc.cma
 
+dtest :
+	dune build test
+
 # make lib 
 # make
 

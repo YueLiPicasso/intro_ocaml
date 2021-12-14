@@ -19,9 +19,6 @@ let is_box t =
   then true
   else false
 
-let is_int = (=) Obj.int_tag
-let is_string = (=) Obj.string_tag
-
 let var env x =
   let x = Obj.repr x in
   let tx = Obj.tag x in
