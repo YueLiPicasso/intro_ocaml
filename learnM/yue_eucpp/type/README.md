@@ -1,4 +1,4 @@
-The reifier for the option type is built using the operators "bnd" and "return". Without
+The reifier for the option type is built using the operators "bind" and "return". Without
 type annotation, the meaning of the function definition is obscure:
 ```ocaml
  let reify = fun ra ->
