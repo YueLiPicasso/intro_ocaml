@@ -18,3 +18,6 @@ would be rejetced because `app` is abstract. To work around, give `app` a dummy 
 ```ocaml
 type ('a, 'b) app = App of 'a * 'b
 ```
+## Additional Info
+
+[Slides](file:///home/yuelipicasso/Documents/YueLiPicasso.github.io/Talk/ConferenceTK/yue_JBminiconf2021.pdf) of a short talk on the project.
