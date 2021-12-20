@@ -20,4 +20,4 @@ type ('a, 'b) app = App of 'a * 'b
 ```
 ## Additional Info
 
-[Slides](file:///home/yuelipicasso/Documents/YueLiPicasso.github.io/Talk/ConferenceTK/yue_JBminiconf2021.pdf) of a short talk on the project.
+[Slides](https://yuelipicasso.github.io/Talk/ConferenceTK/yue_JBminiconf2021.pdf) of a short talk on the project.
