@@ -38,4 +38,4 @@ let reify = fun (ra : ('a ->'b) Env.t) ->
           )) : ('a ilogic -> 'b logic) Env.t)
       ) :  ('c Core.ilogic -> 'c Core.logic) -> ('a ilogic -> 'b logic) Env.t)
 ```
-The decoration also shows that actually the reifier is generic for all non-recursive type constructors of one type parameter.
+The decoration also shows that actually the reifier is generic for all non-recursive type constructors of one type parameter. To add types for sub-expressions it is [helpful](https://github.com/YueLiPicasso/intro_ocaml/issues/2#issue-1084625874) to draw the tree representation of the expression for easy reference of the expression structure.
