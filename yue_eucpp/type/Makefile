@@ -1,21 +1,22 @@
-TYPE = option
+ADD_PATH = -I $(LIB_PATH)
+
 MODSIG = $(addsuffix .mli, $(TYPE))
 MODIMP = $(addsuffix .ml,  $(TYPE))
 MODCMI = $(addsuffix .cmi, $(TYPE))
 MODCMO = $(addsuffix .cmo, $(TYPE))
 
-all : $(MODCMO)
+all : $(TYP)
 
-.PHONY : lib clean
+$(TYP) : $(MODCMO)
+	ocamlc -pack -o $(TYP) $(MODCMO)
 
-lib :
-	$(MAKE) -C $(LIB_PATH)
-
-$(MODCMI) &: lib $(MODSIG) 
-	ocamlc -c -I $(LIB_PATH) $(MODSIG)
+$(MODCMI) &: $(MODSIG) 
+	ocamlc -c $(ADD_PATH) $(MODSIG)
 
 $(MODCMO) &: $(MODCMI) $(MODIMP)
-	ocamlc -c -I $(LIB_PATH) $(MODIMP)
+	ocamlc -c $(ADD_PATH) $(MODIMP)
+
+.PHONY : clean
 
 clean :
 	rm -rf *.cm*  *~

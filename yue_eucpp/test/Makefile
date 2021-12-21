@@ -1,12 +1,9 @@
-TEST = test
+ADD_PATH = -I $(LIB_PATH) -I $(TYP_PATH)
 
-all : lib
-	ocamlc -o $(TEST).$(BYTE_EXT) -I $(LIB_PATH) $(LIB) $(TEST).ml
+all :
+	ocamlc -o $(EXE) $(ADD_PATH) $(LIB) $(TYP) $(TEST).ml
 
-.PHONY : lib clean
-
-lib :
-	$(MAKE) -C $(LIB_PATH)
+.PHONY : clean
 
 clean :
 	rm -rf *.cm*  *~  *.$(BYTE_EXT)

@@ -1,6 +1,3 @@
-# topological order of modules
-MODTOPO = anchor var term core
-
 MODSIG = $(addsuffix .mli, $(MODTOPO))
 MODIMP = $(addsuffix .ml,  $(MODTOPO))
 MODCMI = $(addsuffix .cmi, $(MODTOPO))
