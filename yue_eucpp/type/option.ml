@@ -49,3 +49,13 @@ let reify = fun (ra : ('a ->'b) Env.t) ->
         | Value t -> Value (fmap fa t)
       )))))
 *)
+
+(* 
+ra: reifier for the argument type 'a of 'a option
+env: variable environment 
+
+Option.reify ra env = fun x ->
+        match (Reifier.reify env) x with
+        | Var v   -> Var v
+        | Value t -> Value (Option.fmap (ra env) t)   
+*)

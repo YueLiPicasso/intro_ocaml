@@ -1,22 +1,22 @@
 ADD_PATH = -I $(LIB_PATH)
-
-MODSIG = $(addsuffix .mli, $(TYPE))
-MODIMP = $(addsuffix .ml,  $(TYPE))
-MODCMI = $(addsuffix .cmi, $(TYPE))
 MODCMO = $(addsuffix .cmo, $(TYPE))
+OCAMLC_C = ocamlc -c $(ADD_PATH) -rectypes
+OCAMLC_PACK = ocamlc -pack -o $(TYP) -rectypes
 
 all : $(TYP)
 
 $(TYP) : $(MODCMO)
-	ocamlc -pack -o $(TYP) $(MODCMO)
+	$(OCAMLC_PACK) $(MODCMO)
 
-$(MODCMI) &: $(MODSIG) 
-	ocamlc -c $(ADD_PATH) $(MODSIG)
+%.cmi : %.mli
+	$(OCAMLC_C) $<
 
-$(MODCMO) &: $(MODCMI) $(MODIMP)
-	ocamlc -c $(ADD_PATH) $(MODIMP)
+%.cmo : %.ml %.cmi
+	$(OCAMLC_C) $<
 
 .PHONY : clean
 
 clean :
 	rm -rf *.cm*  *~
+
+
