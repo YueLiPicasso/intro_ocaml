@@ -15,11 +15,11 @@ let fmap  =
 let rec reify = fun ra -> Reifier.compose Reifier.reify 
     (Env.bind ra (fun fa -> (Env.bind (reify ra) (fun fr ->
          Env.return (fun lx -> match lx with
-             | Var v as v' -> v'
+             | Var _ as v' -> v'
              | Value t -> Value (fmap fa fr t))))))
     
 (*
  List.reify ra env = fun xl -> match (Reifier.reify env xl) with
-             | Var v as v' -> v'
+             | Var _ as v' -> v'
              | Value t -> Value (fmap (ra env)  (List.reify ra env) t) 
 *)

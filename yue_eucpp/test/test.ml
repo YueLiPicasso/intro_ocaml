@@ -76,7 +76,7 @@ let _ = print_string @@
       (run (fun _ -> Env.return @@ inj (Some (inj (Some (inj true))))))
   in
   match tm with
-  |  Value (Some (Value Option.(Some (Value true)))) -> "PASSED\n"
+  |  Value (Some (Value (Some (Value true)))) -> "PASSED\n"
   | _ -> "failed\n"
 
 

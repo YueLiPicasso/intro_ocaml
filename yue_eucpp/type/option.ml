@@ -29,7 +29,7 @@ let reify = fun (ra : ('a ->'b) Env.t) ->
                  ((Env.return
                      ((fun (x : 'a t Core.ilogic) ->
                          match (r x : 'a t Core.logic) with
-                         | Var v  as v' -> (v' : 'b t Core.logic)   (* Polymorphic Var *)
+                         | Var _  as v' -> (v' : 'b t Core.logic)   (* Polymorphic Var *)
                          | Value t -> ((Value ((fmap (fa : 'a -> 'b) (t : 'a t)) : 'b t))
                                        : 'b t Core.logic)
                        ) : 'a ilogic -> 'b logic)
@@ -45,7 +45,7 @@ let reify = fun (ra : ('a ->'b) Env.t) ->
     (Reifier.reify >>= (fun r -> (ra >>= (fun fa ->
       Env.return (fun x ->
         match r x with
-        | Var v   -> Var v
+        | Var _ as v'   -> v'
         | Value t -> Value (fmap fa t)
       )))))
 *)
@@ -56,6 +56,6 @@ env: variable environment
 
 Option.reify ra env = fun x ->
         match (Reifier.reify env) x with
-        | Var v   -> Var v
+        | Var _ as v'  -> v'
         | Value t -> Value (Option.fmap (ra env) t)   
 *)

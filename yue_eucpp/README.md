@@ -10,5 +10,17 @@ feature the "monad" programming pattern, because monad origins from category the
 
 ## To Build
 
-Use either Dune (not recommend) or Makefile (recommended). 
+Use either Dune or GNU Make.
+
+### Dune
+```
+dune build
+dune runtest
+``` 
+
+### GNU Make
+```
+make
+make runtest
+```
 
