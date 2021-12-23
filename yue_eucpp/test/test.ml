@@ -136,5 +136,30 @@ let _ = print_string @@
   | _ -> "failed\n"
 
 
+(* --------------------------------------------------------------------*)
+    
+(* int causes the expected error *)
+    
+let _ = print_string @@
+  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+      (run (fun v -> Env.return
+               (inj List.(Cons(inj (Some v),
+                               inj (Cons(v, (inj Nil)))))))) in
+  match (tm : int Core.logic Option.logic List.logic) with
+  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
+
+let _ = print_string @@
+  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+      (run (fun v -> Env.return
+               (inj List.(Cons(inj (Some v),
+                               inj (Cons(v, (inj Nil)))))))) in
+  match (tm : 'a Core.logic Option.logic List.logic) with
+  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
+    -> "PASSED --- but problem !\n"
+  | _ -> "failed\n"
+
 (* How to get two vars of different but correct type? *)
 
+(* --------------------------------------------------------------------*)
