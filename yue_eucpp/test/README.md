@@ -9,9 +9,7 @@ let _ = print_string @@
                (inj List.(Cons(inj (Some v),
                                inj (Cons(v, (inj Nil)))))))) in
   match (tm : int Core.logic Option.logic List.logic) with
-  | Value(Cons(Value(Some(Var _)), Value (Cons (Value None, Value Nil))))
-    -> "PASSED\n"
-  | _ -> "failed\n"
+  | _ -> "type error !\n"
 ```
 In a nut shell, the type error reported
 by the type-checker is the incompatibility between the inferred type for `tm` as defined in the
