@@ -40,7 +40,7 @@ Then
 (9) ((inj (Cons(v, (inj Nil)))) : 
          ('d Core.ilogic, ('a, 'b) List.t Core.ilogic) List.t Core.ilogic)
 ```
-Applying `Cons` to then terms of (7) and (9), and then inject, we get a term of type
+Applying `Cons` to the terms of (7) and (9), and then inject, we get a term of type
 
 ```ocaml
 (10)  (('d Core.ilogic) Option.ilogic, 
