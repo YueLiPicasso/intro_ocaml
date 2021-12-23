@@ -1,6 +1,4 @@
-# Comments
-
-## How types are respected? - A case study
+# How types are respected? - A case study
 
 A typed logical list of the type `int option list` cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an `int` (as the argument of `Some`) and an `int option` (as the member of the list). The code below, in which we try to build and reify such an invalid list, causes a type error --- good ! This supports the claim that the monadic reification system is suitable for _typed_ relational programming. 
  
@@ -19,7 +17,7 @@ In a nut shell, the type error reported
 by the type-checker is the incompatibility between the inferred type for `tm` as defined in the
 let-binding, and the annotated type for `tm` as in the pattern matching. Now we see in detail how the type error occurs.
 
-### Let's take a manual type inference exercise !
+## Let's take a manual type inference exercise !
 
 Consulting relevant module interfaces, and using typing rules for lambda terms,  we have
 
@@ -103,6 +101,9 @@ Thus, the result of unification is (i.e., both (10) and (14) become) the type ex
 ```ocaml
 (17) ('f Core.ilogic Option.t as 'f) Core.ilogic Option.ilogic List.ilogic
 ```
+
+## Expanding recursive types 
+
 The recursive type (16) expands to 
 ```ocaml
 (18)   ... Option.t) Core.ilogic) Option.t) Core.ilogic) Option.t
@@ -120,14 +121,17 @@ Then (17) equals to (substitute (19) back)
    = ('g Option.ilogic as 'g) Option.ilogic List.ilogic
 ```
 which is the simplified result of unifying (10) and (14), serving as the first 
-argument type of `Reifier.t` in (13), whose  second  argument type now is 
+argument type of `Reifier.t` in (13), whose  second argument type now is 
 (substitute (19) for `'e`)
 ```ocaml
 (21) ('g Option.ilogic as 'g) Option.t Core.logic Option.logic List.logic
    = ('g Option.ilogic as 'g) Option.logic Option.logic List.logic
 ```
-Now we get the type for `tm` in the let-binding, which is just (20). Obviously (20) is incompatible with the type annotation for `tm` in the pattern matching.
 
+## Pinpoint the type error
+
+Now we get the type for `tm` in the let-binding, which is just (20). Obviously (20) is incompatible with the type annotation for `tm` in the pattern matching. This is exactly the type error
+found by the type checker.
 
 
 
