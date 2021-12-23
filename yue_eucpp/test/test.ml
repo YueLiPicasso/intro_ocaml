@@ -150,6 +150,9 @@ let _ = print_string @@
     -> "PASSED\n"
   | _ -> "failed\n"
 
+(* generalize the list member type and we get no error, thanks to using
+   the -rectypes option *)
+
 let _ = print_string @@
   let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
       (run (fun v -> Env.return
