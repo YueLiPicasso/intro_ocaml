@@ -27,4 +27,4 @@ let var env x =
     if is_var env tx sx x then Some (Obj.magic x) else None
   else None
 
-let fresh env = Obj.magic (Var.fresh env)
+let fresh env = Obj.repr (Var.fresh env)
