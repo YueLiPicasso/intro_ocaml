@@ -13,7 +13,7 @@ According to relevant module interfaces,
 (3) ((Term.fresh (Var.fresh_en())) : 'a Term.t)
 ```
 
-The MGT-Most general type for parameter `rel` is 
+The MGT-Most General Type for parameter `rel` is 
 ```ocaml
 (4) rel : 'a Term.t -> Var.env -> 'b
 ```
@@ -31,7 +31,7 @@ which is then specialized by the sig to
 (7) (run : ('a ilogic -> 'c ilogic Env.t) -> 'c ilogic State.t)
 ```
 with `'b` in (6) (the return type of `rel`) specialized to `'c ilogic` in (7). 
-The first parameter of `rel` must not be more general than `'a Term.t` 
+The type of the first parameter of `rel` must not be more general than `'a Term.t` 
 because of the typing rule for applicationn and that the first argument
 has a type no more general than `'a Term.t`.
 
