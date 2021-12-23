@@ -1,6 +1,6 @@
 # Comments
 
-## How types are respected?
+## How types are respected? - A case study
 
 A typed logical list of the type `int option list` cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an `int` (as the argument of `Some`) and an `int option` (as the member of the list). The code below, in which we try to build and reify such an invalid list, causes a type error --- good ! This supports the claim that the monadic reification system is suitable for _typed_ relational programming. 
  
