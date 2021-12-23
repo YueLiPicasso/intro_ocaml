@@ -1,3 +1,7 @@
+# Comments
+
+## Understanding the monadic reifier
+
 The reifier for the option type is built using the operators "bind" and "return". Without
 type annotation, the meaning of the function definition is obscure:
 ```ocaml

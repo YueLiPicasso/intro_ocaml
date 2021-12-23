@@ -21,7 +21,7 @@ The above code has type error --- good ! (`v` get incompatiable types)
 (3) ((inj Nil) : ('a, 'b) List.t Core.ilogic)
 ```
 
-The type for the `v` in `fun v -> ...` is determed by the type of `run`
+The type for the `v` in `fun v -> ...` is determined by the type of `run`
 to be `'d Core.ilogic`, then 
 
 ```ocaml
