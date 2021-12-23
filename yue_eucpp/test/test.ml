@@ -156,7 +156,7 @@ let _ = print_string @@
                                inj (Cons(v, (inj Nil)))))))) in
   match (tm : 'a Core.logic Option.logic List.logic) with
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
-    -> "PASSED --- but problem !\n"
+    -> "PASSED\n"
   | _ -> "failed\n"
 
 (* --------------------------------------------------------------------*)
