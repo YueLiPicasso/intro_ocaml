@@ -146,6 +146,16 @@ let (_ : int Core.logic Option.logic List.logic) =
              (inj List.(Cons(inj (Some v),
                              inj (Cons(v, (inj Nil)))))))) 
 *)
+
+(* This causes the expected type error at a better place *)
+ 
+let _ =
+  Reifier.apply
+    (List.reify (Option.reify (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
+    (run (fun v -> Env.return
+             (inj List.(Cons(inj (Some v),
+                             inj (Cons(v, (inj Nil)))))))) 
+
 (* generalize the list member type and we get no error, thanks to using
    the -rectypes option *)
 
@@ -154,7 +164,7 @@ let _ = print_string @@
       (run (fun v -> Env.return
                (inj List.(Cons(inj (Some v),
                                inj (Cons(v, (inj Nil)))))))) in
-  match (tm : 'a Core.logic Option.logic List.logic) with
+  match tm with
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
