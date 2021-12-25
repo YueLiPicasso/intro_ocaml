@@ -13,18 +13,17 @@ A logical list of integer options cannot have the form `[Some v;v]` for any logg
 8|  | _ -> "failed\n"
 ```
 
-On the one hand, it is good to have the error found by the type-checker because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message.
-
-It turned out that a thorough (and manual) type analysis not only converges at the error message returned by the type-checker, but also inspires further discussion on several interesting aspects of the code:
+It is good to have the error found by the type-checker because it gives confidence over type-safty of monadic reifiers. The question then is "how is this invalid list rejected by the type checker?". To answer this question is to understand the error message. For me the error message does not make sense after a first reading so I massaged through the type inference process manually and as I hoped I found the same type clash as reported by the type-checker. Along the way I also noticed
+several interesting aspects of the code:
 
 
 - The interplay between the reifier's type and the type of the term to be reified.
 - The consequence of using a reifier that is not deep enough.
 - The role played by the explicit type annotation, and what if we get rid of it.
 
-Now that we have laid down the scope of the note, we shall next unfold the topics into a [summary](#technical-summary) of the technical facts, and then give the [type inference details](#detailed-type-inference) which the summary abstracts.
+Next, in the [Type Clash Summary](#type-clash-summary) I give the major pieces of type information that lead to the type error; and then in [Bonus Observations](#bonus-observations) I discuss on interesting facts and further experiments revealed/motivated by the manual type inference. Finally, in  [Detailed Type Inference](#detailed-type-inference) I show the type inference process in relatively small steps.
 
-## Technical Summary
+## Type Clash Summary
 
 In a nut shell, the type-checker reports that there is incompatibility between the inferred type for `tm` as defined in the let-binding (line 2), and the annotated type for `tm` as in the pattern matching (line 6).
 
@@ -71,7 +70,11 @@ int Core.logic Option.logic List.logic
 ```
 of `tm` in the pattern matching.
 
-These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. Having understood the error messsage and answered the question "How the invalid list is rejected by the type checker?", we now have some other interesting observations along the way.
+These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. 
+
+## Bonus Observations
+
+Having understood the error messsage and answered the question "How the invalid list is rejected by the type checker?", we now have some other interesting observations along the way.
 
  Firstly we used the default polymorphic reifier  `Reifier.reify` for logical integers without explicitly restricting the type to `int`, so we have the type variable `'e` rather than an `int` in `t2`.  If we had added such a restriction, a type error would be
 reported one step earlier, not during pattern matching but during the application of the reifier to the list --- actually this (the reifier application step) is where the type error _should_ occur. Unfortunately, due to the lack of explicit type restriction for the reifier for integers, no error occurred at the time when one should occur.  From this we have something to say about the interplay between the reifier's type and the type of the value to be reified. With a precise type for reifiers, invalid values submitted for reification can be timely rejected. Otherwise, if we allow the reifier to have a type more general than it should be, the types of the reifier and the invalid value may unify. In our case the list is recognised as having a fancy recusive member type (`option` of `option` of `option` of ...), and the story is no longer "reifying a wrong value with a right reifier" but becomes "reifying a right value by a wrong reifier". This moves us to the second observation.
