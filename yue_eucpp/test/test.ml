@@ -198,9 +198,10 @@ let _ = print_string @@
 let _ = print_string @@
   let (tm : ('a Option.ilogic as 'a) Option.logic Option.logic List.logic) =
     Reifier.apply (List.reify (Option.reify Reifier.reify))
-      (run (fun v -> Env.return
-               (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
-                               inj (Cons(v, (inj Nil)))))))) in
+      ((run (fun v -> Env.return
+                (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
+                                inj (Cons(v, (inj Nil))))))))
+       :  ('a Option.ilogic as 'a) List.ilogic State.t) in
   match tm with
   | Value(Cons(Value(Some(Value(Some (Value _ )))), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"

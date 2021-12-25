@@ -9,7 +9,8 @@ A typed logical list corresponding to the type `int option list` cannot have the
 4|                (inj List.(Cons(inj (Some v),
 5|                               inj (Cons(v, (inj Nil)))))))) in
 6|   match (tm : int Core.logic Option.logic List.logic) with
-7|   | _ -> "This is never printed !\n"
+7|  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil)))) -> "PASSED\n"
+8|  | _ -> "failed\n"
 ```
 
 On the one hand, it is good to have a type error here because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message, and vice versa.
@@ -21,7 +22,7 @@ It turned out that a thorough (and manual) type analysis not only converges at t
 - The consequence of using a reifier that is not deep enough.
 - The role played by the explicit type annotation, and what if we get rid of it.
 
-Now that we have laid down the scope of the note, we shall next unfold the topics into a summary of the technical facts, and then give the full details which the summary abstracts.
+Now that we have laid down the scope of the note, we shall next unfold the topics into a [summary](#technical-summary) of the technical facts, and then give the [type inference details](#detailed-type-inference) which the summary abstracts.
 
 ## Technical Summary
 
@@ -70,14 +71,14 @@ int Core.logic Option.logic List.logic
 ```
 of `tm` in the pattern matching.
 
-These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. Having understood the error messsage and answered the question "How the invalid list is rejected by the type checker?", we now have some other interesting observations.
+These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. Having understood the error messsage and answered the question "How the invalid list is rejected by the type checker?", we now have some other interesting observations along the way.
 
  Firstly we used the default polymorphic reifier  `Reifier.reify` for logical integers without explicitly restricting the type to `int`, so we have the type variable `'e` rather than an `int` in `t2`.  If we had added such a restriction, a type error would be
 reported one step earlier, not during pattern matching but during the application of the reifier to the list --- actually this (the reifier application step) is where the type error _should_ occur. Unfortunately, due to the lack of explicit type restriction for the reifier for integers, no error occurred at the time when one should occur.  From this we have something to say about the interplay between the reifier's type and the type of the value to be reified. With a precise type for reifiers, invalid values submitted for reification can be timely rejected. Otherwise, if we allow the reifier to have a type more general than it should be, the types of the reifier and the invalid value may unify. In our case the list is recognised as having a fancy recusive member type (`option` of `option` of `option` of ...), and the story is no longer "reifying a wrong value with a right reifier" but becomes "reifying a right value by a wrong reifier". This moves us to the second observation.
 
-The second observation is about using a reifier that is not deep enough. Because the reifier type is not precise, the list type and the reifier type unifies and the list is regarded as a list of infinitely nesting options. Members of this nesting option type are e.g., `None`, `Some None` , `Some (Some None)`, `Some (Some (Some None))`, ..., and additionally the cyclic term `x = Some x`. Now we see that the reifier intended for `int Core.ilogic Option.ilogic List.ilogic` is not deep enough for the type `('a Option.ilogic as 'a) List.ilogic`. 
+The second observation is about using a reifier that is not deep enough. Because the reifier type is not precise, the list type and the reifier type unifies and the list is regarded as a list of infinitely nested options. Members of this nested option type are e.g., `None`, `Some None` , `Some (Some None)`, `Some (Some (Some None))`, ..., and additionally the cyclic term `x = Some x`. If we change the type restriction of `tm` to exactly the list of infinitely nested options (which will also be inferred automatically if we simply remove all the type annotation), we will realize that the reifier (at line 2) for the intended type `int Core.ilogic Option.ilogic List.ilogic` is not deep enough for the actual type `('a Option.ilogic as 'a) List.ilogic`. Applying the reifier in this situation _may_ produce partially reified values which has abstract sub-structures that cannot be pattern matched against. However, it is possible that although the reifier is in general not deep enough for the type, it can still fully reify some values of that type when the depth of the value is within the reach of the reifier. For this reason, if we remove the type restriction in line 6 of the code segment, we will then be able match the term against the pattern and print out a "PASSED".  
 
-## Appendix: Type inference full details
+## Detailed Type Inference
 
 Consulting relevant module interfaces, and using typing rules for lambda terms,  we have
 
@@ -86,7 +87,6 @@ Consulting relevant module interfaces, and using typing rules for lambda terms, 
 (2) (inj : 'c -> 'c Core.ilogic)
 (3) ((inj Nil) : ('a, 'b) List.t Core.ilogic)
 ```
-
 The type for the `v` in `fun v -> ...` is determined by the type of `run`
 to be `'d Core.ilogic`, then 
 
@@ -124,11 +124,11 @@ Next,
 ```ocaml
 (11) (Reifier.reify : ('e Core.ilogic, 'e Core.logic) Reifier.t)
 (12) ((Option.reify Reifier.reify) : 
-     ('e Core.ilogic Option.ilogic, 'e Core.logic Option.logic) Reifier.t))
+     ('e Core.ilogic Option.ilogic, 'e Core.logic Option.logic) Reifier.t)
 (13) ((List.reify (Option.reify Reifier.reify)) : 
      ('e Core.ilogic Option.ilogic List.ilogic, 'e Core.logic Option.logic List.logic) Reifier.t)
 ```	 
-To apply the reifier (13), it requires that the type (14) (below, which is the first argument type
+To apply the reifier (13), it requires that the type (14) below (which is the first argument type
 of `Reifier.t` in (13)) and the type (10) compatible.
 
 ```ocaml
