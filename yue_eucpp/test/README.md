@@ -191,7 +191,7 @@ argument type of `Reifier.t` in (13), whose  second argument type now is
    = ('g Option.ilogic as 'g) Option.logic Option.logic List.logic
 ```
 
-Now we get the type for `tm` in the let-binding, which is just (20). Obviously (20) is incompatible with the type annotation for `tm` in the pattern matching. This is exactly the type error
+Now we get the type for `tm` in the let-binding, which is just (21). Obviously (21) is incompatible with the type annotation for `tm` in the pattern matching. This is exactly the type error
 found by the type checker.
 
 
