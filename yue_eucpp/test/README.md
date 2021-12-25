@@ -13,7 +13,7 @@ A logical list of integer options cannot have the form `[Some v;v]` for any logg
 8|  | _ -> "failed\n"
 ```
 
-On the one hand, it is good to have a type error here because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message.
+On the one hand, it is good to have the error found by the type-checker because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message.
 
 It turned out that a thorough (and manual) type analysis not only converges at the error message returned by the type-checker, but also inspires further discussion on several interesting aspects of the code:
 
