@@ -1,6 +1,6 @@
 # How Types Are Respected? - A Case Study
 
-A typed logical list corresponding to the type `int option list` cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an `int` (as the argument of `Some`) and an `int option` (as the member of the list). The code below, by which we create the invalid list (lines 3,4,5) then reify it using the reifier (line 2) for the intended type, causes an error during machine type-checking.
+A logical list of integer options cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an integer (as the argument of `Some`) and an integer option (as the member of the list). The code below, by which we create the invalid list (lines 3,4,5) then reify it using the reifier (line 2) for the intended type, causes an error during machine type-checking.
 
 ```ocaml
 1| let _ = print_string @@
@@ -13,7 +13,7 @@ A typed logical list corresponding to the type `int option list` cannot have the
 8|  | _ -> "failed\n"
 ```
 
-On the one hand, it is good to have a type error here because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message, and vice versa.
+On the one hand, it is good to have a type error here because it gives confidence over type-safty of monadic reifiers. On the other hand, the error message is _not_ quickly comprehensible, inspiring the question "How is this invalid list rejected by the type checker?". To answer this question is to understand the error message.
 
 It turned out that a thorough (and manual) type analysis not only converges at the error message returned by the type-checker, but also inspires further discussion on several interesting aspects of the code:
 
