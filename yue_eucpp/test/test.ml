@@ -137,8 +137,11 @@ let _ = print_string @@
 
 
 (* --------------------------------------------------------------------*)
+(* The following experients are part of the case study on type safety  *)
+(* --------------------------------------------------------------------*)
     
 (* This causes the expected type error *)
+    
 (*    
 let (_ : int Core.logic Option.logic List.logic) =
   Reifier.apply (List.reify (Option.reify Reifier.reify))
@@ -148,27 +151,64 @@ let (_ : int Core.logic Option.logic List.logic) =
 *)
 
 (* This causes the expected type error at a better place *)
- 
+    
+(*
 let _ =
   Reifier.apply
-    (List.reify (Option.reify (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
+    (List.reify (Option.reify (Reifier.reify 
+                               : (int Core.ilogic, int Core.logic) Reifier.t)))
     (run (fun v -> Env.return
              (inj List.(Cons(inj (Some v),
                              inj (Cons(v, (inj Nil)))))))) 
+*)
 
 (* generalize the list member type and we get no error, thanks to using
    the -rectypes option *)
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
-      (run (fun v -> Env.return
-               (inj List.(Cons(inj (Some v),
-                               inj (Cons(v, (inj Nil)))))))) in
+  let (tm : ('a Option.ilogic as 'a) Option.logic Option.logic List.logic)
+    = Reifier.apply (List.reify (Option.reify Reifier.reify))
+      ((run (fun v -> Env.return
+                (inj List.(Cons(inj (Some v),
+                                inj (Cons(v, (inj Nil))))))))
+       :  ('a Option.ilogic as 'a) List.ilogic State.t) in
   match tm with
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
 
+(* The pattern shall be no deeper than what the reifier can reify *)
+
+let _ = print_string @@
+  let (tm : ('a Option.ilogic as 'a) Option.logic Option.logic List.logic) =
+    Reifier.apply (List.reify (Option.reify Reifier.reify))
+      ((run (fun v -> Env.return
+               (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
+                               inj (Cons(v, (inj Nil))))))))
+    :  ('a Option.ilogic as 'a) List.ilogic State.t) in
+  match tm with
+  | Value(Cons(Value(Some(Value(Some _))), Value (Cons (Var _, Value Nil))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
+
+(* If the pattern is deeper than what the reifier can reify, and unreified 
+   (abstract) part cannot be pattern matched *)
+    
+(*
+let _ = print_string @@
+  let (tm : ('a Option.ilogic as 'a) Option.logic Option.logic List.logic) =
+    Reifier.apply (List.reify (Option.reify Reifier.reify))
+      (run (fun v -> Env.return
+               (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
+                               inj (Cons(v, (inj Nil)))))))) in
+  match tm with
+  | Value(Cons(Value(Some(Value(Some (Value _ )))), Value (Cons (Var _, Value Nil))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
+*)
+
+(* --------------------------------------------------------------------*)
+(* ---------- End of experiments for the case study -------------------*)
 (* --------------------------------------------------------------------*)
 
 (* How to get two vars of different but correct type? *)
