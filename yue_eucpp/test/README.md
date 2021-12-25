@@ -2,7 +2,7 @@
 
 A typed logical list corresponding to the type `int option list` cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an `int` (as the argument of `Some`) and an `int option` (as the member of the list). The code below, by which we create the invalid list (lines 3,4,5) then reify it using the reifier (line 2) for the intended type, causes an error during machine type-checking.
 
-```
+```ocaml
 1| let _ = print_string @@
 2|   let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
 3|       (run (fun v -> Env.return
