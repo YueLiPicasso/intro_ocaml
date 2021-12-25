@@ -70,7 +70,7 @@ int Core.logic Option.logic List.logic
 ```
 of `tm` in the pattern matching.
 
-These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. 
+These are the major steps in the manual type analysis, and the resulting incompatibility is just what the type-checker reports. Step-by-step type inference is given in [Detailed Type Inference](#detailed-type-inference).
 
 ## Bonus Observations
 
