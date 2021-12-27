@@ -1,4 +1,4 @@
-- [Type Safety Case study](#how-types-are-respected?-a-case-study)
+- [Type Safety Case study](#how-types-are-respected---a-case-study)
 - [Using Multiple Logical Variables](#introducing-multiple-distinct-logical-variables)
 
 # How Types Are Respected? - A Case Study
