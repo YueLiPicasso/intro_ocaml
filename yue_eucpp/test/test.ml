@@ -213,3 +213,23 @@ let _ = print_string @@
 (* --------------------------------------------------------------------*)
 
 (* How to get two vars of different but correct type? *)
+
+let _ = print_string @@
+  match Reifier.apply (List.reify Reifier.reify)
+          (run (fun x -> fresh (fun y -> Env.return @@ List.cons x y))) with
+  | Value(Cons(Var v1, Var v2))
+    when Var.(index v1 <> index v2) && Var.(env v1 = env v2) -> "PASSED\n"
+  | _ -> "failed"
+
+let _ = print_string @@
+  match Reifier.apply
+          (List.reify
+             (Option.reify
+                (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
+          (run (fun x -> fresh (fun y -> Env.return @@
+                                 List.(cons (Option.some y) @@ cons x (nil()))))) with
+  | (Value(Cons(Value(Some(Var v1)), Value(Cons(Var v2, Value Nil))))
+     : int Core.logic Option.logic List.logic)
+    when Var.(index v1 <> index v2) && Var.(env v1 = env v2) -> "PASSED\n"
+  | _ -> "failed\n"
+    

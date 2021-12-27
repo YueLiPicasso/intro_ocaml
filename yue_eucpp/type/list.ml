@@ -7,6 +7,10 @@ type 'a logic = ('a, 'a logic) t Core.logic
 
 type 'a ilogic = ('a, 'a ilogic) t Core.ilogic
 
+let nil = fun () -> inj Nil
+
+let cons = fun x y -> inj @@ Cons(x,y)
+  
 let fmap  =
   fun f g -> function
     | Nil -> Nil

@@ -7,6 +7,10 @@ type 'a logic = 'a t Core.logic
     
 type 'a ilogic = 'a t Core.ilogic
 
+let none = fun () -> inj None
+
+let some = fun v -> inj (Some v)
+
 let fmap = fun f -> function
   | Some a -> Some (f a)
   | None -> None
