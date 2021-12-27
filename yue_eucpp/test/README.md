@@ -215,7 +215,7 @@ However, `fresh` applies `fun v2 -> ...` to a new variable and `env`, but this a
 run (fun v1 -> fresh (fun v2 -> Env.return @@ 
   List.cons (Option.some v1) (List.cons v2 (List.nil()))))
 ```
-Now the types are correct and the meaning the expression is also correct. If we rewrite the expression using the definitions of relevant functions, we would see that `run` creates an `env` and use it to create a fresh variable. `fun v1 -> ...` is applied to the variable and `env` so that `v1` is bound to the variable and `fresh (fun v2 -> ...)` is applied to the `env`. Then `fresh` uses this `env` to create a second variable, to which and to `env` the function `fun v2 -> ...` is applied, so that `v2` is bound to the second variable and `Env.return @@ List.cons ...` is applied to `env`. Finally only 
+Now the types are correct and the meaning of the expression is also correct. If we rewrite the expression using the definitions of relevant functions, we would see that `run` creates an `env` and use it to create a fresh variable. `fun v1 -> ...` is applied to the variable and `env` so that `v1` is bound to the variable and `fresh (fun v2 -> ...)` is applied to the `env`. Then `fresh` uses this `env` to create a second variable, to which and to `env` the function `fun v2 -> ...` is applied, so that `v2` is bound to the second variable and `Env.return @@ List.cons ...` is applied to `env`. Finally only 
 ```ocaml
 List.cons (Option.some v1) (List.cons v2 (List.nil()))
 ```
