@@ -1,24 +1,16 @@
-MODSIG = $(addsuffix .mli, $(MODTOPO))
-MODIMP = $(addsuffix .ml,  $(MODTOPO))
-MODCMI = $(addsuffix .cmi, $(MODTOPO))
 MODCMO = $(addsuffix .cmo, $(MODTOPO))
+OCAMLC_C = ocamlc -c
 
 all : $(LIB)
-
-# pack the modules
 
 $(LIB) : $(MODCMO)
 	ocamlc -pack -o $(LIB) $(MODCMO)
 
-# compile implementation
+%.cmi : %.mli
+	$(OCAMLC_C) $<
 
-$(MODCMO) &: $(MODCMI) $(MODIMP)
-	ocamlc -c $(MODIMP)
-
-# compile interface
-
-$(MODCMI) &: $(MODSIG)
-	ocamlc -c $(MODSIG)
+%.cmo : %.ml %.cmi
+	$(OCAMLC_C) $<
 
 .PHONY : clean
 

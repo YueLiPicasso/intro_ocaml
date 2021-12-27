@@ -226,10 +226,48 @@ let _ = print_string @@
           (List.reify
              (Option.reify
                 (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
-          (run (fun x -> fresh (fun y -> Env.return @@
-                                 List.(cons (Option.some y) @@ cons x (nil()))))) with
-  | (Value(Cons(Value(Some(Var v1)), Value(Cons(Var v2, Value Nil))))
-     : int Core.logic Option.logic List.logic)
+          (run (fun x ->
+               fresh (fun y ->
+                   Env.return
+                     List.(cons (Option.some y)
+                             (cons x (nil()))))))
+  with
+  | Value(Cons(Value(Some(Var v1)), Value(Cons(Var v2, Value Nil))))
     when Var.(index v1 <> index v2) && Var.(env v1 = env v2) -> "PASSED\n"
   | _ -> "failed\n"
+
+let _ = print_string @@
+  match Reifier.apply
+          (List.reify
+             (Option.reify
+                (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
+          (run (fun v1 ->
+              fresh (fun v2 ->
+                fresh (fun v3 ->
+                  Env.return
+                    List.(cons v1
+                            (cons (Option.some v2)
+                               (cons (Option.none()) v3)))))))
+  with
+  | Value(Cons(Var v1,
+               Value(Cons(Value(Some(Var v2)),
+                          Value(Cons(Value None, Var v3))))))
+    when Var.(index v1 < index v2) && Var.(index v2 < index v3) -> "PASSED\n"
+  | _ -> "failed\n"
     
+(* reify infinitely nested options *)
+    
+(* stack overflow problem. Maybe we need a new `bind` that can introduce some delay *)
+(*
+let _ = print_string @@
+  let (tm : ('a Option.logic as 'a) List.logic)
+    = Reifier.apply (List.reify (Option.reify_inf()))
+      ((run (fun v -> Env.return
+                (inj List.(Cons(inj (Some v),
+                                inj (Cons(v, (inj Nil))))))))
+       :  ('b Option.ilogic as 'b) List.ilogic State.t) in
+  match tm with
+  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
+*)

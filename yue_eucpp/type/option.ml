@@ -11,6 +11,8 @@ let none = fun () -> inj None
 
 let some = fun v -> inj (Some v)
 
+let rec somes () = inj (Some (somes()))
+
 let fmap = fun f -> function
   | Some a -> Some (f a)
   | None -> None
@@ -63,3 +65,18 @@ Option.reify ra env = fun x ->
         | Var _ as v'  -> v'
         | Value t -> Value (Option.fmap (ra env) t)   
 *)
+
+
+let rec reify_inf () = Reifier.compose Reifier.reify 
+      (Env.bind (reify_inf()) (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t))))
+      
+(*
+reify_inf () env = fun x -> match (Reifier.reify env x) with
+             | Var _ as v' -> v'
+             | Value t -> Value (fmap (reify_inf () env) t) 
+*)
+  
