@@ -210,7 +210,7 @@ then we would read (according to the definition of `run`) that `run` generates a
 ```ocaml
 run (fun v1 -> fresh (fun v2 -> List.cons (Option.some v1) (List.cons v2 (List.nil()))))
 ```
-However, `fresh` applies `fun v2 -> ...` to a new variable and `env`, but this application is not possible because that after `v2` is bound to the new variable, the body of `fun v2 -> <body>` can accept no `env`. This problem is solved if we apply `Env.return` to the `<body>`
+However, `fresh` applies `fun v2 -> ...` to a new variable and `env`, but this application is not possible because that after `v2` is bound to the new variable, the `<body>` of `fun v2 -> <body>` can accept no `env`. This problem is solved if we apply `Env.return` to the `<body>`
 ```ocaml
 run (fun v1 -> fresh (fun v2 -> Env.return @@ 
   List.cons (Option.some v1) (List.cons v2 (List.nil()))))
