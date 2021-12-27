@@ -1,3 +1,6 @@
+- [Type Safety Case study](#how-types-are-respected?-a-case-study)
+- [Using Multiple Logical Variables](#introducing-multiple-distinct-logical-variables)
+
 # How Types Are Respected? - A Case Study
 
 A logical list of integer options cannot have the form `[Some v;v]` for any loggic variable `v` because `v` cannot at the same time be an integer (as the argument of `Some`) and an integer option (as the member of the list). The code below, by which we create the invalid list (lines 3,4,5) then reify it using the reifier (line 2) for the intended type, causes an error during machine type-checking.
@@ -195,4 +198,6 @@ Now we get the type for `tm` in the let-binding, which is just (21). Obviously (
 found by the type checker.
 
 
+# Introducing Multiple Distinct Logical Variables
 
+One variable is introduced by `run`, but how to introduce two or more distinct logical variables? For a single variable `v`, `[Some v; v]` can never be a logical list of integer options, but for two distinct variables `v1, v2`, `[Some v1; v2]` can be a logical list of integer options, where `v1` is a logical integer and `v2` is a logical integer option.
