@@ -79,4 +79,13 @@ reify_inf () env = fun x -> match (Reifier.reify env x) with
              | Var _ as v' -> v'
              | Value t -> Value (fmap (reify_inf () env) t) 
 *)
-  
+
+(* too many arguments error *)
+(*      
+let rec reify_inf' env = Reifier.compose Reifier.reify 
+      (Env.bind reify_inf' (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t)))) env
+*)

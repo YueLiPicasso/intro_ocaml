@@ -224,6 +224,8 @@ is returned with `v1` and `v2` bound to distinct logical variables (both created
 
 # The Problem of Non-terminating Reifiers for Certain Recursive Types
 
+## Motivation
+
 We saw that the infinitely nested option type `'a Option.ilogic as 'a` is inferred for members of the logical list `[Some v; v]` when we tried to reify it by composing the list reifier `List.reify`, the option reifier `Option.reify` and the default shallow reifier `Reifier.reify` without any additional type annotation. We also saw that the so composed reifier is in general too shallow for arbitrary values of the type of list of infinitely nested options. We ask: can we write a reifier for the type `'a Option.ilogic as 'a` ? An experienced relational programmer would also see here the structural identity between the type of infinitely nested options and the type of natural numbers represented as Peano numerals. You may think that since Peano numerals are so common in relational programming, there shouldn't be any problem writing a reifier for it and for  any type that is homomorphic to it. The reality is, however, we face a succession of problems when trying to write such a reifiier in the monadic style.
 
 First let's define the type for infinitely nested optoins in the module `Opnest` and see its structural identity with Peano numerals defined in the module `Penum`. 
@@ -267,6 +269,7 @@ x = Some x
 Zero, Succ Zero, Succ (Succ Zero), Succ (Succ (Succ Zero)), ...
 x = Succ x
 ```
+## Showing the Problem
 
 Following the model of list reifier, we can easily fabric a plausible reifier for `Opnest`
 ```ocaml
@@ -291,8 +294,35 @@ let rec reify () = Reifier.compose Reifier.reify
                | Var _ as v' -> v'
                | Value t -> Value (fmap r t))))
 ```
-However, although the second version is acceptable for the compiler, at runtime calling this reifier would trigger an infinite loop that overflows the function call stack.
+However, although the second version is acceptable for the compiler, at runtime calling this reifier would trigger an infinite loop that overflows the stack. We may ask: "I remember that a reifier usually takes an `env` as the first argument, can we just write
+```ocaml
+(* Opnest.reify, version 3 *)
 
+let rec reify = fun env -> Reifier.compose Reifier.reify 
+      (Env.bind reify (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t)))) env
+```
+?" If we do so, we would immediately receive a type error, saying that `Reifier.compose` is given
+ too many arguments.This is down to the bottom because the enviroment monad `Core.Env` hides the type equation `'a Env.t = Var.env -> 'a`, so that as a user of the `Core`, the `Opnest` 
+library can only see `('a, 'b) Reifier.t = ('a -> 'b) Env.t` but cannot see that `('a -> 'b) Env.t = Var.env -> 'a -> 'b`. A non-monadic reifier of course exists
+```ocaml
+(* Opnest.reify, version 4 *)
+
+let rec reify env = fun x -> match (Reifier.reify env x) with
+             | Var _ as v' -> v'
+             | Value t -> Value (fmap (reify env) t) 
+```
+but again it cannot be typed under the monad paradigm: it lives in a totally different world with
+ totally different type management.
+
+### Summary of the Difficulties
+
+- Failure of version 1 taught us that we must define `Opnest.reify` as a fuction (not a value).
+- Failure of version 2 taught us that taking a `unit` argument does not help, for it passes the static check but loops at runtime.
+- Failure of versions 3 and 4 taught us that we have no retreat into the practice of non-monadic programming in the world of monads.  
 
 
 
