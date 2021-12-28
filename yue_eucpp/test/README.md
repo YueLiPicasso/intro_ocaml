@@ -1,5 +1,6 @@
 - [Type Safety Case study](#how-types-are-respected---a-case-study)
 - [Using Multiple Logical Variables](#introducing-multiple-distinct-logical-variables)
+- [The Problem of Non-terminating Reifiers for Certain Recursive Types](#the-problem-of-non-terminating-reifiers-for-certain-recursive-types)
 
 # How Types Are Respected? - A Case Study
 
@@ -220,3 +221,88 @@ Now the types are correct and the meaning of the expression is also correct. If 
 List.cons (Option.some v1) (List.cons v2 (List.nil()))
 ```
 is returned with `v1` and `v2` bound to distinct logical variables (both created wrt. the same `env`) --- this is exactly what we want.
+
+# The Problem of Non-terminating Reifiers for Certain Recursive Types
+
+We saw that the infinitely nested option type `'a Option.ilogic as 'a` is inferred for members of the logical list `[Some v; v]` when we tried to reify it by composing the list reifier `List.reify`, the option reifier `Option.reify` and the default shallow reifier `Reifier.reify` without any additional type annotation. We also saw that the so composed reifier is in general too shallow for arbitrary values of the type of list of infinitely nested options. We ask: can we write a reifier for the type `'a Option.ilogic as 'a` ? An experienced relational programmer would also see here the structural identity between the type of infinitely nested options and the type of natural numbers represented as Peano numerals. You may think that since Peano numerals are so common in relational programming, there shouldn't be any problem writing a reifier for it and for  any type that is homomorphic to it. The reality is, however, we face a succession of problems when trying to write such a reifiier in the monadic style.
+
+First let's define the type for infinitely nested optoins in the module `Opnest` and see its structural identity with Peano numerals defined in the module `Penum`. 
+
+```ocaml
+module Option = struct
+  type 'a t      = 'a option
+  type 'a logic  = 'a t Core.logic
+  type 'a ilogic = 'a t Core.ilogic
+end
+
+module Opnest = struct
+  type logic  = 'a Option.logic  as 'a
+  type ilogic = 'a Option.ilogic as 'a
+end
+```
+
+Note that 
+```ocaml
+type 'a option = None | Some of 'a
+type 'a peano  = Zero | Succ of 'a
+
+module Peano = struct
+  type 'a t = 'a peano
+  type 'a logic = 'a t Core.logic
+  type 'a ilogic = 'a t Core.ilogic
+end
+
+module Penum = struct
+  type logic  = 'a Peano.logic as 'a
+  type ilogic = 'a Peano.ilogic as 'a
+end
+```
+Therefore as `Opnest` admits values like
+```ocaml
+None, Some None, Some (Some None), Some (Some (Some None)), ...
+x = Some x
+``` 
+`Penum` admits values like
+```ocaml
+Zero, Succ Zero, Succ (Succ Zero), Succ (Succ (Succ Zero)), ...
+x = Succ x
+```
+
+Following the model of list reifier, we can easily fabric a plausible reifier for `Opnest`
+```ocaml
+(* Opnest.reify, version 1 *)
+
+let rec reify = Reifier.compose Reifier.reify 
+      (Env.bind reify (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t))))
+``` 
+Here, unfortunately, OCaml would see an invalid recursive definition of a non-functional value `reify`, and more precisely, the body of the definition is not [_staticly constructive_](https://ocaml.org/releases/4.11/htmlman/letrecvalues.html) with respect to the name `reify` being defined.
+We may come up with the simple remedy of making `reify` accept a `unit` value as the first argument
+```ocaml
+(* Opnest.reify, version 2 *)
+
+let rec reify () = Reifier.compose Reifier.reify 
+      (Env.bind (reify ()) (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t))))
+```
+However, although the second version is acceptable for the compiler, at runtime calling this reifier would trigger an infinite loop that overflows the function call stack.
+
+
+
+
+
+
+
+
+
+
+
+
+
+

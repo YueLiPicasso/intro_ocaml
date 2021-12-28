@@ -258,7 +258,7 @@ let _ = print_string @@
 (* reify infinitely nested options *)
     
 (* stack overflow problem. Maybe we need a new `bind` that can introduce some delay *)
-(*
+
 let _ = print_string @@
   let (tm : ('a Option.logic as 'a) List.logic)
     = Reifier.apply (List.reify (Option.reify_inf()))
@@ -270,4 +270,4 @@ let _ = print_string @@
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
-*)
+
