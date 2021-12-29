@@ -9,7 +9,12 @@ module Env : sig
   val return : 'a -> 'a t
   val fmap   : ('a -> 'b) -> 'a t -> 'b t
   val bind   : 'a t -> ('a -> 'b t) -> 'b t
-  val bind'  : (unit -> 'a t) -> ('a -> 'b t) -> 'b t    
+  module Lazy : sig
+    type nonrec 'a t = 'a Lazy.t t
+    val return : 'a -> 'a t
+    val fmap   : ('a -> 'b) -> 'a t -> 'b t
+    val bind   : 'a t -> ('a -> 'b t) -> 'b t
+  end
 end
 
 module State : sig
@@ -30,7 +35,19 @@ module Reifier : sig
   val compose : ('a, 'b) t -> ('b, 'c) t -> ('a, 'c) t
   val fmap    : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
   val fcomap  : ('a -> 'b) -> ('b, 'c) t -> ('a, 'c) t
+  module Lazy : sig
+    type ('a, 'b) t = ('a -> 'b) Env.Lazy.t
+    val reify   : ('a ilogic, 'a logic) t
+    val apply   : ('a, 'b) t -> 'a State.t -> 'b
+    val compose : ('a, 'b) t -> ('b, 'c) t -> ('a, 'c) t
+  end
 end
+
+(* Useful type equations 
+
+ ('a, 'b) Reifier.Lazy.t = ('a -> 'b) Env.Lazy.t = ('a -> 'b) Lazy.t Env.t
+
+*)
 
 val fresh : ('a ilogic -> 'b Env.t) -> 'b Env.t                   
 

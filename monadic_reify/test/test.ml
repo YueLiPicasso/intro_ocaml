@@ -220,7 +220,8 @@ let _ = print_string @@
   | _ -> "failed\n"
     
 (* reify infinitely nested options *)
-    
+
+(*
 let _ = print_string @@
   let (tm : (Option.Nested.logic List.logic))
     = Reifier.apply (List.reify (Option.Nested.reify()))
@@ -232,4 +233,4 @@ let _ = print_string @@
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
-
+*)

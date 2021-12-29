@@ -31,12 +31,12 @@ module Nested = struct
     
   let rec some () = inj (Some (some()))
 
-  let rec reify () = Reifier.compose Reifier.reify 
-      (Env.bind' reify (fun r ->
-           Env.return (fun x ->
+  let rec reify = Reifier.Lazy.compose Reifier.Lazy.reify 
+      (Env.Lazy.bind reify (fun r ->
+           Env.Lazy.return (fun x ->
                match x with
                | Var _ as v' -> v'
-               | Value t -> Value (fmap r t))))
+               | Value t -> Value (fmap r t)))) 
 end
 
 
