@@ -221,10 +221,30 @@ let _ = print_string @@
     
 (* reify infinitely nested options *)
 
-(*
+let _ = print_string @@
+  let (tm : Option.Nested.logic list)
+    = Stdlib.List.map (Reifier.apply (Lazy.force Option.Nested.reify))
+      ([(run Env.return);
+        (run (fun _ -> Env.return Option.(none())));
+        (run (fun _ -> Env.return Option.(some (none()))));
+        (run (fun _ -> Env.return Option.(some (some (none())))));
+        (run (fun _ -> Env.return Option.(some (some (some (none()))))));
+        (run (fun _ -> Env.return Option.(some (some (some (some (none())))))))] 
+       :  Option.Nested.ilogic State.t list ) in
+  match tm with
+  | [Var _ ;
+     Value None;
+     Value(Some(Value None));
+     Value(Some(Value(Some(Value None))));
+     Value(Some(Value(Some(Value(Some(Value None))))));
+     Value(Some(Value(Some(Value(Some(Value(Some(Value None))))))))]
+    -> "PASSED\n"
+  | _ -> "failed\n"
+
+
 let _ = print_string @@
   let (tm : (Option.Nested.logic List.logic))
-    = Reifier.apply (List.reify (Option.Nested.reify()))
+    = Reifier.apply (List.reify (Lazy.force Option.Nested.reify))
       ((run (fun v -> Env.return
                 (inj List.(Cons(inj (Some v),
                                 inj (Cons(v, (inj Nil))))))))
@@ -233,4 +253,4 @@ let _ = print_string @@
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
-*)
+

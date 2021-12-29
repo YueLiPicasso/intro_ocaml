@@ -23,7 +23,7 @@ module Nested : sig
   
   val some : unit -> ilogic
     
-  val reify : (ilogic,logic) Reifier.Lazy.t
+  val reify : (ilogic,logic) Reifier.t Lazy.t
       
 end
 

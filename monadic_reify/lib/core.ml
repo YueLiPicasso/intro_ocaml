@@ -10,16 +10,12 @@ let observe : Var.env -> 'a ilogic -> 'a logic =
                | Some v -> Var v
 
 module Env = struct
-  type 'a t = Var.env -> 'a
+  type 'a t = Var.env -> 'a 
   let return a     = fun _ -> a
   let fmap f r env = f (r env)
-  let bind r k env = k (r env) env
-      
+  let bind r k env = k (r env) env      
   module Lazy = struct
-    type nonrec 'a t = 'a Lazy.t t
-    let return a = fun _ -> lazy a
-    let fmap f r env = lazy (f (Lazy.force (r env)))
-    let bind r k env = k (Lazy.force (r env)) env
+    let bind r k env = k (Lazy.force r env) env
   end
 end
 
@@ -47,13 +43,6 @@ module Reifier = struct
   let compose r r' env a = r' env (r env a)
   let fmap f r env a = f (r env a)
   let fcomap f r env a = r env (f a)
-
-  module Lazy = struct
-    type ('a, 'b) t = ('a -> 'b) Env.Lazy.t
-    let reify env = lazy (observe env)
-    let apply r (env, a) = Lazy.force (r env) a
-    let compose r r' = fun env -> lazy (fun a -> Lazy.force (r' env) (Lazy.force (r env) a))
-  end
 end
                    
 let fresh g env = g (Term.fresh env) env
