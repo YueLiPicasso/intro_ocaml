@@ -1,0 +1,7 @@
+(lang dune 2.9)
+(name monadic_reify)
+(version 0.5)
+
+(generate_opam_files true)
+
+(package (name monadic_reify) (synopsis "Developing monadic reifiers"))

@@ -1,0 +1,4 @@
+(test 
+  (name test) 
+  (libraries  eucpp type)
+  (flags (:standard -rectypes)))
