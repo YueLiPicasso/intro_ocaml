@@ -9,6 +9,7 @@ module Env : sig
   val return : 'a -> 'a t
   val fmap   : ('a -> 'b) -> 'a t -> 'b t
   val bind   : 'a t -> ('a -> 'b t) -> 'b t
+  val bind'  : (unit -> 'a t) -> ('a -> 'b t) -> 'b t    
 end
 
 module State : sig

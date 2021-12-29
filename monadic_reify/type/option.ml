@@ -32,7 +32,7 @@ module Nested = struct
   let rec some () = inj (Some (some()))
 
   let rec reify () = Reifier.compose Reifier.reify 
-      (Env.bind (reify()) (fun r ->
+      (Env.bind' reify (fun r ->
            Env.return (fun x ->
                match x with
                | Var _ as v' -> v'

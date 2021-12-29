@@ -11,9 +11,10 @@ let observe : Var.env -> 'a ilogic -> 'a logic =
 
 module Env = struct
   type 'a t = Var.env -> 'a
-  let return a = fun _ -> a
+  let return a     = fun _ -> a
   let fmap f r env = f (r env)
   let bind r k env = k (r env) env
+  let bind' r      = bind (r())    
 end
 
 module State = struct

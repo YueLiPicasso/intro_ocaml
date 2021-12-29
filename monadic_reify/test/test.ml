@@ -165,7 +165,7 @@ let _ = print_string @@
 (* partial reification using a not-deep-enough reifier *)
 
 let _ = print_string @@
-  let (tm : Option.Nested.ilogic Option.logic Option.logic List.logic) =
+  let (tm : (Option.Nested.ilogic Option.logic Option.logic List.logic)) =
     Reifier.apply (List.reify (Option.reify Reifier.reify))
       ((run (fun v -> Env.return
                (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
@@ -219,5 +219,17 @@ let _ = print_string @@
     when Var.(index v1 < index v2) && Var.(index v2 < index v3) -> "PASSED\n"
   | _ -> "failed\n"
     
-
+(* reify infinitely nested options *)
+    
+let _ = print_string @@
+  let (tm : (Option.Nested.logic List.logic))
+    = Reifier.apply (List.reify (Option.Nested.reify()))
+      ((run (fun v -> Env.return
+                (inj List.(Cons(inj (Some v),
+                                inj (Cons(v, (inj Nil))))))))
+       :  Option.Nested.ilogic List.ilogic State.t) in
+  match tm with
+  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
 
