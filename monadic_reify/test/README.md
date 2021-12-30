@@ -1,6 +1,6 @@
 - [Type Safety Case study](#how-types-are-respected---a-case-study)
 - [Using Multiple Logical Variables](#introducing-multiple-distinct-logical-variables)
-- [Solving the Problem of Non-terminating Reifiers for Certain Recursive Types](#solving-the-problem-of-non-terminating-reifiers-for-certain-recursive-types)
+- [Solving the Problem of Non-terminating Monadic Reifiers for Certain Recursive Types](#solving-the-problem-of-non-terminating-monadic-reifiers-for-certain-recursive-types)
 
 # How Types Are Respected? - A Case Study
 
