@@ -230,7 +230,6 @@ is returned with `v1` and `v2` bound to distinct logical variables (both created
 - [Idea of Solution](#idea-of-solution)
 - [Result](#result)
 - [Discussion](#discussion)
-- [Related Work](#related-work)
 
 ## Motivation
 
@@ -302,7 +301,7 @@ let rec reify () = Reifier.compose Reifier.reify
                | Var _ as v' -> v'
                | Value t -> Value (fmap r t))))
 ```
-However, although the second version is acceptable for the compiler, at runtime calling this reifier would trigger an infinite loop that overflows the stack. We may ask: "I remember that a reifier usually takes an `env` as the first argument, can we just write
+However, although the second version is acceptable for the compiler, at runtime calling this reifier would always trigger an infinite loop that overflows the stack, even when the value to be reified is _not_ cyclic. This is because the evaluation of `reify()` depends on a cyclic evaluation of `reify()` itself, and `reify()` must be evaluated before it is `Reifier.apply`ed due to the call-by-value rule of OCaml. In consequence, this reifier dies in a loop before it ever meets the value to be reified. We may ask: "I remember that a reifier usually takes an `env` as the first argument, can we just write
 ```ocaml
 (* Opnest.reify, version 3 *)
 
@@ -328,13 +327,13 @@ but again it cannot be typed under the monad paradigm: it lives in a totally dif
 
 ## Summary of the Difficulties
 
-- Failure of version 1 taught us that we must define `Opnest.reify` as a fuction (not a value).
+- Failure of version 1 taught us that we must define `Opnest.reify` to be staticly constructive.
 - Failure of version 2 taught us that taking a `unit` argument does not help, for it passes the static check but loops at runtime.
 - Failure of versions 3 and 4 taught us that we have no retreat into the practice of non-monadic programming in the world of monads.  
 
 ## Idea of Solution
 
-We may use OCaml lazy evaluation feature to write a lazy reifier and write a monadic binder for the lazy reifier.  
+Static constructiveness is not just about using `fun ...-> ...` but also `lazy (...)` as per the OCaml manual. We may use OCaml lazy evaluation feature to write a lazy reifier and write a new monadic binder for the lazy reifier. The lazy evaluation prevents `reify` itself from looping when it is evaluated as an argument of `Reifier.apply`. The new binder simply forces the suspension in addtion to doing what a usual binder does. 
 
 ## Result
 
@@ -361,21 +360,20 @@ That's all. And it has type
 ```ocaml
 (ilogic, logic) Reifier.t Lazy.t
 ```
+Evaluation of `refiy` itself always terminates because of lazyness, and when being applied it penetrates any number of layers of nested `option`s becasue the looping power is released by the `Env.Lazy.bind` precisely on the value to be reified, instead of being released prematurely which is the case of the earlier unsuccessful version 2. This solution overcomes all the listed difficulties.
+ 
+## Discussion 
 
-## Discussion
+Regarding the proposed solution: 
 
-The proposed solution: 
-
-- It does not loop at runtime for all non-cyclic values. For cyclic values it loops.
+- It does not loop at runtime for non-cyclic values. For cyclic values it loops (of course).
 - Created by simple modification of a naive monadic reifier.
 - It can be composed with other reifiers as usual when wrapped by `Stdlib.Lazy.force`.
 - Monad abstraction is respected, the implementation of `Env.t` remains abstract.
+- It is not specific to nested options. It may be automated by a generic programming framework.
 - [Not thread-safe](https://ocaml.org/releases/4.11/htmlman/libref/Lazy.html).
 
-
-## Related Work
-
-The reifier is also implemented using some [fix-point concept](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Logic.ml#L106) at the cost of [breaking](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Env.mli#L44) the monad abstraction.
+The reifier is also implemented using some [fix-point concept](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Logic.ml#L106) at the cost of [breaking](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Env.mli#L44) the monad abstraction. I guess that my colleague met the same problem of non-termination when experimenting with the naive monadic reifier on Peano numbers. As a first remedy he may defined the fix-point operator but soon realized that it does not help if the `Env.t` type remains abstract. Maybe he also have noticed that the advantage (in terms  of avoiding a predefined set of module functors) of monadic reification over the [old style](https://github.com/JetBrains-Research/OCanren/blob/8ce216180e2abe37b8a1f60cf6bf9187c63fc81c/src/core/Logic.ml#L139) is essentially not because of monad but because of the definition of `ilogic` types,  therefore he decided to pick out the `ilogic` type and compromise the monad abstraction, so that he could have staticly constructiveness in the form of `fun...-> ...`. 
 
 
 
