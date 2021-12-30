@@ -222,7 +222,7 @@ List.cons (Option.some v1) (List.cons v2 (List.nil()))
 ```
 is returned with `v1` and `v2` bound to distinct logical variables (both created wrt. the same `env`) --- this is exactly what we want.
 
-# Solving the Problem of Non-terminating Reifiers for Certain Recursive Types
+# Solving the Problem of Non-terminating Monadic Reifiers for Certain Recursive Types
 
 - [Motivation](#motivation)
 - [Showing the Problem](#showing-the-problem)
