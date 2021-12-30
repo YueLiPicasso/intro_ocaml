@@ -1,6 +1,6 @@
 - [Type Safety Case study](#how-types-are-respected---a-case-study)
 - [Using Multiple Logical Variables](#introducing-multiple-distinct-logical-variables)
-- [The Problem of Non-terminating Reifiers for Certain Recursive Types](#the-problem-of-non-terminating-reifiers-for-certain-recursive-types)
+- [Solving the Problem of Non-terminating Reifiers for Certain Recursive Types](#solving-the-problem-of-non-terminating-reifiers-for-certain-recursive-types)
 
 # How Types Are Respected? - A Case Study
 
@@ -222,11 +222,19 @@ List.cons (Option.some v1) (List.cons v2 (List.nil()))
 ```
 is returned with `v1` and `v2` bound to distinct logical variables (both created wrt. the same `env`) --- this is exactly what we want.
 
-# The Problem of Non-terminating Reifiers for Certain Recursive Types
+# Solving the Problem of Non-terminating Reifiers for Certain Recursive Types
+
+- [Motivation](#motivation)
+- [Showing the Problem](#showing-the-problem)
+- [Summary of the Difficulties](#summary-of-the-difficulties)
+- [Idea of Solution](#idea-of-solution)
+- [Result](#result)
+- [Discussion](#discussion)
+- [Related Work](#related-work)
 
 ## Motivation
 
-We saw that the infinitely nested option type `'a Option.ilogic as 'a` is inferred for members of the logical list `[Some v; v]` when we tried to reify it by composing the list reifier `List.reify`, the option reifier `Option.reify` and the default shallow reifier `Reifier.reify` without any additional type annotation. We also saw that the so composed reifier is in general too shallow for arbitrary values of the type of list of infinitely nested options. We ask: can we write a reifier for the type `'a Option.ilogic as 'a` ? An experienced relational programmer would also see here the structural identity between the type of infinitely nested options and the type of natural numbers represented as Peano numerals. You may think that since Peano numerals are so common in relational programming, there shouldn't be any problem writing a reifier for it and for  any type that is homomorphic to it. The reality is, however, we face a succession of problems when trying to write such a reifiier in the monadic style.
+We [saw](#how-types-are-respected---a-case-study) that the infinitely nested option type `'a Option.ilogic as 'a` is inferred for members of the logical list `[Some v; v]` when we tried to reify it by composing the list reifier `List.reify`, the option reifier `Option.reify` and the default shallow reifier `Reifier.reify` without any additional type annotation. We also saw that the so composed reifier is in general too shallow for arbitrary values of the type of list of infinitely nested options. We ask: can we write a reifier for the type `'a Option.ilogic as 'a` ? An experienced relational programmer would also see here the structural identity between the type of infinitely nested options and the type of natural numbers represented as Peano numerals. You may think that since Peano numerals are so common in relational programming, there shouldn't be any problem writing a reifier for it and for  any type that is homomorphic to it. The reality is, however, we face a succession of problems when trying to write such a reifiier in the monadic style.
 
 First let's define the type for infinitely nested optoins in the module `Opnest` and see its structural identity with Peano numerals defined in the module `Penum`. 
 
@@ -318,14 +326,56 @@ let rec reify env = fun x -> match (Reifier.reify env x) with
 but again it cannot be typed under the monad paradigm: it lives in a totally different world with
  totally different type management.
 
-### Summary of the Difficulties
+## Summary of the Difficulties
 
 - Failure of version 1 taught us that we must define `Opnest.reify` as a fuction (not a value).
 - Failure of version 2 taught us that taking a `unit` argument does not help, for it passes the static check but loops at runtime.
 - Failure of versions 3 and 4 taught us that we have no retreat into the practice of non-monadic programming in the world of monads.  
 
+## Idea of Solution
+
+We may use OCaml lazy evaluation feature to write a lazy reifier and write a monadic binder for the lazy reifier.  
+
+## Result
+
+Add sub-module `Lazy` to `Core.Env`
+
+```ocaml
+module Lazy = struct
+    let bind r k env = k (Lazy.force r env) env
+end
+```
+Take our `Opnest.reify` version 1, wrap the whole thing in `lazy`, and use the module path `Env.Lazy` instead of `Env` in `Env.bind`
+
+```ocaml
+(* Opnest.reify, version 5 *)
+
+let rec reify = lazy (Reifier.compose Reifier.reify 
+      (Env.Lazy.bind reify (fun r ->
+           Env.return (fun x ->
+               match x with
+               | Var _ as v' -> v'
+               | Value t -> Value (fmap r t))))) 
+```
+That's all. And it has type 
+```ocaml
+(ilogic, logic) Reifier.t Lazy.t
+```
+
+## Discussion
+
+The proposed solution: 
+
+- It does not loop at runtime for all non-cyclic values. For cyclic values it loops.
+- Created by simple modification of a naive monadic reifier.
+- It can be composed with other reifiers as usual when wrapped by `Stdlib.Lazy.force`.
+- Monad abstraction is respected, the implementation of `Env.t` remains abstract.
+- [Not thread-safe](https://ocaml.org/releases/4.11/htmlman/libref/Lazy.html).
 
 
+## Related Work
+
+The reifier is also implemented using some [fix-point concept](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Logic.ml#L106) at the cost of [breaking](https://github.com/Kakadu/OCanren/blob/dce7c390559e273cb25589b7b672291b28c742a3/src/core/Env.mli#L44) the monad abstraction.
 
 
 
