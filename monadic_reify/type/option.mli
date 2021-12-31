@@ -15,6 +15,10 @@ val fmap : ('a -> 'b) -> 'a t -> 'b t
     
 val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t
 
+module TA : sig
+  val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t
+end
+
 module Nested : sig
 
   type nonrec logic  = 'b logic as 'b
@@ -25,6 +29,9 @@ module Nested : sig
     
   val reify : (ilogic,logic) Reifier.t Lazy.t
 
+  module TA : sig
+    val reify : (ilogic,logic) Reifier.t Lazy.t
+  end
 end
 
 
