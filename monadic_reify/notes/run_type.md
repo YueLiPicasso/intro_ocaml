@@ -1,6 +1,10 @@
-# Comments
+# Type Analysis of the Body of `Core.run`
 
-## Type analysis of the body of `run`
+On the level of module interface, `run` is used to generate a state of logical value.
+
+On the level of implementation, `run` generates a logical variable which is then passed to 
+the argument function to create a logical value that contains the variable. This value is then paired
+with the `env` in which the variable is valid, to form a state.
 
 ```ocaml
 let run rel = let env = Var.fresh_env () in
@@ -31,7 +35,5 @@ which is then specialized by the sig to
 (7) (run : ('a ilogic -> 'c ilogic Env.t) -> 'c ilogic State.t)
 ```
 with `'b` in (6) (the return type of `rel`) specialized to `'c ilogic` in (7). 
-The type of the first parameter of `rel` must not be more general than `'a Term.t` 
-because of the typing rule for applicationn and that the first argument
-has a type no more general than `'a Term.t`.
+
 
