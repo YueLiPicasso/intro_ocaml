@@ -36,7 +36,45 @@ module Nested = struct
            Env.return (fun x ->
                match x with
                | Var _ as v' -> v'
-               | Value t -> Value (fmap r t))))) 
+               | Value t -> Value (fmap r t)))))
+
+  (* The type intricacies of [reify] is detailed in [TA.reify] *)
+    
+  module TA = struct
+   
+    let rec reify =
+      ((lazy
+         (((((Reifier.compose :
+                (ilogic, ilogic t Core.logic) Reifier.t
+              -> (ilogic t Core.logic, logic) Reifier.t
+              -> (ilogic, logic) Reifier.t)
+               (Reifier.reify :
+                  (ilogic, ilogic t Core.logic) Reifier.t))
+            : (ilogic t Core.logic, logic) Reifier.t -> (ilogic, logic) Reifier.t)
+             (((((Env.Lazy.bind
+                  : (ilogic, logic) Reifier.t Lazy.t
+                  -> ((ilogic ->  logic) -> (ilogic t Core.logic, logic) Reifier.t)
+                  -> (ilogic t Core.logic, logic) Reifier.t)
+                   (reify : (ilogic, logic) Reifier.t Lazy.t))
+                : ((ilogic ->  logic) -> (ilogic t Core.logic, logic) Reifier.t)
+                -> (ilogic t Core.logic, logic) Reifier.t)
+                 ((fun (r : ilogic ->  logic) ->
+                     (((Env.return
+                        : (ilogic t Core.logic -> logic)
+                        -> (ilogic t Core.logic, logic) Reifier.t)
+                         ((fun (x : ilogic t Core.logic) ->
+                             match x with
+                             | Var _ as v' -> (v' : logic)
+                             | Value (t : ilogic t) ->
+                               ((Value ((fmap (r : ilogic -> logic) (t : ilogic t)) : logic t))
+                                : logic))
+                          : ilogic t Core.logic -> logic))
+                      : (ilogic t Core.logic, logic) Reifier.t))
+                  : (ilogic ->  logic) -> (ilogic t Core.logic, logic) Reifier.t))
+              : (ilogic t Core.logic, logic) Reifier.t))
+          : (ilogic, logic) Reifier.t))
+       : (ilogic, logic) Reifier.t Lazy.t)
+  end    
 end
 
 
