@@ -243,16 +243,38 @@ let _ = print_string @@
 
 (* providing to a lazy reifier a lazy sub-refier *)
 
-let _ = print_string @@
+let cons = List.cons and nil = List.nil and some = Option.some and none = Option.none
+
+let _ =
+  print_string @@
   let (tm : (Option.Nested.logic List.logic))
-    = Reifier.Lazy.apply (List.reify (Lazy.force Option.Nested.reify))
+    = Reifier.Lazy.apply (List.reify' Option.Nested.reify)
       ((run (fun v -> Env.return
-                (inj List.(Cons(inj (Some v),
-                                inj (Cons(v, (inj Nil))))))))
+                (cons (some v) (cons v (cons (some (some (some v))) (nil()))))))
        :  Option.Nested.ilogic List.ilogic State.t) in
   match tm with
-  | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
+  | Value
+      (Cons(Value(Some(Var _)),
+            Value (Cons (Var _,
+                         Value(Cons(Value(Some(Value(Some(Value(Some(Var _)))))),
+                                    Value Nil))))))
     -> "PASSED\n"
   | _ -> "failed\n"
 
-
+(*[[Some None];
+   [Some(Some(Some None)); Some(Some v)]] *)
+let _ =
+  print_string @@
+  let (tm : Option.Nested.logic List.logic List.logic) =
+    Reifier.Lazy.apply (List.reify' (List.reify' Option.Nested.reify))
+      (run (fun v -> Env.return (cons (cons (some (none())) (nil()))
+                                   (cons (cons (some(some(some (none()))))
+                                            (cons (some(some v)) (nil()))) (nil())))))
+in
+match tm with
+| Value(Cons(Value(Cons(Value(Some(Value None)),Value Nil)),
+             Value(Cons(Value(Cons(Value(Some(Value(Some(Value(Some(Value None)))))),
+                                   Value(Cons(Value(Some(Value(Some(Var _)))),Value Nil)))),
+                        Value(Nil)))))
+     -> "PASSED\n"
+  | _ -> "failed\n"
