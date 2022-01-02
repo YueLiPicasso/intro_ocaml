@@ -1,6 +1,6 @@
 # Reifiers Written in the Monad Pattern
 
-Adapted without conceptual change from [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24).
+Adapted without conceptual change from [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24). There is a problem of looping for certain recursive reifiers, even if `Reifier.compose` is used. This problem is described in `test/README.md`, Section _The Problem of Non-terminating Reifiers for Certain Recursive Types_.
 
 ## Tips
 

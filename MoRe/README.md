@@ -1,5 +1,37 @@
 # Reifiers Written in the Monad Pattern
 
+Recursive reifiers in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project are written using a `compose` operator to avoid looping. The [yue_eucpp](../yue_eucpp) project finds that the `compose` operator fails to prevent looping in some important cases. The problem is then solved by the [monadic_reify](../monadic_reify) project using lazy evaluation. Here we get rid of the `compose` operator entirely, and use just lazy evaluation to prevent looping in all cases in interest. The benefit in so doing is further explained bellow. 
+
+The lazy monadic reifier for list which we propose looks like
+```ocaml
+let rec reify :  ('a, 'b) Reifier.t Lazy.t -> ('a List.ilogic, 'b List.logic) Reifier.t Lazy.t =
+  fun ra -> lazy
+    (Reifier.reify >>= (fun r -> ra >>>= (fun fa -> reify ra >>>= (fun fr ->
+         Env.return (fun x -> match r x with
+             | Var _ as v -> v
+             | Value t -> Value (fmap (Reifier.Lazy.force fa) (Reifier.Lazy.force fr) t)))))) 
+```
+But in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project, the list reifier looks like 
+```ocaml
+let rec reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t = fun ra ->
+    Reifier.compose Reifier.reify @@
+      (ra >>= (fun fa -> (reify ra >>= (fun fr ->
+        Env.return (fun lx ->
+          match lx with
+          | Var v   -> Var v
+          | Value t -> Value (fmap fa fr t))))))
+```
+where the `compose` operator obscures the monadic semantics of the reifier definition. 
+
+Moreover, we have a working reifier for the type of nested options (which is homomorphic to the type of Peano numbers)
+```ocaml
+let rec reify = lazy
+    (Reifier.reify >>= (fun r -> reify >>>= (fun rr -> Env.return (fun x ->
+         match r x with
+         | Var _ as v -> v
+         | Value t -> Value (fmap (Reifier.Lazy.force rr) t)))))
+```  
+This has no parallel in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project.
 
 ## To Build
 
