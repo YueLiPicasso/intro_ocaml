@@ -1,5 +1,8 @@
 # Reifiers Written in the Monad Pattern
 
+We use lazy evaluation to solve the looping problem of certain recursive reifiers. This problem was discovered in the [yue_eucpp](../yue_eucpp) project. `Reifier.compose` was also used to tackle looping but in the case of our interest it does not work. The details are given in the technical note [Using Multiple Logical Variables](notes/multivar.md)
+- [Solving the Problem of Non-terminating Monadic Reifiers for Certain Recursive Types](notes/lazy_reify.md). We guess it is possible to get rid of  `Reifier.compose` and use just lazy evaluation to solve the looping problem entirely. This idea is discussed in the note [Understanding the Monadic Reifiers](notes/type_annot.md).
+
 ## To Build
 
 Use either Dune or GNU Make.

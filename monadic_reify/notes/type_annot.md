@@ -14,6 +14,7 @@ We shall discuss
     - [The Monad Abstraction](#the-monad-abstraction)
     - [Typing Details](#typing-details)
 - [Recursive Reifiers](#recursive-reifiers)
+    - [Problems of Reifier Composition]
 - [Tips for Type Annotation](#tips-for-type-annotation)
 
 ## The Shallow Reifier
@@ -158,6 +159,29 @@ let rec reify =
           : (ilogic, logic) Reifier.t))
        : (ilogic, logic) Reifier.t Lazy.t)
 ```
+### Problems of Reifier Composition
+
+`Reifier.compose` was [originally](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24#file-main-ml-L384) introduced to solve the looping problem of the list reifier. We have [seen](lazy_reify.md) that without lazy evaluation a composed reifier may still die in a loop. In addition, in the typing details above we see
+```ocaml
+(Reifier.compose :
+                (ilogic, ilogic t Core.logic) Reifier.t
+              -> (ilogic t Core.logic, logic) Reifier.t
+              -> (ilogic, logic) Reifier.t)
+```
+where the first argument type 
+```ocaml
+(ilogic, ilogic t Core.logic) Reifier.t
+```
+refers to a reifier that is too shallow for the job whilst the second argument type
+```ocaml
+(ilogic t Core.logic, logic) Reifier.t
+``` 
+which is particularly unusual, refers to a reifier that does not start from an `ilogic` type but a half reified `ilogic` type. Although `Reifier.compose` actually composes two "half-reifiers" into a fully functional reifier, there is some sort of abuse of the type `Reifier.t`, which usually takes a pure `ilogic` type and returns  a pure `logic` type. Can we just use lazy evaluation and get rid of `Reifier.compose` entirely?
+
+ To answer this question, first we need to understand _how_ `Reifier.compose` avoids the problem of looping. An inspection of the [source](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24#file-main-ml-L384) of the looping and non-looping list reifiers tells us that when the definition of `Reifier.compose` is applied during evaluation of the recursive call, the recursive call does not repeat the root call but terminates with a functional value, otherwise if we do not use `Reifier.compose` the recursive call repeats the root call and loops. Unfortunately, this loop-preventing mechanism of `Reifier.compose` does not work in the case of nested options because there loop happens even before `Reifier.compose` is applied.
+
+It is possible therefore to get rid of `Reifier.compose` completely and just use lazy evaluationn to solve the looping problem. This would give the recursive reifiers a clearer monadic semantics, and maintain a consistant use of the type `Reifier.t`.
+
 ## Tips for Type Annotation
 
 * To manually add types for sub-expressions it is [helpful](https://github.com/YueLiPicasso/intro_ocaml/issues/2#issue-1084625874) to draw the tree representation of the expression for easy reference of the expression structure. 
