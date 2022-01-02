@@ -16,12 +16,11 @@ let fmap  =
     | Nil -> Nil
     | Cons (h , t) -> Cons (f h ,  g t)
 
-let rec reify = fun ra ->
-  let (>>=)  = Env.bind in
-  let (>>>=) = Reifier.Lazy.bind in 
-        lazy(Reifier.reify >>= (fun r -> ra >>= (fun fa -> reify ra >>>= (fun fr ->
-            Env.return (fun x -> match r x with
-                | Var _ as v -> v
-                | Value t -> Value (fmap fa (Reifier.Lazy.force fr) t)))))) 
+let rec reify =
+  fun ra -> lazy
+    (Reifier.reify >>= (fun r -> ra >>= (fun fa -> reify ra >>>= (fun fr ->
+         Env.return (fun x -> match r x with
+             | Var _ as v -> v
+             | Value t -> Value (fmap fa (Reifier.Lazy.force fr) t)))))) 
   
     

@@ -243,7 +243,6 @@ let _ = print_string @@
 
 (* providing to a lazy reifier a lazy sub-refier *)
 
-
 let _ = print_string @@
   let (tm : (Option.Nested.logic List.logic))
     = Reifier.Lazy.apply (List.reify (Lazy.force Option.Nested.reify))
