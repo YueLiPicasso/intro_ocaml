@@ -14,7 +14,7 @@ We shall discuss
     - [The Monad Abstraction](#the-monad-abstraction)
     - [Typing Details](#typing-details)
 - [Recursive Reifiers](#recursive-reifiers)
-    - [Problems of Reifier Composition]
+    - [Problems of Reifier Composition](#problems-of-reifier-composition)
 - [Tips for Type Annotation](#tips-for-type-annotation)
 
 ## The Shallow Reifier
