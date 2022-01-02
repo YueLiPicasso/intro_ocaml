@@ -18,8 +18,9 @@ module State : sig
   type 'a t
   val extract : 'a t -> 'a
   val extend  : 'a t -> ('a t -> 'b) -> 'b t
-  val observe : 'a ilogic t -> 'a logic
+  val observe : 'a ilogic t -> 'a logic      
 end
+
                  
 exception Not_a_value
 
@@ -32,6 +33,11 @@ module Reifier : sig
   val compose : ('a, 'b) t -> ('b, 'c) t -> ('a, 'c) t
   val fmap    : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
   val fcomap  : ('a -> 'b) -> ('b, 'c) t -> ('a, 'c) t
+  module Lazy : sig
+    val apply   : ('a, 'b) t Lazy.t -> 'a State.t -> 'b
+    val bind : ('a, 'b) t Lazy.t -> (('a, 'b) t Lazy.t State.t -> 'c Env.t) -> 'c Env.t
+    val force : ('a, 'b) t Lazy.t State.t -> 'a -> 'b
+  end
 end
 
 val fresh : ('a ilogic -> 'b Env.t) -> 'b Env.t                   

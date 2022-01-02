@@ -95,20 +95,20 @@ let _ = print_string @@
 (* Reify List *)
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify) (runrt()) in
+  let tm = Reifier.Lazy.apply (List.reify Reifier.reify) (runrt()) in
   match tm with
   | Var _ -> "PASSED\n"
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.Lazy.apply (List.reify Reifier.reify)
       (run (fun v -> Env.return (inj List.(Cons(v, inj Nil))))) in
   match tm with
   | Value (Cons (Var _, Value Nil)) -> "PASSED\n"
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.Lazy.apply (List.reify Reifier.reify)
       (run (fun v -> Env.return
                (inj List.(Cons(v,
                                inj (Cons(v, (inj Nil)))))))) in
@@ -117,7 +117,7 @@ let _ = print_string @@
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.Lazy.apply (List.reify Reifier.reify)
       (run (fun v -> Env.return
                (inj List.(Cons(inj 5,
                                inj (Cons(inj 6, v))))))) in
@@ -128,7 +128,7 @@ let _ = print_string @@
 (* reify option list *)
     
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let tm = Reifier.Lazy.apply (List.reify (Option.reify Reifier.reify))
       (run (fun v -> Env.return
                (inj List.(Cons(inj (Some (inj 5)),
                                inj (Cons(v, (inj Nil)))))))) in
@@ -139,7 +139,7 @@ let _ = print_string @@
 
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let tm = Reifier.Lazy.apply (List.reify (Option.reify Reifier.reify))
       (run (fun v -> Env.return
                (inj List.(Cons(inj (Some v),
                                inj (Cons(inj None, (inj Nil)))))))) in
@@ -152,7 +152,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   let (tm : Option.Nested.ilogic Option.logic Option.logic List.logic)
-    = Reifier.apply (List.reify (Option.reify Reifier.reify))
+    = Reifier.Lazy.apply (List.reify (Option.reify Reifier.reify))
       ((run (fun v -> Env.return
                 (inj List.(Cons(inj (Some v),
                                 inj (Cons(v, (inj Nil))))))))
@@ -166,7 +166,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   let (tm : (Option.Nested.ilogic Option.logic Option.logic List.logic)) =
-    Reifier.apply (List.reify (Option.reify Reifier.reify))
+    Reifier.Lazy.apply (List.reify (Option.reify Reifier.reify))
       ((run (fun v -> Env.return
                (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
                                inj (Cons(v, (inj Nil))))))))
@@ -179,14 +179,14 @@ let _ = print_string @@
 (* How to get two vars of different but correct type? *)
 
 let _ = print_string @@
-  match Reifier.apply (List.reify Reifier.reify)
+  match Reifier.Lazy.apply (List.reify Reifier.reify)
           (run (fun x -> fresh (fun y -> Env.return @@ List.cons x y))) with
   | Value(Cons(Var v1, Var v2))
     when Var.(index v1 <> index v2) && Var.(env v1 = env v2) -> "PASSED\n"
   | _ -> "failed"
 
 let _ = print_string @@
-  match Reifier.apply
+  match Reifier.Lazy.apply
           (List.reify
              (Option.reify
                 (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
@@ -201,7 +201,7 @@ let _ = print_string @@
   | _ -> "failed\n"
 
 let _ = print_string @@
-  match Reifier.apply
+  match Reifier.Lazy.apply
           (List.reify
              (Option.reify
                 (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
@@ -223,7 +223,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   let (tm : Option.Nested.logic list)
-    = Stdlib.List.map (Reifier.apply (Lazy.force Option.Nested.reify))
+    = Stdlib.List.map (Reifier.Lazy.apply Option.Nested.reify)
       ([(run Env.return);
         (run (fun _ -> Env.return Option.(none())));
         (run (fun _ -> Env.return Option.(some (none()))));
@@ -244,7 +244,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   let (tm : (Option.Nested.logic List.logic))
-    = Reifier.apply (List.reify (Lazy.force Option.Nested.reify))
+    = Reifier.Lazy.apply (List.reify (Lazy.force Option.Nested.reify))
       ((run (fun v -> Env.return
                 (inj List.(Cons(inj (Some v),
                                 inj (Cons(v, (inj Nil))))))))
