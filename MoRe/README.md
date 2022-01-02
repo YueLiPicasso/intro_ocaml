@@ -1,6 +1,6 @@
 # Reifiers Written in the Monad Pattern
 
-Recursive reifiers in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project are written using a `compose` operator to avoid looping. The [yue_eucpp](../yue_eucpp) project finds that the `compose` operator fails to prevent looping in some important cases. The problem is then solved by the [monadic_reify](../monadic_reify) project using lazy evaluation. Here we get rid of the `compose` operator entirely, and use just lazy evaluation to prevent looping in all cases in interest. The benefit in so doing is further explained bellow. 
+Recursive reifiers in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project are written using a `compose` operator to avoid looping. The [yue_eucpp](../yue_eucpp) project finds that the `compose` operator fails to prevent looping in some important cases. The problem is then solved by the [monadic_reify](../monadic_reify) project using lazy evaluation. Here we get rid of the `compose` operator entirely, and use just lazy evaluation to prevent looping in all cases of interest. The benefit in so doing is further explained bellow. 
 
 The lazy monadic reifier for list which we propose looks like
 ```ocaml
