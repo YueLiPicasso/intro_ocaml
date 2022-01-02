@@ -45,6 +45,7 @@ module Reifier = struct
   let fmap f r env a = f (r env a)
   let fcomap f r env a = r env (f a)
   module Lazy = struct
+    type nonrec ('a, 'b) t = ('a, 'b) t Lazy.t
     let apply r (env, a) = Lazy.force r env a
     let force (env, lr) = Lazy.force lr env
     let bind lr k env = k (env, lr) env

@@ -241,6 +241,8 @@ let _ = print_string @@
     -> "PASSED\n"
   | _ -> "failed\n"
 
+(* providing to a lazy reifier a lazy sub-refier *)
+
 
 let _ = print_string @@
   let (tm : (Option.Nested.logic List.logic))
@@ -253,4 +255,5 @@ let _ = print_string @@
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
+
 

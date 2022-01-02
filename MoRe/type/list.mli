@@ -13,4 +13,4 @@ val cons : 'a -> 'a ilogic  -> 'a ilogic
 
 val fmap : ('a -> 'c) -> ('b -> 'd) -> ('a, 'b) t -> ('c, 'd) t
 
-val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t Lazy.t
+val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.Lazy.t

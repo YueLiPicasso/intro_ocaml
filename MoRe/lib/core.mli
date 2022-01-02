@@ -34,9 +34,10 @@ module Reifier : sig
   val fmap    : ('b -> 'c) -> ('a, 'b) t -> ('a, 'c) t
   val fcomap  : ('a -> 'b) -> ('b, 'c) t -> ('a, 'c) t
   module Lazy : sig
-    val apply   : ('a, 'b) t Lazy.t -> 'a State.t -> 'b
-    val bind : ('a, 'b) t Lazy.t -> (('a, 'b) t Lazy.t State.t -> 'c Env.t) -> 'c Env.t
-    val force : ('a, 'b) t Lazy.t State.t -> 'a -> 'b
+    type nonrec ('a, 'b) t = ('a, 'b) t Lazy.t 
+    val apply   : ('a, 'b) t -> 'a State.t -> 'b
+    val bind : ('a, 'b) t -> (('a, 'b) t State.t -> 'c Env.t) -> 'c Env.t
+    val force : ('a, 'b) t State.t -> 'a -> 'b
   end
 end
 
