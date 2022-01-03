@@ -40,7 +40,7 @@ This has no parallel in the [Moiseenko](https://gist.github.com/eupp/a78e9fc0868
 - Clearer monadic semantics for recursive reifier definitions, compared with those using `Reifier.compose`. 
 - Recursive reifiers are all defined to be lazy.
 - Getting rid entirely of the unreliable `Reifier.compose` that was used by Moiseenko to define recursive reifiers.
--  Implemented by an inexpensive and conceptually consistant extension of the original monadic framework of the Moiseenko project: we extend `Env` with a lazy binder `Env.Lazy.bind` and extend `Reifier` with `Reifier.Lazy.apply`, and nothng else. 
+-  Implemented by an inexpensive and conceptually consistent extension of the original monadic framework of the Moiseenko project: we extend `Env` with a lazy binder `Env.Lazy.bind` and extend `Reifier` with `Reifier.Lazy.apply`, and nothng else. 
 
 ## To Build
 
