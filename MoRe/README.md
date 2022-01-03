@@ -9,7 +9,7 @@ let rec reify :  ('a, 'b) Reifier.t Lazy.t -> ('a List.ilogic, 'b List.logic) Re
     (Reifier.reify >>= (fun r -> ra >>>= (fun fa -> reify ra >>>= (fun fr ->
          Env.return (fun x -> match r x with
              | Var _ as v -> v
-             | Value t -> Value (fmap (Reifier.Lazy.force fa) (Reifier.Lazy.force fr) t)))))) 
+             | Value t -> Value (fmap (Lazy.force fa) (Lazy.force fr) t)))))) 
 ```
 But in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project, the list reifier looks like 
 ```ocaml
@@ -29,9 +29,19 @@ let rec reify = lazy
     (Reifier.reify >>= (fun r -> reify >>>= (fun rr -> Env.return (fun x ->
          match r x with
          | Var _ as v -> v
-         | Value t -> Value (fmap (Reifier.Lazy.force rr) t)))))
+         | Value t -> Value (fmap (Lazy.force rr) t)))))
 ```  
 This has no parallel in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project.
+
+## Features
+
+- Solved the looping problem of some Moiseenko reifiers
+- Respects monad abstraction
+- Clearer monadic semantics of the recursive refifer definitions, compared with those using `Reifier.compose`. 
+- Recursive reifiers are all defined to be lazy.
+- Getting rid of the unreliable `Reifier.compose` that was used by Moiseenko to define recursive reifiers.
+
+These features are paid inexpensively by extending `Env` with a lazy binder `Env.Lazy.bind` and extending `Reifier` with `Reifier.Lazy.apply`, and nothng else. 
 
 ## To Build
 
