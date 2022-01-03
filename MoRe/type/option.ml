@@ -35,7 +35,7 @@ module Nested = struct
     (Reifier.reify >>= (fun r -> reify >>>= (fun rr -> Env.return (fun x ->
          match r x with
          | Var _ as v -> v
-         | Value t -> Value (fmap (Reifier.Lazy.force rr) t)))))
+         | Value t -> Value (fmap (Lazy.force rr) t)))))
 end
 
 

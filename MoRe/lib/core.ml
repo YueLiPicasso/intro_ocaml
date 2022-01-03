@@ -13,7 +13,10 @@ let observe : Var.env -> 'a ilogic -> 'a logic =
 module Env = struct
   type 'a t = Var.env -> 'a 
   let return a     = fun _ -> a
-  let bind r k env = k (r env) env      
+  let bind r k env = k (r env) env
+  module Lazy = struct
+    let bind r k env = k  (lazy (Lazy.force r env)) env
+  end
 end
 
 module State = struct
@@ -26,8 +29,6 @@ module Reifier = struct
   let apply r (env, a) = r env a
   module Lazy = struct
     let apply r (env, a) = apply (Lazy.force r) (env, a)
-    let bind r k env = k (env, r) env
-    let force (env, r) = Lazy.force r env
   end
 end
                    
@@ -37,5 +38,5 @@ let run rel = let env = Var.fresh_env () in
               (env, rel (Term.fresh env) env)
 
 let (>>=) = Env.bind
-let (>>>=) = Reifier.Lazy.bind 
+let (>>>=) = Env.Lazy.bind 
 

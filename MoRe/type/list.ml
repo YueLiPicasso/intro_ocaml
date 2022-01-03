@@ -21,11 +21,11 @@ let rec reify =
     (Reifier.reify >>= (fun r -> ra >>= (fun fa -> reify ra >>>= (fun fr ->
          Env.return (fun x -> match r x with
              | Var _ as v -> v
-             | Value t -> Value (fmap fa (Reifier.Lazy.force fr) t)))))) 
+             | Value t -> Value (fmap fa (Lazy.force fr) t)))))) 
   
  let rec reify' =
   fun ra -> lazy
     (Reifier.reify >>= (fun r -> ra >>>= (fun fa -> reify' ra >>>= (fun fr ->
          Env.return (fun x -> match r x with
              | Var _ as v -> v
-             | Value t -> Value (fmap (Reifier.Lazy.force fa) (Reifier.Lazy.force fr) t))))))    
+             | Value t -> Value (fmap (Lazy.force fa) (Lazy.force fr) t))))))    
