@@ -272,11 +272,21 @@ let _ =
       (run (fun v -> Env.return (cons (cons (some (none())) (nil()))
                                    (cons (cons (some(some(some (none()))))
                                             (cons (some(some v)) (nil()))) (nil())))))
-in
-match tm with
-| Value(Cons(Value(Cons(Value(Some(Value None)),Value Nil)),
-             Value(Cons(Value(Cons(Value(Some(Value(Some(Value(Some(Value None)))))),
-                                   Value(Cons(Value(Some(Value(Some(Var _)))),Value Nil)))),
-                        Value(Nil)))))
-     -> "PASSED\n"
+  in
+  match tm with
+  | Value(Cons(Value(Cons(Value(Some(Value None)),Value Nil)),
+               Value(Cons(Value(Cons(Value(Some(Value(Some(Value(Some(Value None)))))),
+                                     Value(Cons(Value(Some(Value(Some(Var _)))),Value Nil)))),
+                          Value(Nil)))))
+    -> "PASSED\n"
+  | _ -> "failed\n"
+    
+(* reify option of integer list *)
+    
+let _ = print_string @@
+  let (tm : int Core.logic List.logic Option.logic) =  
+    Reifier.apply (Option.reify (List.reify Reifier.reify))
+      (run (fun v -> Env.return (some (cons v (cons (inj 1) (nil()))))))
+  in match tm with
+  | Value(Some(Value(Cons(Var _, Value(Cons(Value 1, Value Nil)))))) -> "PASSED\n"
   | _ -> "failed\n"
