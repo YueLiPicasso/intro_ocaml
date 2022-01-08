@@ -42,10 +42,6 @@ This has no parallel in the [Moiseenko](https://gist.github.com/eupp/a78e9fc0868
 - Getting rid entirely of the unreliable `Reifier.compose` that was used by Moiseenko to define recursive reifiers.
 -  Implemented by an inexpensive and conceptually consistent extension of the original monadic framework of the Moiseenko project: we extend `Env` with a lazy binder `Env.Lazy.bind` and extend `Reifier` with `Reifier.Lazy.apply`, and nothng else. 
 
-# Limitation and Improvment
-
-Note that we have two monadic binders `>>=` and `>>>=` for eager and lazy reifiers respectively. It is possible to avoid this complication and use only one binder without caring about if the reifier is lazy or eager: see [MoRe2](../MoRe2). 
-
 
 ## To Build
 
