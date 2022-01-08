@@ -1,6 +1,8 @@
 # Reifiers Written in the Monad Pattern
 
-Recursive reifiers in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project are written using a `compose` operator to avoid looping. The [yue_eucpp](../yue_eucpp) project finds that the `compose` operator fails to prevent looping in some important cases. The problem is then solved by the [monadic_reify](../monadic_reify) project using lazy evaluation. The [MoRe](../MoRe) project gets rid of the `compose` operator entirely, and use just lazy evaluation to prevent looping in all cases of interest. A draw back of MoRe is that the user of the reifiers has to care about if a reifier is lazy or not. Here in MoRe2 we use free the user from this burdon by using a sum type to unify lazy and eager reifiers. The benefit is that we only need one monadic binder rather than two. 
+The [MoRe](../MoRe) project distinguishes lazy and eager monadic reifiers, so that a user of the reifiers has to care about if a reifier is lazy or not, and choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. The benefits are 
+- We only need one monadic binder and one application function, rather than two;
+- When composing reifiers we do not need to care about if they are lazy or eager. 
 
 ## To Build
 
