@@ -241,7 +241,7 @@ let _ = print_string @@
     -> "PASSED\n"
   | _ -> "failed\n"
 
-(* providing to a lazy reifier a lazy sub-refier *)
+(* reifier list of nested options *)
 
 let cons = List.cons and nil = List.nil and some = Option.some and none = Option.none
 
@@ -260,6 +260,8 @@ let _ =
                                     Value Nil))))))
     -> "PASSED\n"
   | _ -> "failed\n"
+
+(* reifier list of list of nested options *)
 
 (*[[Some None];
    [Some(Some(Some None)); Some(Some v)]] *)

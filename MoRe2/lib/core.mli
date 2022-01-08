@@ -7,7 +7,7 @@ val inj : 'a -> 'a ilogic
 
 module EL : sig
    type 'a t =
-      Eager of 'a
+       Eager of 'a
      | Lazy  of 'a Lazy.t
 
    val use : 'a t -> 'a
