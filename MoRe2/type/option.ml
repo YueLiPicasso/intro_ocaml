@@ -30,12 +30,11 @@ module Nested = struct
     
   let rec some () = inj (Some (some()))
 
-  let rec reify' = lazy
-    (Reifier.reify >>= (fun r -> reify >>= (fun rr -> Env.return (fun x ->
-         match EL.use r x with
-         | Var _ as v -> v
-         | Value t -> Value (fmap (EL.use rr) t)))))
-  and reify = EL.Lazy reify'
+  let rec reify =
+    EL.Lazy (lazy (Reifier.reify >>= (fun r -> reify >>= (fun rr -> Env.return (fun x ->
+        match EL.use r x with
+        | Var _ as v -> v
+        | Value t -> Value (fmap (EL.use rr) t))))))
 end
 
 
