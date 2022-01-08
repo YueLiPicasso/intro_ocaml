@@ -1,0 +1,4 @@
+(library 
+  (name type)
+  (libraries  more)
+  (flags (:standard -rectypes)))

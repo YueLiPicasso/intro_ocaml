@@ -33,6 +33,8 @@ let rec reify = lazy
 ```  
 This has no parallel in the [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project.
 
+Note that we have two monadic binders `>>=` and `>>>=` for eager and lazy reifiers respectively. It is possible to avoid this and use only one binder. The solution is given by [MoRe2](../MoRe2). 
+
 ## Features
 
 - Solved the looping problem of some Moiseenko reifiers.
