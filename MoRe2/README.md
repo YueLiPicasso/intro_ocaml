@@ -1,6 +1,6 @@
 # Reifiers Written in the Monad Pattern
 
-The [MoRe](../MoRe) project solves the non-termination problem of the Moiseenko project by systematic lazy programming,  so that a user of the reifiers has to care about if a reifier is lazy or not, and accordingly choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. 
+The [MoRe](../MoRe) project solves the non-termination problem of the Moiseenko project by systematic lazy evaluation,  so that a user of the reifiers has to care about if a reifier is lazy or not, and accordingly choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. 
 
 The benefits are 
 - We only need one monadic binder and one application function, rather than two;
