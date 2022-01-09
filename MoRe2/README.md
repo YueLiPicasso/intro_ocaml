@@ -1,6 +1,6 @@
 # Reifiers Written in the Monad Pattern
 
-The [MoRe](../MoRe) project distinguishes lazy and eager monadic reifiers, so that a user of the reifiers has to care about if a reifier is lazy or not, and accordingly choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. 
+The [MoRe](../MoRe) project solves the non-termination problem of the Moiseenko project by systematic lazy programming,  so that a user of the reifiers has to care about if a reifier is lazy or not, and accordingly choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. 
 
 The benefits are 
 - We only need one monadic binder and one application function, rather than two;
@@ -10,6 +10,7 @@ The costs are
 - Introducing a simple sum type. 
 - When implementing a reifier, additionally wrap the definition body with one of the constructors `Lazy` and `Eager` of the sum type.
 
+Next: [[To build]](#to-build) [[Technical Details]](#technical-details) [[Tips on Monadic Programming]](#tips) [[Credits]](#credits)
 
 ## To Build
 
@@ -29,7 +30,12 @@ make runtest
 
 ## Technical Details
 
-The migration from MoRe to MoRe2 involves no significant structural change of the code. MoRe2 is essentially a paraphrase of MoRe. For instance, in MoRe we have two binders:
+
+The migration from MoRe to MoRe2 involves no significant structural change of the code. MoRe2 is essentially a paraphrase of MoRe. 
+
+### Unifying lazy and eager types under a sum type
+
+In MoRe we have two binders:
 ```ocaml
 (* MoRe *)
 val Env.bind      : 'a t        -> ('a        -> 'b t) -> 'b t
@@ -69,6 +75,8 @@ let bind r k env = k (lazy (Lazy.force r env)) env
 
 Reifier types lazy and eager can also be unified similarly. In MoRe a user works with `('a, 'b) Reifier.t = ('a -> 'b) Env.t` and `('a, 'b) Reifier.t Lazy.t = ('a -> 'b) Env.t Lazy.t` but in MoRe2 the user works with just `('a, 'b) Reifier.t = ('a -> 'b) Env.t EL.t` which has two value shapes `Eager of ('a -> 'b) Env.t` and `Lazy of ('a -> 'b) Env.t Lazy.t` that have clear correspondence in MoRe.   
 
+### Cost and gain in implementing reifiers  
+
 
 Now the implementer of reifiers need to clearly wrap a reifier by as being `Lazy` or `Eager`. For instance, previously
 ```ocaml
@@ -100,6 +108,21 @@ let rec reify = fun ra -> EL.Lazy
 ```
 where we need only `>>=`.
 
+### Resuming the good old way of using reifiers
+
+Moiseenko reifiers are composed and used like (the good old way)
+```ocaml
+Reifier.apply (Option.reify Reifier.reify) 
+Reifier.apply (List.reify (Option.reify Reifier.reify)) 
+Reifier.apply (List.reify (List.reify Reifier.reify)) 
+```
+MoRe reifiers are used like (corresponding to the above examples) 
+```ocaml
+Reifier.apply (Option.reify Reifier.reify)                              (* no change here *)
+Reifier.Lazy.apply (List.reify (Option.reify Reifier.reify))            (* top level Reifier.Lazy.apply *)
+Reifier.Lazy.apply (List.reify (Lazy.force (List.reify Reifier.reify))) (* explicit Lazy.force and top level Reifier.Lazy.apply *)
+```
+MoRe2 reifiers are used in the good old way and additionally have no non-termination problem suffered by Moiseenko reifiers.  
 
 ## Tips
 
