@@ -26,6 +26,59 @@ dune runtest
 make
 make runtest
 ```
+
+## Technical Details
+
+The migration from MoRe to MoRe2 involves no significant structural change of the code. MoRe2 is essentially a paraphrase of MoRe. For instance, in MoRe we have two binders:
+```ocaml
+(* MoRe *)
+val Env.bind      : 'a t        -> ('a        -> 'b t) -> 'b t
+val Env.Lazy.bind : 'a t Lazy.t -> ('a Lazy.t -> 'b t) -> 'b t
+```
+We can unify `'a t`  and  `'a t Lazy.t` (and similarly unify `'a` and `'a Lazy.t`) under the MoRe2 sum type 
+```ocaml
+(* MoRe2 *)
+module EL = stuct
+  type 'a t = Eager of 'a
+            | Lazy  of 'a Lazy.t
+end
+```
+so that we only need one binder for both lazy and eager types
+```ocaml
+(* MoRe2 *)
+val Env.bind : 'a t EL.t -> ('a EL.t -> 'b t) -> 'b t 
+```
+where a value of type `'a t EL.t` has the shape `Eager of 'a t`   or   `Lazy of 'a t Lazy.t`. When binding `a` and `b`, under MoRe 
+the user needs to know that `a` is eager and write `a >>= b`, or `a` is lazy and write `a >>>= b`. But under MoRe2 the user doesn't
+ care if `a` is lazy or eager, and he just writes `a >>= b` and the implementation of `>>=` takes care of the cases
+```ocaml
+(* MoRe2, module ENV *)
+let bind r k env =
+    let re = match r with
+      | EL.Eager r ->  EL.Eager (r env)
+      | EL.Lazy  r ->  EL.Lazy (lazy (Lazy.force r env))
+    in k re env
+```
+which just combines the implementations of eager and lazy bind of MoRe
+```ocaml
+(* MoRe, module Env *)
+let bind r k env = k (r env) env
+(* module Env.Lazy *) 
+let bind r k env = k (lazy (Lazy.force r env)) env
+```
+
+Reifier types lazy and eager can also be unified similarly. In MoRe a user works with `('a, 'b) Reifier.t = ('a -> 'b) Env.t` and `('a, 'b) Reifier.t Lazy.t = ('a -> 'b) Env.t Lazy.t` but in MoRe2 the user works with just `('a, 'b) Reifier.t = ('a -> 'b) Env.t EL.t` which has two value shapes `Eager of ('a -> 'b) Env.t` and `Lazy of ('a -> 'b) Env.t Lazy.t` that have clear correspondence in MoRe.   
+
+
+Now the implementer of reifiers need to clearly wrap a reifier by as being `Lazy` or `Eager`. For instance, previously
+```ocaml
+Reifier.reify = observe
+```
+but now 
+```ocaml
+Reifier.reify = EL.Eager observe
+```
+ 
 ## Tips
 
 A functional programmer is not born with an understanding of category theory but is very likely to be tempted 
