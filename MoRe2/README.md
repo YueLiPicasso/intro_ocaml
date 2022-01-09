@@ -52,7 +52,7 @@ where a value of type `'a t EL.t` has the shape `Eager of 'a t`   or   `Lazy of 
 the user needs to know that `a` is eager and write `a >>= b`, or `a` is lazy and write `a >>>= b`. But under MoRe2 the user doesn't
  care if `a` is lazy or eager, and he just writes `a >>= b` and the implementation of `>>=` takes care of the cases
 ```ocaml
-(* MoRe2, module ENV *)
+(* MoRe2, module Env *)
 let bind r k env =
     let re = match r with
       | EL.Eager r ->  EL.Eager (r env)
@@ -78,7 +78,29 @@ but now
 ```ocaml
 Reifier.reify = EL.Eager observe
 ```
- 
+And, for one more comparison, previously
+```ocaml
+(* MoRe, library List *)
+
+let rec reify =
+  fun ra -> lazy
+    (Reifier.reify >>= (fun r -> ra >>= (fun fa -> reify ra >>>= (fun fr ->
+         Env.return (fun x -> match r x with
+             | Var _ as v -> v
+             | Value t -> Value (fmap fa (Lazy.force fr) t)))))) 
+```
+where we need both `>>=` and `>>>=`  but now
+```ocaml
+(* MoRe2, library List *)
+let rec reify = fun ra -> EL.Lazy
+    (lazy (Reifier.reify >>= (fun r -> ra >>= (fun fa -> reify ra >>= (fun fr ->
+         Env.return (fun x -> match EL.use r x with
+             | Var _ as v -> v
+             | Value t -> Value (fmap (EL.use fa) (EL.use fr) t)))))))  
+```
+where we need only `>>=`.
+
+
 ## Tips
 
 A functional programmer is not born with an understanding of category theory but is very likely to be tempted 
