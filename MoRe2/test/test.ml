@@ -92,58 +92,58 @@ let _ = print_string @@
   | _ -> "failed\n"
 
 
-(* Reify List *)
+(* Reify List.Rec *)
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify) (runrt()) in
+  let tm = Reifier.apply (List.Rec.reify Reifier.reify) (runrt()) in
   match tm with
   | Var _ -> "PASSED\n"
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.apply (List.Rec.reify Reifier.reify)
       (run (fun v -> Env.return (inj List.(Cons(v, inj Nil))))) in
   match tm with
   | Value (Cons (Var _, Value Nil)) -> "PASSED\n"
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.apply (List.Rec.reify Reifier.reify)
       (run (fun v -> Env.return
                (inj List.(Cons(v,
                                inj (Cons(v, (inj Nil)))))))) in
-  match (tm : 'a Core.logic List.logic) with
+  match (tm : 'a Core.logic List.Rec.logic) with
   | Value(Cons(Var _, Value (Cons (Var _, Value Nil)))) -> "PASSED\n"
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify Reifier.reify)
+  let tm = Reifier.apply (List.Rec.reify Reifier.reify)
       (run (fun v -> Env.return
                (inj List.(Cons(inj 5,
                                inj (Cons(inj 6, v))))))) in
-  match (tm : int Core.logic List.logic) with
+  match (tm : int Core.logic List.Rec.logic) with
   | Value(Cons(Value 5, Value (Cons (Value 6, Var _)))) -> "PASSED\n"
   | _ -> "failed\n"
 
 (* reify option list *)
     
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let tm = Reifier.apply (List.Rec.reify (Option.reify Reifier.reify))
       (run (fun v -> Env.return
                (inj List.(Cons(inj (Some (inj 5)),
                                inj (Cons(v, (inj Nil)))))))) in
-  match (tm : int Core.logic Option.logic List.logic) with
+  match (tm : int Core.logic Option.logic List.Rec.logic) with
   | Value(Cons(Value(Some(Value 5)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
 
 
 let _ = print_string @@
-  let tm = Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let tm = Reifier.apply (List.Rec.reify (Option.reify Reifier.reify))
       (run (fun v -> Env.return
                (inj List.(Cons(inj (Some v),
                                inj (Cons(inj None, (inj Nil)))))))) in
-  match (tm : int Core.logic Option.logic List.logic) with
+  match (tm : int Core.logic Option.logic List.Rec.logic) with
   | Value(Cons(Value(Some(Var _)), Value (Cons (Value None, Value Nil))))
     -> "PASSED\n"
   | _ -> "failed\n"
@@ -151,12 +151,12 @@ let _ = print_string @@
 (* reifier not deep enough in general but deep enough for the special case *)
 
 let _ = print_string @@
-  let (tm : Option.Nested.ilogic Option.logic Option.logic List.logic)
-    = Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let (tm : Option.Nested.ilogic Option.logic Option.logic List.Rec.logic)
+    = Reifier.apply (List.Rec.reify (Option.reify Reifier.reify))
       ((run (fun v -> Env.return
                 (inj List.(Cons(inj (Some v),
                                 inj (Cons(v, (inj Nil))))))))
-       :  Option.Nested.ilogic List.ilogic State.t) in
+       :  Option.Nested.ilogic List.Rec.ilogic State.t) in
   match tm with
   | Value(Cons(Value(Some(Var _)), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
@@ -165,12 +165,12 @@ let _ = print_string @@
 (* partial reification using a not-deep-enough reifier *)
 
 let _ = print_string @@
-  let (tm : (Option.Nested.ilogic Option.logic Option.logic List.logic)) =
-    Reifier.apply (List.reify (Option.reify Reifier.reify))
+  let (tm : (Option.Nested.ilogic Option.logic Option.logic List.Rec.logic)) =
+    Reifier.apply (List.Rec.reify (Option.reify Reifier.reify))
       ((run (fun v -> Env.return
                (inj List.(Cons(inj (Some (inj (Some (inj (Some v))))),
                                inj (Cons(v, (inj Nil))))))))
-    :  Option.Nested.ilogic List.ilogic State.t) in
+    :  Option.Nested.ilogic List.Rec.ilogic State.t) in
   match tm with
   | Value(Cons(Value(Some(Value(Some _))), Value (Cons (Var _, Value Nil))))
     -> "PASSED\n"
@@ -179,7 +179,7 @@ let _ = print_string @@
 (* How to get two vars of different but correct type? *)
 
 let _ = print_string @@
-  match Reifier.apply (List.reify Reifier.reify)
+  match Reifier.apply (List.Rec.reify Reifier.reify)
           (run (fun x -> fresh (fun y -> Env.return @@ List.cons x y))) with
   | Value(Cons(Var v1, Var v2))
     when Var.(index v1 <> index v2) && Var.(env v1 = env v2) -> "PASSED\n"
@@ -187,7 +187,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   match Reifier.apply
-          (List.reify
+          (List.Rec.reify
              (Option.reify
                 (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
           (run (fun x ->
@@ -202,7 +202,7 @@ let _ = print_string @@
 
 let _ = print_string @@
   match Reifier.apply
-          (List.reify
+          (List.Rec.reify
              (Option.reify
                 (Reifier.reify : (int Core.ilogic, int Core.logic) Reifier.t)))
           (run (fun v1 ->
@@ -247,11 +247,11 @@ let cons = List.cons and nil = List.nil and some = Option.some and none = Option
 
 let _ =
   print_string @@
-  let (tm : (Option.Nested.logic List.logic))
-    = Reifier.apply (List.reify Option.Nested.reify)
+  let (tm : (Option.Nested.logic List.Rec.logic))
+    = Reifier.apply (List.Rec.reify Option.Nested.reify)
       ((run (fun v -> Env.return
                 (cons (some v) (cons v (cons (some (some (some v))) (nil()))))))
-       :  Option.Nested.ilogic List.ilogic State.t) in
+       :  Option.Nested.ilogic List.Rec.ilogic State.t) in
   match tm with
   | Value
       (Cons(Value(Some(Var _)),
@@ -267,8 +267,8 @@ let _ =
    [Some(Some(Some None)); Some(Some v)]] *)
 let _ =
   print_string @@
-  let (tm : Option.Nested.logic List.logic List.logic) =
-    Reifier.apply (List.reify (List.reify Option.Nested.reify))
+  let (tm : Option.Nested.logic List.Rec.logic List.Rec.logic) =
+    Reifier.apply (List.Rec.reify (List.Rec.reify Option.Nested.reify))
       (run (fun v -> Env.return (cons (cons (some (none())) (nil()))
                                    (cons (cons (some(some(some (none()))))
                                             (cons (some(some v)) (nil()))) (nil())))))
@@ -284,8 +284,8 @@ let _ =
 (* reify option of integer list *)
     
 let _ = print_string @@
-  let (tm : int Core.logic List.logic Option.logic) =  
-    Reifier.apply (Option.reify (List.reify Reifier.reify))
+  let (tm : int Core.logic List.Rec.logic Option.logic) =  
+    Reifier.apply (Option.reify (List.Rec.reify Reifier.reify))
       (run (fun v -> Env.return (some (cons v (cons (inj 1) (nil()))))))
   in match tm with
   | Value(Some(Value(Cons(Var _, Value(Cons(Value 1, Value Nil)))))) -> "PASSED\n"
@@ -314,10 +314,10 @@ let _ = print_string @@
   | _ -> "failed\n"
 
 let _ = print_string @@
-  let (tm : ('a Option.logic, 'a List.logic) Either.logic) =  
+  let (tm : ('a Option.logic, 'a List.Rec.logic) Either.logic) =  
     Reifier.apply (Either.reify
                      ~left:(Option.reify Reifier.reify)
-                     ~right:(List.reify Reifier.reify))
+                     ~right:(List.Rec.reify Reifier.reify))
       (run (fun v -> Env.return (right (cons v (nil())))))
   in match tm with
   | Value(Right(Value(Cons(Var _, Value Nil)))) -> "PASSED\n"
