@@ -28,9 +28,9 @@ end
 (* lazy list *)
 module Seq : sig
   
-  type 'a logic = unit -> ('a, 'a logic) t Core.logic
+  type 'a logic = unit -> ('a, 'b) t Core.logic as 'b
 
-  type 'a ilogic = unit -> ('a, 'a ilogic) t Core.ilogic
+  type 'a ilogic = unit -> ('a, 'b) t Core.ilogic as 'b
 
   val ints : int -> int Core.ilogic ilogic
   
