@@ -43,7 +43,7 @@ module Seq = struct
 end
 
 let rec take n l =
-  let l = l () in if n <= 0  then Value Nil else
+  if n <= 0  then Value Nil else let l = l () in
     match l with
     | Value Nil as v -> v
     | Value (Cons (h,t)) -> Value (Cons (h, take (n-1) t))
