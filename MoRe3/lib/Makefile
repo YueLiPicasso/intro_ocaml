@@ -1,7 +1,7 @@
 MODCMO = $(addsuffix .cmo, $(MODTOPO))
 MODCMI = $(addsuffix .cmi, $(MODTOPO))
-OCAMLC_C = ocamlc -c -rectypes
-OCAMLC_P = ocamlc -pack -o $(LIB) -rectypes
+OCAMLC_C = ocamlc -c 
+OCAMLC_P = ocamlc -pack -o $(LIB) 
 
 $(LIB) : $(MODCMO) $(MODCMI)
 	 $(OCAMLC_P) $(MODCMO)

@@ -47,4 +47,5 @@ let rec take ~n l =
     match l with
     | Value Nil as v -> v
     | Value (Cons (h,t)) -> Value (Cons (h, take (n-1) t))
+    | Var _ as v -> v
                               

@@ -11,7 +11,7 @@ val left : 'a -> ('a, 'b) ilogic
 
 val right : 'b -> ('a, 'b) ilogic
 
-val fmap : left:('a1 -> 'a2) -> right:('b1 -> 'b2) -> ('a1, 'b1) t -> ('a2, 'b2) t
+val fmap : ('a1 -> 'a2) -> ('b1 -> 'b2) -> ('a1, 'b1) t -> ('a2, 'b2) t
 
-val reify : left:('a1, 'a2) Reifier.t -> right:('b1, 'b2) Reifier.t ->
+val reify : ('a1, 'a2) Reifier.t -> ('b1, 'b2) Reifier.t ->
   (('a1, 'b1) ilogic, ('a2, 'b2) logic) Reifier.t

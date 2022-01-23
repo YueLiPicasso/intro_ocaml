@@ -1,6 +1,5 @@
 open More
-open More.Core
-open Common       
+open More.Core   
     
 type 'a t = 'a option
     
@@ -22,9 +21,9 @@ val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t
    for termination of the computation, use Seq instead. *)
 module Rec : sig
 
-  type nonrec logic  = 'b logic as 'b
+  type logic  = 'b t Core.logic  as 'b
     
-  type nonrec ilogic = 'b ilogic as 'b
+  type ilogic = 'b t Core.ilogic as 'b
     
   val reify : (ilogic,logic) Reifier.t 
 

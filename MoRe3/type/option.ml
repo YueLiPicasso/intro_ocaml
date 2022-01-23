@@ -52,6 +52,7 @@ let rec take ~n oo = let oo = oo () in if n <= 0 then Value None else
     match oo with
     | Value None as v -> v
     | Value (Some x) -> Value (Some (take (n-1) x))
+    | Var _ as v -> v
 
 
 
