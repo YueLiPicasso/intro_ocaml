@@ -9,7 +9,7 @@ The first question is the looping problem. Here looping is not because we are wo
 The second question concerns predefined functors: can that be eliminated by monadic reifiers?. The short but firm answer is "no".  Along the line of projects we find that there are actually two kinds of reifiers: lazy and eager, indexed by the number of type parameters and the map function. (Note that "lazy" now refers to lazily evaluated infinite data, but we also used the lazy/thunk technique to solve the looping problem --- these two mentions of "lazy" are independent from each other.) Recursion is not a concern here because a recursive reifier can always be built from a non-recursive one. The [type/Common](type/common.mli) module gives the shape of the predefined functor set in the context of monadic reification.  As applications of the predefined set, we have two modules that share the same structure modulo the number of type parameters and the map function: [type/List](type/list.mli) vs. [type/Option](type/option.mli), and we additionally have [type/Either](type/either.mli). Note that they reuse the generic reifiers provided by the predefined functor set in exactly the same way as the non-monadic OCanren reifier implementation. 
 
 Now we are well positioned to draw a conclusion on monadic reification:
-- It provides good abstraction (hiding `Env.t`) and but requires understanding of monad, and also some lazy evaluation technique to avoid looping.
+- It provides good abstraction (hiding `Env.t`) and but requires understanding of monads, and also some lazy evaluation techniques to avoid looping.
 - In terms of avoiding a predefined functor set, it does not help.
 
 Some tips:
