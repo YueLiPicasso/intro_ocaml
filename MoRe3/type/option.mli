@@ -44,6 +44,6 @@ end
 
 
 (* e.g., take 2 from SomeSomeSomeSome... we get SomeSomeNone. *)
-val take : n:int -> Seq.logic -> Rec.logic
+val take : int -> Seq.logic -> Rec.logic
 
 

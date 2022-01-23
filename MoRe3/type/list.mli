@@ -38,4 +38,4 @@ module Seq : sig
       
 end
 
-val take : n:int -> 'a Seq.logic -> 'a Rec.logic
+val take : int -> 'a Seq.logic -> 'a Rec.logic

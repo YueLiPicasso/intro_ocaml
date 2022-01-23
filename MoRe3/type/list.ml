@@ -42,7 +42,7 @@ module Seq = struct
   let rec reify = fun ra () -> FT.Lazy.reify ra (reify ra) ()  
 end
 
-let rec take ~n l =
+let rec take n l =
   let l = l () in if n <= 0  then Value Nil else
     match l with
     | Value Nil as v -> v
