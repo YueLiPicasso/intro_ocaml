@@ -1,5 +1,11 @@
 # Reifiers Written in the Monad Pattern
 
+This project succeeds the projects listed in the [Credits](#credits) section, bringing the understanding and implementation of monadic reification to a new stage. We are now able to answer the two major questions pursued all along the series of projects:
+* Resolving of the looping problem of monadic reification over recursive algebraic data types, with the most reliable, simple and readable code.
+* Evaluating monadic reification as a potential technique to eliminate the need for [a predefined set of functors](https://github.com/JetBrains-Research/OCanren/blob/8ce216180e2abe37b8a1f60cf6bf9187c63fc81c/src/core/Logic.ml#L135) in the implementation of OCanren. 
+
+The first question is the looping problem. Here looping is not because we are working on any infinite/cyclic data, but because of the call-by-value strategy of OCaml, coupled with a naive monadic style. Since we need monad, our only hope is to engineer wrt. to call-by-value. Each predecessor project makes a step forward in this regard. For instance, to begin with, [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) uses a `compose` operator to stop looping for list reifiers, but this does not work for Peano numbers, as discovered by [yue_eucpp](../yue_eucpp), which is a careful review of Moiseenko's work, spliting the monolithic source file into the combination of a core library, a custom type library and a test file. Then, [monadic_reify](../monadic_reify) proposes the use of OCaml's Stdlib.Lazy as a reliable loop killer. Following that,  in [MoRe](../MoRe)  the `compose` operator is completely removed, and there are two monad binders for recursive and non-recursive reifiers 
+
 The [MoRe](../MoRe) project solves the non-termination problem of the Moiseenko project by systematic lazy evaluation,  so that a user of the reifiers has to care about if a reifier is lazy or not, and accordingly choose which binder (`>>=` or `>>>=`) and which application function (`Reifier.apply` or `Reifier.Lazy.apply`) to use. Moreover, although it is possible to mix-compose lazy and eager reifiers, this again requires the user to take care of wrapping the lazy reifiers with `Lazy.force`.  Here in MoRe2 we free the user from the burdens associated with lazy evaluation. We use a sum type to unify lazy and eager reifiers. 
 
 The benefits are 
@@ -133,7 +139,10 @@ feature the "monad" programming pattern, because monad origins from category the
 
 ## Credits
 
-- The [MoRe](../MoRe) project
-- The [monadic_reify](../monadic_reify) project
-- The [yue_eucpp](../yue_eucpp) project 
-- The [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) project
+Predecessor projects, lastest first.
+
+- [MoRe2](../MoRe2) 
+- [MoRe](../MoRe) 
+- [monadic_reify](../monadic_reify) 
+- [yue_eucpp](../yue_eucpp) 
+- [Moiseenko](https://gist.github.com/eupp/a78e9fc086834106e98d50e1e7bdea24) 
