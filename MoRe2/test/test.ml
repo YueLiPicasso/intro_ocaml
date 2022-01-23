@@ -290,3 +290,58 @@ let _ = print_string @@
   in match tm with
   | Value(Some(Value(Cons(Var _, Value(Cons(Value 1, Value Nil)))))) -> "PASSED\n"
   | _ -> "failed\n"
+
+(* reify either *)
+
+let left = Either.left and right = Either.right
+
+let _ = print_string @@
+  let (tm : ('a, 'b) Either.logic) =  
+    Reifier.apply (Either.reify ~left:Reifier.reify ~right:Reifier.reify)
+      (run (fun v -> Env.return (left v)))
+  in match tm with
+  | Value(Left(Var _)) -> "PASSED\n"
+  | _ -> "failed\n"
+
+let _ = print_string @@
+  let (tm : (('a, 'b) Either.logic, ('c, 'd) Either.logic) Either.logic) =  
+    Reifier.apply (Either.reify
+                     ~left:(Either.reify ~left:Reifier.reify ~right:Reifier.reify)
+                     ~right:(Either.reify ~left:Reifier.reify ~right:Reifier.reify))
+      (run (fun v -> Env.return (right (left v))))
+  in match tm with
+  | Value(Right(Value(Left(Var _)))) -> "PASSED\n"
+  | _ -> "failed\n"
+
+let _ = print_string @@
+  let (tm : ('a Option.logic, 'a List.logic) Either.logic) =  
+    Reifier.apply (Either.reify
+                     ~left:(Option.reify Reifier.reify)
+                     ~right:(List.reify Reifier.reify))
+      (run (fun v -> Env.return (right (cons v (nil())))))
+  in match tm with
+  | Value(Right(Value(Cons(Var _, Value Nil)))) -> "PASSED\n"
+  | _ -> "failed\n"
+
+(* reify List.Seq *)
+
+let _ = print_string @@
+  let tm : int Core.logic List.Seq.logic = Reifier.apply (List.Seq.reify Reifier.reify)
+      (run (fun _ -> Env.return @@ List.Seq.ints 0))
+  in
+  begin
+    match List.take 1 tm with
+    | Value(Cons(Value 0, Value Nil)) -> "PASSED\n"
+    | _ ->  "failed\n"
+  end
+  ^
+  begin    match List.take 2 tm with
+    | Value(Cons(Value 0, Value(Cons(Value 1, Value Nil)))) -> "PASSED\n"
+    | _ ->  "failed\n"
+  end
+  ^
+  begin    match List.take 3 tm with
+    | Value(Cons(Value 0, Value(Cons(Value 1, Value(Cons(Value 2, Value Nil)))))) -> "PASSED\n"
+    | _ ->  "failed\n"
+  end
+  

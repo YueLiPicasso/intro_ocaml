@@ -19,7 +19,7 @@ let reify = fun ra ->
   EL.Eager (Reifier.reify >>= (fun r -> (ra >>= (fun fa ->
       Env.return (fun x ->
           match EL.use r x with
-          | Var _ as v'   -> v'
+          | Var _ as v   -> v
           | Value t -> Value (fmap (EL.use fa) t))))))
     
 module Nested = struct

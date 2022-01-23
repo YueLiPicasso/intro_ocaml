@@ -32,7 +32,7 @@ end
 
 val fresh : ('a ilogic -> 'b Env.t) -> 'b Env.t                   
 
-val run : ('a ilogic -> 'b ilogic Env.t) -> 'b ilogic State.t
+val run : ('a ilogic -> 'b Env.t) -> 'b State.t
   
 val (>>=) : 'a Env.t EL.t -> ('a EL.t -> 'b Env.t) -> 'b Env.t
 

@@ -1,7 +1,7 @@
 # topological order of core library modules
 # list of custom types
 export MODTOPO = anchor var term core
-export TYPE = option list
+export TYPE = option list either
 
 # root directory, and relative dirs of:
 # core library 
