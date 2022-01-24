@@ -31,10 +31,11 @@ module Seq : sig
   type 'a logic = unit -> ('a, 'b) t Core.logic as 'b
 
   type 'a ilogic = unit -> ('a, 'b) t Core.ilogic as 'b
-
-  val ints : int -> int Core.ilogic ilogic
   
   val reify : ('a, 'b) Reifier.t -> ('a ilogic, 'b logic) Reifier.t
+
+  (* The infinite lazy stream n, n+1, n+2, ... *)
+  val ints : int -> int Core.ilogic ilogic
       
 end
 
