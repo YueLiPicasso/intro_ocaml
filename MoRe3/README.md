@@ -7,7 +7,7 @@ This project succeeds the projects listed in the [Credits](#credits) section, br
 
 ## "Intrisic" vs. "Data-driven" looping
 
-We distinguish "intrisic" vs. "data-driven" looping.  Intrinsic looping of monadic reifiers is not because we are working on any infinite/cyclic data, but because of the call-by-value strategy of OCaml, coupled with a naive monadic coding style. Data-driven looping occurs when there is _no_ intrinsic looping but computation over infinite data is not properly controlled/suspended. The looping problem of monadic reification refers to intrinsic looping, because data-driven looping is common for both monadic and non-monadic reification. Actually we successfully addressed both forms of looping simultaneously in this project, but we shall defer the discussion about data-driven looping until [a later section](#answering-the-predefined-set-problem).
+We distinguish "intrisic" vs. "data-driven" looping.  Intrinsic looping of monadic reifiers is not because we are working on any infinite/cyclic data, but because of the call-by-value strategy of OCaml, coupled with a naive monadic coding style. Data-driven looping occurs when there is _no_ intrinsic looping, but computation over infinite data is not properly controlled/suspended. The looping problem of monadic reification refers to intrinsic looping, because data-driven looping is common for both monadic and non-monadic reification. Actually we successfully addressed both forms of looping simultaneously in this project, but we shall defer the discussion about data-driven looping until [a later section](#answering-the-predefined-set-problem).
 
 ## Answering the looping problem
 
