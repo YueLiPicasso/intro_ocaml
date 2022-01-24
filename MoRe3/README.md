@@ -5,9 +5,9 @@ This project succeeds the projects listed in the [Credits](#credits) section, br
 * Resolving the looping problem of recusively defined monadic reifiers with the most reliable, simple and readable code.
 * Evaluating monadic reification as a potential technique to eliminate the need for [a predefined set of functors](https://github.com/JetBrains-Research/OCanren/blob/8ce216180e2abe37b8a1f60cf6bf9187c63fc81c/src/core/Logic.ml#L135) in the implementation of OCanren. 
 
-## "Intrisic" vs. "Data-driven" Looping
+## "Intrinsic" vs. "Data-driven" Looping
 
-We distinguish "intrisic" vs. "data-driven" looping.  Intrinsic looping of monadic reifiers is not because we are working on any infinite/cyclic data, but because of the call-by-value strategy of OCaml, coupled with a naive monadic coding style. Data-driven looping occurs when there is _no_ intrinsic looping, but computation over infinite data is not properly controlled/suspended. The looping problem of monadic reification refers to intrinsic looping, because data-driven looping is common for both monadic and non-monadic reification. Actually we successfully addressed both forms of looping simultaneously in this project, but we shall defer the discussion about data-driven looping until [a later section](#answering-the-predefined-set-problem).
+We distinguish "intrinsic" vs. "data-driven" looping.  Intrinsic looping of monadic reifiers is not because we are working on any infinite/cyclic data, but because of the call-by-value strategy of OCaml, coupled with a naive monadic coding style. Data-driven looping occurs when there is _no_ intrinsic looping, but computation over infinite data is not properly controlled/suspended. The looping problem of monadic reification refers to intrinsic looping, because data-driven looping is common for both monadic and non-monadic reification. Actually we successfully addressed both forms of looping simultaneously in this project, but we shall defer the discussion about data-driven looping until [a later section](#answering-the-predefined-set-problem).
 
 ## Answering the Looping Problem
 
