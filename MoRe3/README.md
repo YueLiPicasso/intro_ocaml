@@ -1,6 +1,6 @@
 # Reifiers Written in the Monad Pattern
 
-This project succeeds the projects listed in the [Credits](#credits) section, bringing the understanding and implementation of monadic reification to a new stage. We are now able to answer the two major questions pursued all along the series:
+This project succeeds the projects listed in the [Credits](#credits) section, bringing the understanding and implementation of monadic reification to a new stage. We are now able to answer the two major questions pursued all along the journey:
 
 * Resolving the looping problem of recusively defined monadic reifiers with the most reliable, simple and readable code.
 * Evaluating monadic reification as a potential technique to eliminate the need for [a predefined set of functors](https://github.com/JetBrains-Research/OCanren/blob/8ce216180e2abe37b8a1f60cf6bf9187c63fc81c/src/core/Logic.ml#L135) in the implementation of OCanren. 
