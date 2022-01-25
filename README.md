@@ -3,6 +3,16 @@
 This repo hosts artifects created while I was learning the OCaml language and
 subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren).
 
+
+## Monadic Reifiers for OCanren 
+
+There is a succession of projects dedicated to understanding and evaluating the monadic style of reification of OCanren terms. The most recent work is [MoRe3](MoRe3), which includes a review of its predecesor projects [yue_eucpp](yue_eucpp), [monadic_reify](monadic_reify), [MoRe](MoRe) and [MoRe2](MoRe2).
+
+## Typing OCanren Reifiers using Light-weight Higher-kinded Polymorphism
+
+OCanren reifiers are provided by a set of predefined functors.  [OCanren_Logic_HKP](OCanren_Logic_HKP) is an experiment of applying the light-weight higher-kinded polymorphism technique to replace functors by higher-kinded polymorphic expressions. The most recent progress is [reifyHKP.v2](OCanren_Logic_HKP/reifyHKP/v2/). 
+
+
 ## OCanren Examples
 
 The [OCanren_exercises](OCanren_exercises) directory contains several interesting (recreational)
@@ -13,10 +23,9 @@ robbers to evenly share their booty !
 
 ## Other Goodies
 
-The [sessions](sessions) folder are exercise code that I wrote following several OCaml resources.
+The [sessions](sessions) folder are exercise code that I wrote following several OCaml learning resources.
 
-[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog. Translating the code into OCanren  is an ongoing exercise.
-
+[Hanoi](Hanoi) solves the Tower of Hanoi problem in OCaml and SWI-Prolog. 
 
 
 ## Compiling OCanren Source
