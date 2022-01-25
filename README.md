@@ -12,6 +12,10 @@ There is a succession of projects dedicated to understanding and evaluating the 
 
 OCanren reifiers are provided by a set of predefined functors.  [OCanren_Logic_HKP](OCanren_Logic_HKP) is an experiment of applying the light-weight higher-kinded polymorphism technique to replace functors by higher-kinded polymorphic expressions. The most recent progress is [reifyHKP.v2](OCanren_Logic_HKP/reifyHKP/v2/). 
 
+## OCanren Tutorial
+
+There is a tutorial on programming in OCanren which stays in [its own repo]( https://github.com/YueLiPicasso/OCanrenTutorial) but logically belongs to this repo.
+
 
 ## OCanren Examples
 
