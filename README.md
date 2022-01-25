@@ -1,7 +1,7 @@
 # OCaml and OCanren Study Notes
 
 This repo hosts artifects created while I was learning the OCaml language and
-subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren).
+subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren). The sections below represent a timeline of my progress, with the lastest work on the top.
 
 
 ## Monadic Reifiers for OCanren 
