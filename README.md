@@ -1,8 +1,18 @@
 # OCaml and OCanren Study Notes
 
 This repo hosts artifects created while I was learning the OCaml language and
-subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren). The sections below represent a timeline of my progress, with the lastest work on the top.
+subsequently when I was learning [OCanren](https://github.com/JetBrains-Research/OCanren). The table of contents below represents a timeline of my progress, with the lastest work on the top.
 
+- [Monadic Reifiers for OCanren](#monadic-reifiers-for-ocanren)
+- [Typing OCanren Reifiers using Light-weight Higher-kinded Polymorphism](#typing-ocanren-reifiers-using-light-weight-higher-kinded-polymorphism)
+- [OCanren Tutorial](#ocanren-tutorial)
+- [OCanren Examples](#ocanren-examples)
+- [Other Goodies](#other-goodies)
+- [Compiling OCanren Source](#compiling-ocanren-source)
+- [Installation Notes](#installation-notes)
+    - [Installing OCanren](#installing-ocanren)
+    - [Installing OCaml](#installing-ocaml)
+    - [Ubuntu Linux Live USB Setup](#ubuntu-linux-live-usb-setup)
 
 ## Monadic Reifiers for OCanren 
 
